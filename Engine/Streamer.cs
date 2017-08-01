@@ -1,5 +1,6 @@
 ﻿using System;
-
+using System.Collections.Generic;
+using System.IO;
 namespace Engine
 {
     /// <summary>
@@ -8,8 +9,11 @@ namespace Engine
     /// <para>to a File Stream</para>
     /// </summary>
     //Author 3dO
-    public class Streamer
+    public static class Streamer
     {
-        
+        public static void d (){
+            //FileStream
+        }
+        //IEnumerable<String> boy = Directory.EnumerateFiles("Path","*.cs",SearchOption.AllDirectories);
     }
 }

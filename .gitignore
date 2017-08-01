@@ -18,7 +18,6 @@
 x64/
 x86/
 bld/
-Testv1/
 [Bb]in/
 [Oo]bj/
 [Ll]og/
@@ -259,9 +258,4 @@ paket-files/
 
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
-*.pyc
-/Testv1
-/Testv1
-/Testv1/Properties/AssemblyInfo.cs
-/Testv1/Properties
-/Testv1
+*.pycoperties

@@ -12,6 +12,11 @@ using MaterialSkin.Animations;
 using MaterialSkin.Controls;
 using System.IO;
 namespace Front_End {
+    /// <summary>
+    /// Author Seyi
+    /// Google Looking Gui...DO IT
+    /// </summary>
+    /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
     public partial class GUI: MaterialForm {
         public GUI() {
             InitializeComponent();

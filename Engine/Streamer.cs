@@ -11,9 +11,9 @@ namespace Engine
     //Author 3dO
     public static class Streamer
     {
-        public static void d (){
-            //FileStream
-        }
+        //To get all sub folders in a directory
         //IEnumerable<String> boy = Directory.EnumerateFiles("Path","*.cs",SearchOption.AllDirectories);
+        //Comparing to check if file was modified
+        //.CompareTo((new FileInfo(a)).LastWriteTime)!= 0
     }
 }

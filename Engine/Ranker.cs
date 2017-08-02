@@ -16,6 +16,8 @@ namespace Engine
         /// </summary>
         /// <param name="query">The query. File type still to be determined</param>
         /// <returns></returns>
-        public Document[] SearchQuery(Stream query) { return null; } 
+        public Document[] SearchQuery(Stream query) {
+            return null;
+        } 
     }
 }

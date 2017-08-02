@@ -6,11 +6,20 @@ namespace Engine
 {
     /// <summary>
     /// IDK
-    /// Author TENI
+    /// Author Timi
     /// </summary>
-    class Semanter
+    public static class Semanter
     {
-        //AutoComplete word and query
-        //Correction
+        /// <summary>
+        /// Suggestionses the specified query.
+        /// </summary>
+        /// <param name="query">The List of strings containing the query in order.</param>
+        /// <returns>An array of suggested terms, sorted by relevance</returns>
+        public static String[] Suggestions(List<String> query) {
+            return null;
+        }
+        public static String Correct(List<String> query) {
+            return null;
+        }
     }
 }

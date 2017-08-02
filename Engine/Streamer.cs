@@ -12,6 +12,11 @@ namespace Engine
 
     public static class Streamer
     {
-        
+        public static void AddFileFrom(String pathToFile) { 
+            //throw file tye exception
+        }
+        public static void RemoveFile(Document doc) { }
+        public static void ModifyFile(Document doc) { }
+        //Stop codes
     }
 }

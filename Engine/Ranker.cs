@@ -9,14 +9,14 @@ namespace Engine
     /// Author Timi
     /// Gets Results to the Query and ranks them by relevance.
     /// </summary>
-    class Ranker
+    public static class Ranker
     {
         /// <summary>
-        /// Searches the inverted Index for the shii and then ranks them, The 
+        /// Searches the inverted Index for the shii and then ranks them, The 1st guy is the most relevant
         /// </summary>
         /// <param name="query">The query. File type still to be determined</param>
         /// <returns></returns>
-        public Document[] SearchQuery(Stream query) {
+        public static Document[] SearchQuery(List<String> query) {
             return null;
         } 
     }

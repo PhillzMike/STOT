@@ -7,8 +7,15 @@ namespace Engine
     /// <summary>
     /// Author Timi
     /// </summary>
-    class Querier
+    public static class Querier
     {
+        public static Document[] Search(String query) {
+            return null;
+        }
+        public static String[] AutoComplete(String query) {
+            return null;
+        }
+        //Types
         //Tokenize query
         //Search Query
         //Autocomplete Query

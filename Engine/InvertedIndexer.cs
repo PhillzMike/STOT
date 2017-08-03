@@ -27,7 +27,15 @@ namespace Engine
                 }
             }
         }
-        public static void DeleteDocument(List<String> words,Document doc) { }
+        public static void DeleteDocument(Document doc) {
+            doc = null;
+        }
+        public static void RemoveDocument(String word,Document doc) {
+            invertedIndexTable[word].Remove(doc);
+            if(invertedIndexTable[word].Keys.Count == 0) {
+                invertedIndexTable.Remove(word);
+            }
+        }
         public static void ModifyDocument(List<String> words,Document doc) {
                 //figure out what git did
         }

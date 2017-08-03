@@ -11,19 +11,23 @@ namespace Engine
     /// //TODO unstatic
     public static class InvertedIndexer
     {
-        private static Dictionary<String,Dictionary<Document,int>> invertedIndexTable;
-        public static Dictionary<string,Dictionary<Document,int>> InvertedIndexTable { get => invertedIndexTable; }
+        private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
+        public static Dictionary<string,Dictionary<Document,List<int>>> InvertedIndexTable { get => invertedIndexTable; }
 
         public static void AddDocument(List<String> words,Document doc) {
+            int i = 0;
             foreach(String word in words) {
                 if(invertedIndexTable.ContainsKey(word)) {
                     if(invertedIndexTable[word].ContainsKey(doc)) {
-                        invertedIndexTable[word][doc]++;
+                        invertedIndexTable[word][doc].Add(i++);
+                        List<int> ia = new List<int> {
+                            1
+                        };
                     } else {
-                        invertedIndexTable[word].Add(doc,1);
+                        invertedIndexTable[word].Add(doc,new List<int> { i++ });
                     }
                 } else {
-                    invertedIndexTable.Add(word,new Dictionary<Document,int> { { doc,1 } });
+                    invertedIndexTable.Add(word,new Dictionary<Document,List<int>> {{ doc,new List<int> { i++ } } });
                 }
             }
         }

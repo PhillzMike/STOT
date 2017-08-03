@@ -9,7 +9,6 @@ namespace Engine
     {
         public string Name { get; set; }
         public string Address { get; set; }
-        public string Summary { get; set; }
         public DateTime LastModified { get; set; }
         /// <summary>
         /// The part of the document relevant to the query

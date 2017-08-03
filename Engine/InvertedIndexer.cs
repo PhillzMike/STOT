@@ -12,7 +12,7 @@ namespace Engine
     public static class InvertedIndexer
     {
         private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
-        public static Dictionary<string,Dictionary<Document,List<int>>> InvertedIndexTable { get => invertedIndexTable; }
+        public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
 
         public static void AddDocument(List<String> words,Document doc) {
             int i = 0;

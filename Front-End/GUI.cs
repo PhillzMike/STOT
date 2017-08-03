@@ -13,6 +13,7 @@ using MaterialSkin.Controls;
 using System.IO;
 namespace Front_End {
     /// <summary>
+    /// Implement Crawler at intervals and other classes
     /// Author Seyi
     /// Google Looking Gui...DO IT
     /// </summary>

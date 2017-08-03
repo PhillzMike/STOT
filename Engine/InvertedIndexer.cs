@@ -8,6 +8,7 @@ namespace Engine
     /// Uploads tokens from a file into the inverted index Table
     /// Author Ope
     /// </summary>
+    /// //TODO unstatic
     public static class InvertedIndexer
     {
         private static Dictionary<String,Dictionary<Document,Int32>> invertedIndexTable;
@@ -15,7 +16,7 @@ namespace Engine
 
         public static void AddDocument(List<String> words,Document doc) { }
         public static void DeleteDocument(List<String> words,Document doc) { }
-        public static void AModifyDocument(List<String> words,Document doc) {
+        public static void ModifyDocument(List<String> words,Document doc) {
                 //figure out what git did
         }
         //Add Document

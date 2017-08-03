@@ -15,7 +15,7 @@ namespace Engine
         public static String[] AutoComplete(String query) {
             return null;
         }
-        //Types
+        //Types : pdf
         //Tokenize query
         //Search Query
         //Autocomplete Query

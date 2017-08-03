@@ -6,15 +6,27 @@ namespace Engine
 {
     /// <summary>
     /// Uploads tokens from a file into the inverted index Table
-    /// Author Ope
+    /// Author 3dO
     /// </summary>
     /// //TODO unstatic
     public static class InvertedIndexer
     {
-        private static Dictionary<String,Dictionary<Document,Int32>> invertedIndexTable;
+        private static Dictionary<String,Dictionary<Document,int>> invertedIndexTable;
         public static Dictionary<string,Dictionary<Document,int>> InvertedIndexTable { get => invertedIndexTable; }
 
-        public static void AddDocument(List<String> words,Document doc) { }
+        public static void AddDocument(List<String> words,Document doc) {
+            foreach(String word in words) {
+                if(invertedIndexTable.ContainsKey(word)) {
+                    if(invertedIndexTable[word].ContainsKey(doc)) {
+                        invertedIndexTable[word][doc]++;
+                    } else {
+                        invertedIndexTable[word].Add(doc,1);
+                    }
+                } else {
+                    invertedIndexTable.Add(word,new Dictionary<Document,int> { { doc,1 } });
+                }
+            }
+        }
         public static void DeleteDocument(List<String> words,Document doc) { }
         public static void ModifyDocument(List<String> words,Document doc) {
                 //figure out what git did

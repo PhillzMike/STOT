@@ -15,7 +15,7 @@ namespace Engine
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
-        public static String[] Suggestions(List<String> query) {
+        public static List<String> Suggestions(List<String> query) {
             return null;
         }
         public static String Correct(List<String> query) {

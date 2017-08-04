@@ -9,10 +9,10 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-        public static Document[] Search(String query) {
+        public static List<Document> Search(String query) {
             return null;
         }
-        public static String[] AutoComplete(String query) {
+        public static List<String> AutoComplete(String query) {
             return null;
         }
         //Types : pdf

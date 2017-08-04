@@ -16,7 +16,7 @@ namespace Engine
         /// </summary>
         /// <param name="query">The query. File type still to be determined</param>
         /// <returns></returns>
-        public static Document[] SearchQuery(List<String> query) {
+        public static List<Document> SearchQuery(List<String> query, List<Document> Results) {
             return null;
         } 
     }

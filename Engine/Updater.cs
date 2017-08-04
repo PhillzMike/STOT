@@ -9,7 +9,7 @@ namespace Engine
         //Author Teni
        
         
-        public static Document[] Crawler(String Directory,Document[] Files) {
+        public static List<Document> Crawler(String Directory,List<Document> Files) {
 
             //Check if files are added, removed or Modified
 

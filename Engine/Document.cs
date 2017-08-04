@@ -9,11 +9,12 @@ namespace Engine
     {
         public string Name { get; set; }
         public string Address { get; set; }
+        public Type Type { get; set; }
         public DateTime LastModified { get; set; }
         /// <summary>
         /// The part of the document relevant to the query
         /// </summary>
         public string Relevance { get; set; }
-        public Document(String Name,String Path,String Summary) { }
+        public Document(String Name,String Path,Type Type,DateTime LastModified) { }
     }
 }

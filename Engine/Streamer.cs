@@ -10,9 +10,9 @@ namespace Engine
     /// <para>to a File Stream</para>
     /// </summary>
 
-    public static class Streamer
-    {
-        public static void AddFileFrom(String pathToFile) { 
+    public static class Streamer {
+
+        public static void AddFileFrom(Document doc) { 
             //throw file tye exception
         }
         public static void RemoveFile(Document doc) { }

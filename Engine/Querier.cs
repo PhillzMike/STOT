@@ -5,7 +5,7 @@ using System.Text;
 namespace Engine
 {
     /// <summary>
-    /// Author Timi
+    /// Author Teni
     /// </summary>
     public static class Querier
     {

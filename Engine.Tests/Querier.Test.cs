@@ -6,7 +6,7 @@ using Engine;
 namespace Engine.Tests
 {
     [TestClass]
-    class QuerierTest
+    public class QuerierTest
     {
         [TestMethod]
         public void SplitWhitespaceTest() {

@@ -18,5 +18,16 @@ namespace Engine.Tests
             for(int i = 0;i < expected.Length;i++)
                 Assert.AreEqual<string>(expected[i],Actual[i]);
         }
+        [TestMethod]
+        public void SearchTest()
+        {
+            string s = "type                    :  pdf";
+            Char[] space = { ' ' };
+            string[] sarray = s.Split(space, StringSplitOptions.RemoveEmptyEntries);
+            string actual = Querier.TypeChecker(sarray);
+            string expected = ("pdf");
+            Assert.AreEqual<string>(expected, actual);
+        }
+
     }
 }

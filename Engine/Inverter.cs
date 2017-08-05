@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace Engine
 {
     /// <summary>
@@ -9,8 +8,7 @@ namespace Engine
     /// Author 3dO
     /// </summary>
     /// //TODO unstatic
-    public static class InvertedIndexer
-    {
+    public static class InvertedIndexer{
         public static int DocumentCount { get; } 
         private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
         public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }

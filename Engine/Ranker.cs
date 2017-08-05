@@ -28,7 +28,7 @@ namespace Engine
                 return (1 + Math.Log(count));
         }
         private static double IDFWeight(int noOfDocuments) {
-            return Math.Log(InvertedIndexer.Table.)
+            return Math.Log(Inverter.Table.)
         }
     }
 }

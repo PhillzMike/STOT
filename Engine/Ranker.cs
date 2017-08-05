@@ -12,11 +12,12 @@ namespace Engine
     public static class Ranker
     {
         /// <summary>
-        /// Searches the inverted Index for the shii and then ranks them, The 1st guy is the most relevant
+        /// Searches the query.
         /// </summary>
-        /// <param name="query">The query. File type still to be determined</param>
-        /// <returns></returns>
-        public static List<Document> SearchQuery(List<String> query, List<Document> Results) {
+        /// <param name="query">The query.</param>
+        /// <param name="Results">The results.</param>
+        /// <returns> A list of documents in descending order of relevance</returns>
+        public static List<Document> SearchQuery(List<String> query, Dictionary<Document,int[]> Results) {
             return null;
         } 
     }

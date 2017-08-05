@@ -40,7 +40,7 @@ namespace Engine
                 return (1 + Math.Log(count));
         }
         private static double IDFWeight(int noOfDocuments) {
-            return Math.Log(InvertedIndexer.DocumentCount/noOfDocuments);
+            return Math.Log(Inverter.DocumentCount/noOfDocuments);
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Engine.Tests
     public class InverterTest
     {
         [TestMethod]
-        public void TestMethod1()
+        public void Inverter()
         {
 
         }

@@ -11,6 +11,7 @@ namespace Engine
     /// //TODO unstatic
     public static class InvertedIndexer
     {
+        public static int DocumentCount { get; } 
         private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
         public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
         public static void AddDocument(List<String> words,Document doc) {

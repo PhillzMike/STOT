@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-
 namespace Engine
 {
     /// <summary>
@@ -9,11 +8,10 @@ namespace Engine
     /// Author 3dO
     /// </summary>
     /// //TODO unstatic
-    public static class InvertedIndexer
-    {
-        private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
+    public static class Inverter{
+        public static int DocumentCount { get; } 
+        private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable=new Dictionary<string, Dictionary<Document, List<int>>>();
         public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
-
         public static void AddDocument(List<String> words,Document doc) {
             int i = 0;
             foreach(String word in words) {
@@ -41,7 +39,7 @@ namespace Engine
             }
         }
         public static void ModifyDocument(List<String> words,Document doc) {
-                //figure out what git did
+            //figure out what git did here
         }
         //Add Document
         //Remove Document

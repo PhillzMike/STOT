@@ -13,7 +13,6 @@ namespace Engine
     {
         private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
         public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
-
         public static void AddDocument(List<String> words,Document doc) {
             int i = 0;
             foreach(String word in words) {

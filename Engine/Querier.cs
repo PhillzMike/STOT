@@ -20,15 +20,25 @@ namespace Engine
             //return Ranker.SearchQuery(,);
             //type: bring out document of possible type
             //type must be followed by :, no matter the number of whitespaces.
-           String [] words = query.Split(' ');
+           String [] words = query.Split((new char[]{' '}), StringSplitOptions.RemoveEmptyEntries);
            List<String> splitwords = new List<String>();
            var stopwords = File.ReadAllLines("stopwords.txt");
            var stpwordlist = new List<String>(stopwords);
-           foreach (string k in words)
+           for(int k= 0; k<words.Length; k++)
             {
-                if(!stpwordlist.Contains(k) || words.Contains("type:"))
-                   splitwords.Add(k);
-            } 
+                if (!stpwordlist.Contains(words[k]))
+                {  
+                    if (words[k] == "type")
+                    {  if (words[k++] == ":")
+                        { string type = words[k + 1]; }
+                        else
+                        { splitwords.Add(words[k]); }
+                    }
+                    splitwords.Add(words[k]);
+                   }
+                }
+             
+          
             DocsFound(splitwords);
             return null;
         }
@@ -38,16 +48,17 @@ namespace Engine
             return null;
         }
 
-        private static List<KeyValuePair<Document, List<int>>> DocsFound(List<String> querywords)
+        private static Dictionary<Document, double[]> DocsFound(List<String> querywords)
         {
-             List<KeyValuePair<Document, List<int>>> found = new List<KeyValuePair<Document, List<int>>>();
+            Dictionary<Document, double[]> found = new Dictionary<Document, double[]>();
             foreach (string t in querywords)
             {
-                found = InvertedIndexer.Table[t].ToList();
+                
             
             }
              return found;
         }
+        //giving 
         //Types : pdf
         //Tokenize query
         //Search Query

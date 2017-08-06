@@ -5,9 +5,9 @@ using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Engine;
 namespace Engine.Tests {
     [TestClass]
-    public class SemanterTest {
+    public class StreamerTest {
         [TestMethod]
-        public void Semanter() {
+        public void Streamer() {
 
         }
 

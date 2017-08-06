@@ -10,7 +10,7 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-
+        public static  List<String> typespossible = new List<String>();
         public static string type;
         public static List<Document> Search(String query) {
            
@@ -38,7 +38,8 @@ namespace Engine
                 }
                 
             
-           // DocsFound(splitwords);
+          
+            DocsFound(splitwords);
             return null;
         }
         public static List<String> AutoComplete(String query)
@@ -65,7 +66,7 @@ namespace Engine
             }
              return found;
         }
-        public  static string TypeChecker(String [] s)
+        private static string TypeChecker(String [] s)
         { 
         for (int i = 0; i < s.Length; i++) {
                 if (s[i] == "type")
@@ -76,9 +77,20 @@ namespace Engine
             }
             return "";
     }
+        private static List<String> PossibleType(string s)
+        {
+            string[] doctype = Enum.GetNames(typeof(Type));
+            foreach(string m in doctype) {
+                if ((s[0] == m[0]) && (s[1] == m[1]))
+                {
+                    typespossible.Add(m);
+                }
+            }
+            return typespossible;
+        }
         //giving 
         //Types : pdf
-        //Tokenize query
+        //Tokenize query; 
         //Search Query
         //Autocomplete Query
 

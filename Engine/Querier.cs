@@ -10,8 +10,8 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-        public static  List<String> typespossible = new List<String>();
-        public static string type;
+        private static  List<Type> typesPossible = new List<Type>();
+        private static string type;
         public static List<Document> Search(String query) {
            
             //ignore stop words \
@@ -56,12 +56,20 @@ namespace Engine
             {
                 count[t] = 0;
             }
+       
             for(int i=0; i<querywords.Count; i++)
-            {
+            { 
                List<Document> available =  Inverter.Table[querywords[i]].Keys.ToList();
                 foreach (Document t in available) {
                     count[i] = Inverter.Table[querywords[i]][t].Count;
-                    found.Add(t, count);
+                    if (typesPossible.Contains(t.Type))
+                    {
+                        found.Add(t, count);
+                    }
+                    else
+                    {
+                        found.Add(t, count);
+                    }
               }
             }
              return found;
@@ -69,24 +77,32 @@ namespace Engine
         private static string TypeChecker(String [] s)
         { 
         for (int i = 0; i < s.Length; i++) {
-                if (s[i] == "type")
+                if (s[i].ToLower().Equals("type"))
                 {
-                    if (s[i + 1] == ":")
+                    if (s[i + 1].Equals(":"))
                     { return s[i + 2]; }
                 }
             }
             return "";
     }
-        private static List<String> PossibleType(string s)
+        private static List<Type> PossibleType(string s)
         {
-            string[] doctype = Enum.GetNames(typeof(Type));
-            foreach(string m in doctype) {
-                if ((s[0] == m[0]) && (s[1] == m[1]))
+           
+            
+            foreach ( string m in Enum.GetNames(typeof(Type))){
+                bool teni = true;
+                for (int i = 0; i < s.Length; i++) { 
+
+                    if (!(s[i] == m[i]))
                 {
-                    typespossible.Add(m);
-                }
+                        teni = false; 
+               }
+                   
+             }
+              //  if (teni)
+                   // typesPossible.Add(Type.m);
             }
-            return typespossible;
+            return typesPossible;
         }
         //giving 
         //Types : pdf

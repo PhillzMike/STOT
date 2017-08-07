@@ -11,7 +11,7 @@ namespace Engine
     {
         private string _Name;
         private string _Address;
-        private Type _Type;
+        private Format _Type;
         private DateTime _LastSeen;
         private string _Relevance;
         /// <summary>
@@ -48,7 +48,7 @@ namespace Engine
         /// <value>
         /// The type or file format ofthe document.
         /// </value>
-        public Type Type {
+        public Format Type {
             get { return _Type; }
             set {_Type = value; }
         }
@@ -82,7 +82,7 @@ namespace Engine
         /// <param name="Path">The path to where the document is stored.</param>
         /// <param name="Type">The typeor file format of the document.</param>
         /// <param name="LastModified">The last time the Document was Modified.</param>
-        public Document(String Name,String Path,Type Type,DateTime LastModified) {
+        public Document(String Name,String Path,Format Type,DateTime LastModified) {
             this.Name = Name;
             this.Address = Path;
             this.LastModified = LastModified;

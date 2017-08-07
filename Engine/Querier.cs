@@ -10,7 +10,7 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-        private static  List<Type> typesPossible = new List<Type>();
+        private static  List<Format> typesPossible = new List<Format>();
         private static string type;
         public static List<Document> Search(String query) {
            
@@ -85,11 +85,11 @@ namespace Engine
             }
             return "";
     }
-        private static List<Type> PossibleType(string s)
+        private static List<Format> PossibleType(string s)
         {
            
             
-            foreach ( string m in Enum.GetNames(typeof(Type))){
+            foreach ( string m in Enum.GetNames(typeof(Format))){
                 bool teni = true;
                 for (int i = 0; i < s.Length; i++) { 
 

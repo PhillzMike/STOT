@@ -4,7 +4,7 @@ using System.Text;
 
 namespace Engine
 {
-    public enum Type
+    public enum Format
     {
         pdf, doc, docx, ppt, pptx, xls, xlsx, txt, html, xml
     };

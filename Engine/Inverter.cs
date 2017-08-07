@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
-namespace Engine
-{
+using System.Runtime.CompilerServices;
+[assembly: InternalsVisibleTo("InverterTest")]
+namespace Engine {
+   
     /// <summary>
     /// Uploads tokens from a file into the inverted index Table
     /// Author 3dO

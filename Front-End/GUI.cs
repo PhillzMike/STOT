@@ -18,23 +18,41 @@ namespace Front_End {
     /// Google Looking Gui...DO IT
     /// </summary>
     /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
-    public partial class UNILAG: MaterialForm {
+    public partial class UNILAG:Form {
         public UNILAG() {
             InitializeComponent();
             var skinManager = MaterialSkinManager.Instance;
             skinManager = MaterialSkinManager.Instance;
-            skinManager.AddFormToManage(this);
+         //   skinManager.AddFormToManage(this);
             skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
-            skinManager.ColorScheme = new ColorScheme(Primary.LightGreen100, Primary.LightGreen300, Primary.LightGreen300, Accent.LightBlue200, TextShade.WHITE);
+            skinManager.ColorScheme = new ColorScheme(Primary.Green300, Primary.Green400, Primary.Green400, Accent.Blue200, TextShade.WHITE);
         }
 
         private void UNILAG_Load(object sender, EventArgs e)
         {
-
+            HomePage H = new HomePage();
+            this.IsMdiContainer = true;
+            H.MdiParent = this;
+            H.Show();
+            
         }
 
-        
+        public void LoadHomePage()
+        {
+            HomePage H = new HomePage() {
+                MdiParent = this
+            };
+            H.Show();
+        }
 
-        
+        public void LoadSearchPage(string jello)
+        {
+            SearchPage H = new SearchPage(jello)
+            {
+                MdiParent = this
+            };
+            H.Show();
+        }
+
     }
 }

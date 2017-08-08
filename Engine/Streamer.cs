@@ -16,8 +16,12 @@ namespace Engine {
             String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
             Inverter.AddDocument(words,doc);
         }
-        public static void RemoveFile(Document doc) { }
-        public static void ModifyFile(Document doc) { }
+        public static void RemoveFile(Document doc) {
+            Inverter.DeleteDocument(doc);
+        }
+        public static void ModifyFile(Document doc) {
+
+        }
         //Stop codes
     }
 }

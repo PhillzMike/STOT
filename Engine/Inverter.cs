@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Runtime.CompilerServices;
+using System.Threading;
+
 [assembly: InternalsVisibleTo("InverterTest")]
 namespace Engine {
    
@@ -66,6 +68,10 @@ namespace Engine {
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
+        }
+        private static void GarbageCollector() {
+            //Thread a = new Thread();
+            
         }
         /// <summary>
         /// When a document has been modified.

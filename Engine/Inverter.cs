@@ -34,7 +34,7 @@ namespace Engine {
         /// </summary>
         /// <param name="words">The words in the Documents in Form of a List of Strings.</param>
         /// <param name="doc">The document to be added.</param>
-        public static void AddDocument(List<String> words,Document doc) {
+        public static void AddDocument(String[] words,Document doc) {
             int i = 0;
             foreach(String word in words) {
                 if(invertedIndexTable.ContainsKey(word)) {

@@ -11,8 +11,10 @@ namespace Engine {
     /// </summary>
     public static class Streamer {
 
-        public static void AddFileFrom(Document doc) { 
-            //throw file tye exception
+        public static void AddFileFrom(Document doc) {
+            TextExtractor x = new TextExtractor();
+            String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+            Inverter.AddDocument(words,doc);
         }
         public static void RemoveFile(Document doc) { }
         public static void ModifyFile(Document doc) { }

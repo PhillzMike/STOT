@@ -62,7 +62,7 @@ namespace Engine
             get { return _LastSeen; }
             set {
                 if(value==null)
-                    throw new ArgumentNullException("Last Modified","Parameter: Last Modified on "+_Name+" is not set");
+                    throw new ArgumentNullException("Last Modified","Parameter: Last Modified on "+_Address+" is not set");
                 _LastSeen=value;
             }
         }
@@ -72,7 +72,7 @@ namespace Engine
         public string Relevance {
             get { return _Relevance; }
             set {
-                _Relevance=value??throw new ArgumentNullException("Relevance","Parameter: Relevenace of " + _Name + " is not set");
+                _Relevance=value??throw new ArgumentNullException("Relevance","Parameter: Relevenace of " + _Address + " is not set");
             }
         }
         /// <summary>
@@ -80,11 +80,10 @@ namespace Engine
         /// </summary>
         /// <param name="Name">The name of the Document.</param>
         /// <param name="Path">The path to where the document is stored.</param>
-        /// <param name="Type">The typeor file format of the document.</param>
         /// <param name="LastModified">The last time the Document was Modified.</param>
         public Document(String Name,String Path,Format Type,DateTime LastModified) {
             this.Name = Name;
-            this.Address = Path;
+            Address = Path;
             this.LastModified = LastModified;
             this.Type = Type;
         }

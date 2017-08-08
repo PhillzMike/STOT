@@ -11,18 +11,35 @@ namespace Engine {
     /// </summary>
     /// //TODO unstatic
     public static class Inverter{
-        public static int DocumentCount { get; } 
+        //TODO move to Updater        
+        /// <summary>
+        /// Gets the count of all the Documents in the inverted Index Table.
+        /// </summary>
+        /// <value>
+        /// The document count.
+        /// </value>
+        public static int DocumentCount { get; }
         private static Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable=new Dictionary<string, Dictionary<Document, List<int>>>();
+        /// <summary>
+        /// Gets the Inerted Index table, A dictionary of Strings(Words) and Each Word has a Dictionary as the value, 
+        /// <para>The Inner Dictionary uses the Documents containing the Word as Key, </para>
+        /// <para>and a list of where they appear in the Document as Value.</para>
+        /// </summary>
+        /// <value>
+        /// The Inverted Index Table.
+        /// </value>
         public static Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
+        /// <summary>
+        /// Adds the document to the Inverted Index Table.
+        /// </summary>
+        /// <param name="words">The words in the Documents in Form of a List of Strings.</param>
+        /// <param name="doc">The document to be added.</param>
         public static void AddDocument(List<String> words,Document doc) {
             int i = 0;
             foreach(String word in words) {
                 if(invertedIndexTable.ContainsKey(word)) {
                     if(invertedIndexTable[word].ContainsKey(doc)) {
                         invertedIndexTable[word][doc].Add(i++);
-                        List<int> ia = new List<int> {
-                            1
-                        };
                     } else {
                         invertedIndexTable[word].Add(doc,new List<int> { i++ });
                     }
@@ -31,17 +48,32 @@ namespace Engine {
                 }
             }
         }
+        /// <summary>
+        /// Delete this document from the Inverted Index Table
+        /// </summary>
+        /// <param name="doc">The document.</param>
         public static void DeleteDocument(Document doc) {
             doc = null;
         }
+        /// <summary>
+        /// Removes a Document from the Table When it sees a Document no longer beign Tracked.
+        /// </summary>
+        /// <param name="word">The word that found a Document that has been Deleted.</param>
+        /// <param name="doc">The document pointer to be removed.</param>
         public static void RemoveDocument(String word,Document doc) {
+            //TODO run on separate Thread
             invertedIndexTable[word].Remove(doc);
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
         }
+        /// <summary>
+        /// When a document has been modified.
+        /// </summary>
+        /// <param name="words">The words in the new Document.</param>
+        /// <param name="doc">The document modified.</param>
         public static void ModifyDocument(List<String> words,Document doc) {
-            //figure out what git did here
+            //TODO figure out what git did here
         }
         //Add Document
         //Remove Document

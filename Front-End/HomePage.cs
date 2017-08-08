@@ -68,14 +68,15 @@ namespace Front_End
         }
 
         private void TxtSearch_TextChanged(object sender, EventArgs e)
-        {
-            // Engine.Querier.AutoComplete(TxtSearch.Text);            
+        {            
             tree.Clear();
-            foreach (string it in Engine.Querier.AutoComplete(new List<string>()))
+            foreach (string it in Engine.Querier.AutoComplete(TxtSearch.Text))
                 tree.Add(it);
 
 
 
         }
+
+       
     }
 }

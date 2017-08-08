@@ -18,9 +18,23 @@ namespace Front_End {
     /// Google Looking Gui...DO IT
     /// </summary>
     /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
-    public partial class GUI: MaterialForm {
-        public GUI() {
+    public partial class UNILAG: MaterialForm {
+        public UNILAG() {
             InitializeComponent();
+            var skinManager = MaterialSkinManager.Instance;
+            skinManager = MaterialSkinManager.Instance;
+            skinManager.AddFormToManage(this);
+            skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
+            skinManager.ColorScheme = new ColorScheme(Primary.LightGreen100, Primary.LightGreen300, Primary.LightGreen300, Accent.LightBlue200, TextShade.WHITE);
         }
+
+        private void UNILAG_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        
+
+        
     }
 }

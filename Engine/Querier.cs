@@ -10,45 +10,39 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-        private static  List<Format> typesPossible = new List<Format>();
-        private static string type;
+        public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
+        
         public static List<Document> Search(String query) {
-           
-            //ignore stop words \
-            //Separate query into list of words\
-            //InvertedIndexer.Table[query].Values\
+
             //Add all the documents found to a list \
             //return Ranker.SearchQuery(,);
             //type: bring out document of possible type
             //type must be followed by :, no matter the number of whitespaces.
+           List<Format> typesPossible = new List<Format>();
            String [] words = query.Split((new char[]{' '}), StringSplitOptions.RemoveEmptyEntries);
            List<String> splitwords = new List<String>();
-           var stopwords = File.ReadAllLines("../../../../engine/stopwords.txt");
-           var stpwordlist = new List<String>(stopwords);
-           for(int k= 0; k<words.Length; k++)
+           typesPossible = PossibleType(TypeChecker(words));
+           DocsFound(splitwords, typesPossible);
+           
+            for (int k= 0; k<words.Length; k++)
             {
-                if (!stpwordlist.Contains(words[k]))
+                if (!(stopwords.Contains(words[k]) || words[k].Equals("")))
                 {
-                    type = TypeChecker(words);
-                }
-                else
-                { splitwords.Add(words[k]); }
-                    
                     splitwords.Add(words[k]);
+                   }
                 }
-                
-            
-          
-            DocsFound(splitwords);
-            return null;
+            if (splitwords.Count == 0)
+                throw new ArgumentNullException("File doesn't Exist");
+            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible));
         }
-        public static List<String> AutoComplete(String query)
+        public static List<String> AutoComplete(List<String> querywords)
         {
-            //return Semanter.Suggestions
-            return null;
+            //TODO review this later
+            return Semanter.Suggestions(querywords);
+          
         }
 
-        private static Dictionary<Document, double[]> DocsFound(List<String> querywords)
+        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible)
         {
             Dictionary<Document, double []> found = new Dictionary<Document, double[]>();
             double [] count = new double[querywords.Count];
@@ -62,9 +56,12 @@ namespace Engine
                List<Document> available =  Inverter.Table[querywords[i]].Keys.ToList();
                 foreach (Document t in available) {
                     count[i] = Inverter.Table[querywords[i]][t].Count;
-                    if (typesPossible.Contains(t.Type))
+                    if (typesPossible.Count>0)
                     {
-                        found.Add(t, count);
+                        if (typesPossible.Contains(t.Type))
+                        {
+                            found.Add(t, count);
+                        }
                     }
                     else
                     {
@@ -74,41 +71,42 @@ namespace Engine
             }
              return found;
         }
-        private static string TypeChecker(String [] s)
+        private static String TypeChecker(String [] s)
         { 
         for (int i = 0; i < s.Length; i++) {
                 if (s[i].ToLower().Equals("type"))
                 {
                     if (s[i + 1].Equals(":"))
-                    { return s[i + 2]; }
-                }
+
+                    {
+                      string type = s[i + 2];
+                      s[i] = s[i + 1] = s[i + 2] = "";
+                      return type;  
+                    }
+                }         
             }
             return "";
     }
         private static List<Format> PossibleType(string s)
         {
-           
-            
+            List<Format> typesPossible = new List<Format>();
             foreach ( string m in Enum.GetNames(typeof(Format))){
                 bool teni = true;
-                for (int i = 0; i < s.Length; i++) { 
-
-                    if (!(s[i] == m[i]))
+                for (int i = 0; i < s.Length; i++) {
+                  if (!(s[i] == m[i]))
                 {
                         teni = false; 
-               }
-                   
+               }     
              }
-              //  if (teni)
-                   // typesPossible.Add(Type.m);
+                if (teni)
+                {
+                    Enum.TryParse<Format>(m, out Format doctype);
+                    typesPossible.Add(doctype);
+                }
             }
             return typesPossible;
         }
-        //giving 
-        //Types : pdf
-        //Tokenize query; 
-        //Search Query
-        //Autocomplete Query
+        
 
     }
 }

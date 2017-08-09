@@ -48,7 +48,7 @@ namespace Front_End
 
         private void MaterialRaisedButton2_Click(object sender, EventArgs e)
         {
-            if(tree.Count>0)
+            if(tree.Count > 0)
             tree.RemoveAt(tree.Count-1);
         }
 
@@ -76,6 +76,7 @@ namespace Front_End
             if(Querier.Search(TxtSearch.Text).Count > 0) {
                 (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
                 this.Close();
+                
             };
 
 

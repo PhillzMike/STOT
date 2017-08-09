@@ -41,7 +41,7 @@ namespace Front_End {
             Home = new HomePage() {
                 MdiParent = this,
                 Width = this.Width - 20,
-            Height = 50
+                Height = this.Height - 43
             };
             Home.Show();
         }
@@ -50,14 +50,17 @@ namespace Front_End {
         {
             Search = new SearchPage(jello) {
                 MdiParent = this,
-                Size = this.Size                
+                Width = this.Width - 20,
+                Height = this.Height - 43
             };
             Search.Show();
         }
 
         private void UNILAG_SizeChanged(object sender,EventArgs e) {
-            Home.Size = Size;
-            Search.Size = Size;
+            Home.Width = this.Width - 20;
+            Home.Height = this.Height - 43;
+            Search.Width = this.Width - 20;
+            Search.Height = this.Height - 43;
         }
     }
 }

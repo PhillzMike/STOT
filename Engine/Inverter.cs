@@ -78,7 +78,7 @@ namespace Engine {
         /// </summary>
         /// <param name="words">The words in the new Document.</param>
         /// <param name="doc">The document modified.</param>
-        public static void ModifyDocument(List<String> words,Document doc) {
+        public static void ModifyDocument(String[] words,Document doc) {
             //TODO figure out what git did here
         }
         //Add Document

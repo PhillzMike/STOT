@@ -19,40 +19,45 @@ namespace Front_End {
     /// </summary>
     /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
     public partial class UNILAG:Form {
+        HomePage Home = new HomePage();
+        SearchPage Search=new SearchPage("");
         public UNILAG() {
             InitializeComponent();
             var skinManager = MaterialSkinManager.Instance;
             skinManager = MaterialSkinManager.Instance;
-         //   skinManager.AddFormToManage(this);
+            //skinManager.AddFormToManage(this);
             skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             skinManager.ColorScheme = new ColorScheme(Primary.Green300, Primary.Green400, Primary.Green400, Accent.Blue200, TextShade.WHITE);
         }
 
         private void UNILAG_Load(object sender, EventArgs e)
         {
-            HomePage H = new HomePage();
             this.IsMdiContainer = true;
-            H.MdiParent = this;
-            H.Show();
-            
+            LoadHomePage();
         }
 
         public void LoadHomePage()
         {
-            HomePage H = new HomePage() {
-                MdiParent = this
+            Home = new HomePage() {
+                MdiParent = this,
+                Width = this.Width - 20,
+            Height = 50
             };
-            H.Show();
+            Home.Show();
         }
 
         public void LoadSearchPage(string jello)
         {
-            SearchPage H = new SearchPage(jello)
-            {
-                MdiParent = this
+            Search = new SearchPage(jello) {
+                MdiParent = this,
+                Size = this.Size                
             };
-            H.Show();
+            Search.Show();
         }
 
+        private void UNILAG_SizeChanged(object sender,EventArgs e) {
+            Home.Size = Size;
+            Search.Size = Size;
+        }
     }
 }

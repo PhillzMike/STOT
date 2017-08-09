@@ -18,13 +18,11 @@ namespace Front_End
         {
             InitializeComponent();
         }
-
         private void HomePage_Load(object sender, EventArgs e)
         {
             listBox1.DataSource = tree;
             tree.ListChanged += new ListChangedEventHandler(ItemSizeChanged);           
         }
-
         private void ItemSizeChanged(object sender,ListChangedEventArgs e)
         {
             if (listBox1.Items.Count == 0)
@@ -55,8 +53,9 @@ namespace Front_End
         private void ListBox1_ItemSelected(object sender, EventArgs e)
         {
             TxtSearch.Text = listBox1.SelectedItem.ToString();
-            (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
             this.Close();
+            (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
+           
         }
 
         private void ListBox1_KeyPress(object sender, KeyPressEventArgs e)

@@ -70,9 +70,13 @@ namespace Front_End
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {            
             tree.Clear();
-            foreach (string it in Engine.Querier.AutoComplete(TxtSearch.Text))
-                tree.Add(it);
-
+            /*  foreach (string it in Engine.Querier.AutoComplete(TxtSearch.Text))
+                  tree.Add(it);*/
+            //Below Lines will open the search page the moment Querier.Search starts returning search Results
+            if(Querier.Search(TxtSearch.Text).Count > 0) {
+                (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
+                this.Close();
+            };
 
 
         }

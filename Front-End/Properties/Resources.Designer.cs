@@ -59,5 +59,15 @@ namespace Front_End.Properties {
                 resourceCulture = value;
             }
         }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap List_Of_Top_Best_Major_Search_Engines {
+            get {
+                object obj = ResourceManager.GetObject("List-Of-Top-Best-Major-Search-Engines", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
     }
 }

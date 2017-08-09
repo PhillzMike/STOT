@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using Engine;
+//using Engine;
 
 namespace Front_End
 {
@@ -73,11 +73,11 @@ namespace Front_End
             /*  foreach (string it in Engine.Querier.AutoComplete(TxtSearch.Text))
                   tree.Add(it);*/
             //Below Lines will open the search page the moment Querier.Search starts returning search Results
-            if(Querier.Search(TxtSearch.Text).Count > 0) {
+           /* if(Querier.Search(TxtSearch.Text).Count > 0) {
                 (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
                 this.Close();
                 
-            };
+            };*/
 
 
         }

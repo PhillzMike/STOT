@@ -17,5 +17,10 @@ namespace Front_End
             InitializeComponent();
             TxtSearch1.Text = ray;
         }
+
+        private void BtnClick_Click(object sender,EventArgs e) {
+            this.Close();
+            (this.MdiParent as UNILAG).LoadHomePage();
+        }
     }
 }

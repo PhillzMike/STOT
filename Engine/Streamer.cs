@@ -20,7 +20,9 @@ namespace Engine {
             Inverter.DeleteDocument(doc);
         }
         public static void ModifyFile(Document doc) {
-
+            TextExtractor x = new TextExtractor();
+            String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+            Inverter.ModifyDocument(words,doc);
         }
         //Stop codes
     }

@@ -116,13 +116,13 @@ namespace Engine
             int score;
             
             List<int> output = new List<int>();
-         for(int k = 1; k < query.Count; k++) {
+            for(int k = 1; k < query.Count; k++) {
                 //while the first guy is not present
                 while (dic[query[k - 1]].Count == 0) {
                     score = 0;
                     continue;
                 }
-                //Like Merge algoruthm in merge sort
+                //Like Merge algorithm in merge sort
                 List<int> first = new List<int>(dic[query[k-1]]);
                 List<int> second = new List<int>(dic[query[k]]);
                 score = int.MaxValue;
@@ -134,10 +134,12 @@ namespace Engine
                 while(second.Count == 0) {
                     score = 0;
                     output.Add(score);
-                    if (k-1<query.Count)
+                    if (k - 1 < query.Count)
                         k++;
-                    else
-                        goto outer;
+                    else {
+                        output.Add(score);
+                        return output;
+                    }
                     second = new List<int>(dic[query[k]]);
                 }
                 //Check if the list contains an element first, it would not contain any element if the document does not contain
@@ -154,7 +156,6 @@ namespace Engine
                         }
 
                     }
-              outer: output.Add(score);
             }
             return output;
         }

@@ -18,6 +18,9 @@ namespace Engine
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
         public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results) {
+            for (int i = 0; i < query.Count; i++) {
+                query[i] = query[i].ToLower();
+            }
             //Calculating Tf-Idf wieghting of each word in a document
             foreach (Document item in Results.Keys) {
                 double[] x = Results[item];
@@ -26,10 +29,10 @@ namespace Engine
                 }
 
             }
-            //Calculating Tf-Idf weighting of each word in th query
+            //Calculating Tf-Idf weighting of each word in the query
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
-                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count);
+                queryVector[i] = TfWeight(queryVector[i]);// * IDFWeight(Results.Count);
             }
             //Calculating the cosine of the angles between the query vector and the document vectors
             double[] cosOfAngle = new double[queryVector.Length];
@@ -39,7 +42,7 @@ namespace Engine
                 cosOfAngle[counter++] = GetCOSAngle(queryVector, Results[item]);
                 sortedDocument.Add(item);
             }
-            //Sorting the documents basd on the cosine of the angles
+            //Sorting the documents based on the cosine of the angles
             for(int i = 1; i < cosOfAngle.Length; i++) {
                 double key = cosOfAngle[i];
                 Document docKey = sortedDocument[i];
@@ -67,9 +70,17 @@ namespace Engine
             sD = Math.Sqrt(sD);
             return sum / (fD * sD);
         }
-        private static double[] GetVector(List<string> a) {
+        private static double GetScoreBasedOnPos(List<string> query) {
+            List<Dictionary<Document,List<int>>> positions = new List<Dictionary<Document, List<int>>>();
+            foreach (var item in query) {
+                positions.Add(Inverter.Table[item]);
+            }
+              
+            return 0;
+        }
+        public static double[] GetVector(List<string> a) {
             List<double> voice = new List<double>();
-            SortedSet<string> m = new SortedSet<string>(a);
+            HashSet<string> m = new HashSet<string>(a);
             int counter;
             foreach (string f in m) {
                 counter= 0;
@@ -82,11 +93,8 @@ namespace Engine
             }
             return voice.ToArray();
         }
-        private static double TfWeight(double count) {
-            if (count == 0)
-                return 0;
-            else
-                return (1 + Math.Log(count));
+        public static double TfWeight(double count) {
+            return (count == 0) ? 0 : 1 + Math.Log(count);
         }
         private static double IDFWeight(int noOfDocuments) {
             return Math.Log(Inverter.DocumentCount/noOfDocuments);

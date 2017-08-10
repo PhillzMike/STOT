@@ -30,11 +30,11 @@ namespace Engine
                 throw new ArgumentNullException("File doesn't Exist");
             return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible));
         }
-        public static List<String> AutoComplete(List<String> querywords)
+        public static List<String> AutoComplete(String querywords)
         {
             //TODO review this later
-            return Semanter.Suggestions(querywords);
-          
+           // return Semanter.Suggestions(querywords);
+          return null;
         }
 
         private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible)

@@ -65,6 +65,7 @@
             this.BtnClick.TabIndex = 1;
             this.BtnClick.Text = "GO";
             this.BtnClick.UseVisualStyleBackColor = true;
+            this.BtnClick.Click += new System.EventHandler(this.BtnClick_Click);
             // 
             // listBox1
             // 

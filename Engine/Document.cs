@@ -14,6 +14,27 @@ namespace Engine
         private Format _Type;
         private DateTime _LastSeen;
         private string _Relevance;
+        private bool _Available;
+        /// <summary>
+        /// Gets a value indicating whether this <see cref="Document"/> exists.
+        /// <para>All references to this Instance must ensure this is true before proceeding, to avoid null pointer Exceptions</para>
+        /// </summary>
+        /// <value>
+        ///   <c>true</c> if exists; otherwise, <c>false</c>.
+        /// </value>
+        public bool Exists {
+            get { return _Available; }
+        }
+        /// <summary>
+        /// Deletes this Document.
+        /// All references to this document Should no longer work
+        /// </summary>
+        public void Delete() {
+            _Available = false;
+            _Name = "";
+            _Address = "";
+            _Relevance = "";
+        }
         /// <summary>
         /// Gets or sets the name of the Document.
         /// </summary>
@@ -86,6 +107,13 @@ namespace Engine
             Address = Path;
             this.LastModified = LastModified;
             this.Type = Type;
+            _Available = true;
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Document"/> class from an already existing Document.
+        /// </summary>
+        /// <param name="doc">The document that ws modified.</param>
+        /// <param name="LastModified">The last modified.</param>
+        public Document(Document doc,DateTime LastModified):this(doc.Name,doc.Address,doc.Type,LastModified) {}
     }
 }

@@ -13,11 +13,6 @@ namespace Engine
         public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
         
         public static List<Document> Search(String query) {
-
-            //Add all the documents found to a list \
-            //return Ranker.SearchQuery(,);
-            //type: bring out document of possible type
-            //type must be followed by :, no matter the number of whitespaces.
            List<Format> typesPossible = new List<Format>();
            String [] words = query.Split((new char[]{' '}), StringSplitOptions.RemoveEmptyEntries);
            List<String> splitwords = new List<String>();
@@ -71,14 +66,12 @@ namespace Engine
             }
              return found;
         }
-        private static String TypeChecker(String [] s)
+        public static String TypeChecker(String [] s)
         { 
         for (int i = 0; i < s.Length; i++) {
                 if (s[i].ToLower().Equals("type"))
-                {
-                    if (s[i + 1].Equals(":"))
-
-                    {
+                { if (s[i + 1].Equals(":"))
+                     {
                       string type = s[i + 2];
                       s[i] = s[i + 1] = s[i + 2] = "";
                       return type;  
@@ -87,7 +80,7 @@ namespace Engine
             }
             return "";
     }
-        private static List<Format> PossibleType(string s)
+        public static List<Format> PossibleType(string s)
         {
             List<Format> typesPossible = new List<Format>();
             foreach ( string m in Enum.GetNames(typeof(Format))){

@@ -26,6 +26,14 @@ namespace Engine {
             }
         }
         /// <summary>
+        /// Gets the files currently Stored in the Inverted Index Table.
+        /// </summary>
+        /// <value>
+        /// The files stored in the Table.
+        /// </value>
+        public Dictionary<String,Document> Files { get => _files; }
+        private Dictionary<String,Document> _files;
+        /// <summary>
         /// Initializes a new instance of the <see cref="Inverter"/> class without any stop words to be ignored.
         /// </summary>
         public Inverter() {
@@ -64,6 +72,8 @@ namespace Engine {
         /// The stopwords.
         /// </value>
         public HashSet<string> Stopwords { get => _stopwords;}
+        
+
         private HashSet<String> _stopwords;
 
         /// <summary>

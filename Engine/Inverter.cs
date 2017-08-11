@@ -25,14 +25,7 @@ namespace Engine {
                 throw new IOException("The specified path could not be Read",ex);
             }
         }
-        /// <summary>
-        /// Gets the files currently Stored in the Inverted Index Table.
-        /// </summary>
-        /// <value>
-        /// The files stored in the Table.
-        /// </value>
-        public Dictionary<String,Document> Files { get => _files; }
-        private Dictionary<String,Document> _files;
+      
         /// <summary>
         /// Initializes a new instance of the <see cref="Inverter"/> class without any stop words to be ignored.
         /// </summary>
@@ -41,6 +34,15 @@ namespace Engine {
             _documentCount = 0;
             invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
         }
+
+        /// <summary>
+        /// Gets the files currently Stored in the Inverted Index Table.
+        /// </summary>
+        /// <value>
+        /// The files stored in the Table.
+        /// </value>
+        public Dictionary<String,Document> Files { get => _files; }
+        private Dictionary<String,Document> _files;
 
         /// <summary>
         /// Gets the count of all the Documents in the inverted Index Table.
@@ -97,6 +99,7 @@ namespace Engine {
                     invertedIndexTable.Add(word,new Dictionary<Document,List<int>> {{ doc,new List<int> { i++ } } });
                 }
             }
+            Files.Add(doc.Address,doc);
             _documentCount++;
         }
         /// <summary>
@@ -104,7 +107,9 @@ namespace Engine {
         /// </summary>
         /// <param name="doc">The document.</param>
         public void DeleteDocument(Document doc) {
+            Files.Remove(doc.Address);
             doc.Delete();
+            _documentCount--;
         }
         /// <summary>
         /// Removes a Document from the Table When it sees a Document no longer beign Tracked.

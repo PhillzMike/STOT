@@ -79,7 +79,7 @@ namespace Engine
             double finalScore = 0;
             Dictionary<string, List<int>> positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
-                //TODO: Check this guy
+                //TODO Check this guy
                 if (Inverter.Table[item].ContainsKey(doc))
                     positions.Add(item, new List<int>(Inverter.Table[item][doc]));
                 else

@@ -108,11 +108,5 @@
   <ItemGroup>
     <None Include="Resources\List-Of-Top-Best-Major-Search-Engines.png" />
   </ItemGroup>
-  <ItemGroup>
-    <ProjectReference Include="..\Engine\Engine.csproj">
-      <Project>{bd66dcc6-1e5b-4405-b4ed-6440087bce6a}</Project>
-      <Name>Engine</Name>
-    </ProjectReference>
-  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

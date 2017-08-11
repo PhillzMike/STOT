@@ -11,19 +11,20 @@ namespace Engine {
     /// </summary>
     public static class Streamer {
 
-        public static void AddFileFrom(Document doc) {
+        public static void AddFileFrom(Document doc,Inverter invt) {
+            TextExtractor x = new TextExtractor();
+
+            String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+            invt.AddDocument(words,doc);
+        }
+        public static void RemoveFile(Document doc,Inverter invt) {
+            //TODO call garbage collector in Updater
+            invt.DeleteDocument(doc);
+        }
+        public static void ModifyFile(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
             String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
-            Inverter.AddDocument(words,doc);
+            invt.ModifyDocument(words,doc);
         }
-        public static void RemoveFile(Document doc) {
-            Inverter.DeleteDocument(doc);
-        }
-        public static void ModifyFile(Document doc) {
-            TextExtractor x = new TextExtractor();
-            String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
-            Inverter.ModifyDocument(words,doc);
-        }
-        //Stop codes
     }
 }

@@ -11,7 +11,7 @@ namespace Engine
     public static class Semanter
     {
         /// <summary>
-        /// Suggestionses the specified query.
+        /// Suggest Search Quaries Similar to the Passed in query
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>

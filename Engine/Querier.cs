@@ -11,10 +11,10 @@ namespace Engine
     public static class Querier
     {
         public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
-        
+        static char [ ]punc = { ' ', ',',':', '(',')','?', '!',';','-','[',']','"'};
         public static List<Document> Search(String query) {
            List<Format> typesPossible = new List<Format>();
-           String [] words = query.Split((new char[]{' '}), StringSplitOptions.RemoveEmptyEntries);
+           String [] words = query.Split(punc, StringSplitOptions.RemoveEmptyEntries);
            List<String> splitwords = new List<String>();
            typesPossible = PossibleType(TypeChecker(words));
            DocsFound(splitwords, typesPossible);
@@ -33,8 +33,9 @@ namespace Engine
         public static List<String> AutoComplete(String querywords)
         {
             //TODO review this later
-           // return Semanter.Suggestions(querywords);
-          return null;
+            String[] splitwords = querywords.Split(punc, StringSplitOptions.RemoveEmptyEntries);
+            // return Semanter.Suggestions(splitwords);
+            return null;
         }
 
         private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible)

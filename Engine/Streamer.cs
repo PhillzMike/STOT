@@ -10,20 +10,31 @@ namespace Engine {
     /// <para>to a File Stream</para>
     /// </summary>
     public static class Streamer {
-
-        public static void AddFileFrom(Document doc) {
+        /// <summary>
+        /// Adds words from the Specified Document to the specified Inverted Index Table
+        /// </summary>
+        /// <param name="doc">The document to be Tokenized.</param>
+        /// <param name="invt">The inverted Index class to add the Document to.</param>
+        /// <exception cref="TextExtractionException">Could not extract Files from " + doc.Address +" "+ex.Message</exception>
+        public static void AddFileFrom(Document doc,Inverter invt) {
+            TextExtractor x = new TextExtractor();
+            try {
+                String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+                invt.AddDocument(words,doc);
+            } catch (Exception ex) {
+                throw new TextExtractionException("Could not extract Files from " + doc.Address +" "+ex.Message);
+            }
+           
+           
+        }
+        public static void RemoveFile(Document doc,Inverter invt) {
+            //TODO call garbage collector in Updater
+            invt.DeleteDocument(doc);
+        }
+        public static void ModifyFile(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
             String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
-            Inverter.AddDocument(words,doc);
+            invt.ModifyDocument(words,doc);
         }
-        public static void RemoveFile(Document doc) {
-            Inverter.DeleteDocument(doc);
-        }
-        public static void ModifyFile(Document doc) {
-            TextExtractor x = new TextExtractor();
-            String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
-            Inverter.ModifyDocument(words,doc);
-        }
-        //Stop codes
     }
 }

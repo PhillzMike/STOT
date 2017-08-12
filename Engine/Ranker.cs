@@ -17,7 +17,7 @@ namespace Engine
         /// <param name="query">The query.</param>
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
-        public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results) {
+        public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results,Inverter invt) {
             for (int i = 0; i < query.Count; i++) {
                 query[i] = query[i].ToLower();
             }
@@ -25,7 +25,7 @@ namespace Engine
             foreach (Document item in Results.Keys) {
                 double[] x = Results[item];
                 for(int i = 0; i < x.Length; i++) {
-                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count);
+                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count,invt);
                 }
 
             }
@@ -40,7 +40,7 @@ namespace Engine
             List<Document> sortedDocument = new List<Document>();
             foreach (Document item in Results.Keys) {
                 cosOfAngle[counter++] = (GetCOSAngle(queryVector, Results[item])) * 0.7;
-                cosOfAngle[counter] += GetScoreBasedOnPos(query, item) * 0.3;
+                cosOfAngle[counter] += GetScoreBasedOnPos(query, item,invt) * 0.3;
                 sortedDocument.Add(item);
             }
             //Sorting the documents based on the cosine of the angles
@@ -71,17 +71,17 @@ namespace Engine
             sD = Math.Sqrt(sD);
             return sum / (fD * sD);
         }
-        private static double GetScoreBasedOnPos(List<string> query,Document doc) {
-            double score = Math.Tan((45 / query.Count)*ScoreBasedOnConWords(query,doc));
+        private static double GetScoreBasedOnPos(List<string> query,Document doc,Inverter invt) {
+            double score = Math.Tan((45 / query.Count)*ScoreBasedOnConWords(query,doc,invt));
             return score;
         }
-        private static double ScoreBasedOnConWords(List<string> query,Document doc) {
+        private static double ScoreBasedOnConWords(List<string> query,Document doc,Inverter invt) {
             double finalScore = 0;
             Dictionary<string, List<int>> positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
-                //TODO: Check this guy
-                if (Inverter.Table[item].ContainsKey(doc))
-                    positions.Add(item, new List<int>(Inverter.Table[item][doc]));
+                //TODO Check this guy
+                if (invt.Table[item].ContainsKey(doc))
+                    positions.Add(item, new List<int>(invt.Table[item][doc]));
                 else
                     positions.Add(item, new List<int>());
             }
@@ -116,13 +116,13 @@ namespace Engine
             int score;
             
             List<int> output = new List<int>();
-         for(int k = 1; k < query.Count; k++) {
+            for(int k = 1; k < query.Count; k++) {
                 //while the first guy is not present
                 while (dic[query[k - 1]].Count == 0) {
                     score = 0;
                     continue;
                 }
-                //Like Merge algoruthm in merge sort
+                //Like Merge algorithm in merge sort
                 List<int> first = new List<int>(dic[query[k-1]]);
                 List<int> second = new List<int>(dic[query[k]]);
                 score = int.MaxValue;
@@ -134,10 +134,12 @@ namespace Engine
                 while(second.Count == 0) {
                     score = 0;
                     output.Add(score);
-                    if (k-1<query.Count)
+                    if (k - 1 < query.Count)
                         k++;
-                    else
-                        goto outer;
+                    else {
+                        output.Add(score);
+                        return output;
+                    }
                     second = new List<int>(dic[query[k]]);
                 }
                 //Check if the list contains an element first, it would not contain any element if the document does not contain
@@ -154,7 +156,6 @@ namespace Engine
                         }
 
                     }
-              outer: output.Add(score);
             }
             return output;
         }
@@ -176,8 +177,8 @@ namespace Engine
         public static double TfWeight(double count) {
             return (count == 0) ? 0 : 1 + Math.Log(count);
         }
-        private static double IDFWeight(int noOfDocuments) {
-            return Math.Log(Inverter.DocumentCount/noOfDocuments);
+        private static double IDFWeight(int noOfDocuments,Inverter invt) {
+            return Math.Log(invt.DocumentCount/noOfDocuments);
         }
     }
 }

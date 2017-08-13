@@ -7,36 +7,41 @@ namespace Engine
 {
     public static class Updater
     {
-        public static List<Document> Crawler(String path, List<Document> files) {
-            
-            IEnumerable<String> pathfiles = Directory.EnumerateFiles(path, "*.*", SearchOption.AllDirectories);
-            List<String> filesdocname = new List<String>();
-            //Comparing to check if file was modified``
-            //.CompareTo((new FileInfo(a)).LastWriteTime)!= 0, time of modification
-
-            //deleting file
-           foreach (var item in files)
-           { filesdocname.Add(item.Name);
-                if (!pathfiles.Contains(item.Name))
-                {
-                    Streamer.RemoveFile(item);
-                }
-            }
-           //adding file
-            foreach (var name in pathfiles)
+        private static IEnumerable<String> pathfiles;
+        public static List<Document> Crawler(String path, Dictionary<String, Document> files) {
+            //run a for loop on this for all types in format
+            foreach (Format doc in Enum.GetValues(typeof(Format)))
             {
-                if (!filesdocname.Contains(name)) {
-                    foreach (var doc in files)
-                    {
-                        if (doc.Name.Equals(name))
-                            Streamer.AddFileFrom(doc);
+                IEnumerable<String> pathfiles = Directory.EnumerateFiles(path, "*.{0}", SearchOption.AllDirectories);
+
+            }
+            foreach (String item in files.Keys.ToArray<String>())
+            {
+                if (!pathfiles.Contains(item))
+                {
+                    Streamer.RemoveFile(files[item]);
+                }
+                else {
+                    FileInfo thisguyzinfo = new FileInfo(item);
+                    DateTime lastModified = thisguyzinfo.LastWriteTime;
+                    if (lastModified.CompareTo(files[item].LastModified) != 0) {
+                        Streamer.ModifyFile(files[item]);
                     }
                 }
+
             }
-            //modify file
-             
+            //adding file
+            //creating a document object and pass into streamer.adddfile
+            foreach (String name in pathfiles)
+            {
+                if (!files.ContainsKey(name))
+             //add name from path and etc;       Document doc = new Document();
+                     //   Streamer.AddFileFrom(doc);
+                }
             return null;
         }
-            } 
-}
+         }
+  }
+
+
 

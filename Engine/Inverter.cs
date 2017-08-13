@@ -33,6 +33,7 @@ namespace Engine {
             _stopwords = new HashSet<string>();
             _documentCount = 0;
             invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
+            _files = new Dictionary<string,Document>();
         }
 
         /// <summary>
@@ -63,19 +64,17 @@ namespace Engine {
         /// <value>
         /// The Inverted Index Table.
         /// </value>
-        //TODO synchronize
+        //TODO 3dO synchronize
         public Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
         private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
 
         /// <summary>
-        /// Gets the stopwords which are ignored by in this inverted Index Table.
+        /// Gets the stopwords which are ignored in this inverted Index Table.
         /// </summary>
         /// <value>
         /// The stopwords.
         /// </value>
         public HashSet<string> Stopwords { get => _stopwords;}
-        
-
         private HashSet<String> _stopwords;
 
         /// <summary>
@@ -99,9 +98,10 @@ namespace Engine {
                     invertedIndexTable.Add(word,new Dictionary<Document,List<int>> {{ doc,new List<int> { i++ } } });
                 }
             }
-            Files.Add(doc.Address,doc);
+            _files.Add(doc.Address,doc);
             _documentCount++;
         }
+
         /// <summary>
         /// Delete this document
         /// </summary>
@@ -111,6 +111,7 @@ namespace Engine {
             doc.Delete();
             _documentCount--;
         }
+
         /// <summary>
         /// Removes a Document from the Table When it sees a Document no longer beign Tracked.
         /// </summary>
@@ -122,11 +123,12 @@ namespace Engine {
                 invertedIndexTable.Remove(word);
             }
         }
+
         /// <summary>
         /// Runs on a separate Thread, Deletes ALL Untracked Documents from the Inverted Index Table
         /// </summary>
         public void GarbageCollector() {
-            //TODO test
+            //TODO 3dO test 
             //Deadlock avoidance
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
@@ -141,6 +143,7 @@ namespace Engine {
 
             }
         }
+
         /// <summary>
         /// When a document has been modified.
         /// </summary>

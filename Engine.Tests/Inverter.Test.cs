@@ -2,7 +2,6 @@ using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Engine;
 using System.IO;
-using TikaOnDotNet.TextExtraction;
 namespace Engine.Tests
 {
     [TestClass]
@@ -12,7 +11,7 @@ namespace Engine.Tests
         [TestMethod]
         public void Inverter()
         {
-            invt= new Inverter();
+            invt = new Inverter();
             foreach(String a in Directory.EnumerateFiles("../../../Engine/Mock","*.*",SearchOption.AllDirectories)) {
                 try {
                     DateTime i = new DateTime();
@@ -20,8 +19,8 @@ namespace Engine.Tests
                     Enum.TryParse<Format>(fi.Extension,out Format typ);
                     Document doc = new Document(fi.Name,a,typ,i);
                     Streamer.AddFileFrom(doc,invt);
-                } catch (Exception ex){
-                    Assert.Fail("Someone Failed Here "+ex.Message+ex.Data,invt.Table);
+                } catch(Exception ex) {
+                    Assert.Fail("Someone Failed Here " + ex.Message + ex.Data,invt.Table);
                 }
             }
             Assert.AreEqual(1,1);

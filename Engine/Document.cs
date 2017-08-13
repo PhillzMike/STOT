@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace Engine
 {
@@ -81,11 +79,7 @@ namespace Engine
         /// </value>
         public DateTime LastModified {
             get { return _LastSeen; }
-            set {
-                if(value==null)
-                    throw new ArgumentNullException("Last Modified","Parameter: Last Modified on "+_Address+" is not set");
-                _LastSeen=value;
-            }
+            set {_LastSeen=value; }
         }
         /// <summary>
         /// The part of the document relevant to the query, To be displayed During Search

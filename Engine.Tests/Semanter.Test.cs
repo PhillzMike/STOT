@@ -8,7 +8,11 @@ namespace Engine.Tests {
     public class SemanterTest {
         [TestMethod]
         public void Semanter() {
-
+            Semanter samantha = new Semanter();
+            String[] Actuals = { "Living","Grapes","Greens" ,"curiousity","suggestions"};
+            String[] Expecteds = { "Live","Grape" ,"Green","curious","suggest"};
+            for(int i=0;i<Actuals.Length;i++)
+            Assert.AreEqual<String>(Expecteds[i],samantha.StemWord(Actuals[i]));
         }
 
     }

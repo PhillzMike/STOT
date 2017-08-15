@@ -12,9 +12,10 @@ namespace Engine.Tests
         Inverter invt;
         [TestMethod]
         public void Inverter(){
+            
             invt = new Inverter();
             Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", (new Dictionary<string, Document>()),invt);
-
+            invt.SaveThis();
             Assert.AreEqual(1,1);
         }
     }

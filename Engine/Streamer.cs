@@ -17,7 +17,8 @@ namespace Engine {
         public static void AddFileFrom(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
         //    try {
-                String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+        //TODO Remove the stuffs
+                String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ', ',', ':', '(', ')', '?', '!', ';', '-', '[', ']', '"' }),StringSplitOptions.RemoveEmptyEntries);
                 invt.AddDocument(words,doc);
         //    } catch (Exception ex) {
          //       throw new TextExtractionException("Could not extract Files from " + doc.Address +" "+ex.Message);
@@ -41,7 +42,7 @@ namespace Engine {
         public static Document ModifyFile(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
             try {
-                String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
+                String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ', ',', ':', '(', ')', '?', '!', ';', '-', '[', ']', '"' }),StringSplitOptions.RemoveEmptyEntries);
                 return invt.ModifyDocument(words,doc);
             } catch(Exception ex) {
                 throw new TextExtractionException("Could not extract Files from " + doc.Address + " " + ex.Message);

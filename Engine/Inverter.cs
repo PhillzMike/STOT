@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
 //TODO [assembly: InternalsVisibleTo("InverterTest")]
 
@@ -167,7 +168,11 @@ namespace Engine {
         }
 
         public void SaveThis() {
-            
+            //TODO
+            using (Stream stream = File.Open("../../Inverter.stot", FileMode.Create)) {
+                new BinaryFormatter().Serialize(stream, this);
+                stream.Close();
+            }
         }
     }
 }

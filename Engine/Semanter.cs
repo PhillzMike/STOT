@@ -3,6 +3,7 @@ using System.Collections.Generic;
 
 namespace Engine
 {
+    [Serializable]
     /// <summary>
     /// IDK
     /// Author Timi

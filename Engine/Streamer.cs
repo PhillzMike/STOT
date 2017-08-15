@@ -38,11 +38,11 @@ namespace Engine {
         /// <param name="doc">The document that was Modified.</param>
         /// <param name="invt">The inverted Index.</param>
         /// <exception cref="TextExtractionException">Could not extract Files from the Document</exception>
-        public static void ModifyFile(Document doc,Inverter invt) {
+        public static Document ModifyFile(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
             try {
                 String[] words = x.Extract(doc.Address).Text.Split((new char[] { ' ' }),StringSplitOptions.RemoveEmptyEntries);
-                invt.ModifyDocument(words,doc);
+                return invt.ModifyDocument(words,doc);
             } catch(Exception ex) {
                 throw new TextExtractionException("Could not extract Files from " + doc.Address + " " + ex.Message);
             }

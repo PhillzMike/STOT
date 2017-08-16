@@ -16,12 +16,12 @@ namespace Engine {
         /// <exception cref="TextExtractionException">Could not extract Files from the Document</exception>
         public static void AddFileFrom(Document doc,Inverter invt) {
             TextExtractor x = new TextExtractor();
-            try {
-                String[] words = x.Extract(doc.Address).Text.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries);
+          //  try {
+                String[] words = x.Extract(doc.Address).   Text.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries);
                 invt.AddDocument(words,doc);
-            } catch (Exception ex) {
-                throw new TextExtractionException("Could not extract Files from " + doc.Address,ex);
-            }
+          //  } catch (Exception ex) {
+           //     throw new TextExtractionException("Could not extract Files from " + doc.Address,ex);
+          //  }
         }
         /// <summary>
         /// Removes the specified Document from the Inverted Index Table

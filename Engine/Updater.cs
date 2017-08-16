@@ -42,7 +42,7 @@ namespace Engine {
             return docs;
         }
         private static Document GetDocumentFrom(String path) {
-            string posString = path.Substring(path.LastIndexOf("/") + 1);
+            string posString = path.Substring(path.LastIndexOf("\\") + 1);
             int posOfType = posString.LastIndexOf(".");
             string ofName = posString.Substring(0, posOfType);
             string ofType = posString.Substring(posOfType + 1);

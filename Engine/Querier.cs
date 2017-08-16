@@ -10,7 +10,7 @@ namespace Engine
     /// </summary>
     public static class Querier
     {
-        public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
+        //public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
         
         public static List<Document> Search(String query,Inverter invt) {
            List<Format> typesPossible = new List<Format>();
@@ -25,7 +25,7 @@ namespace Engine
            
             for (int k= 0; k<words.Length; k++)
             {
-                if (!(stopwords.Contains(words[k]) || words[k].Equals("")))
+                if (!(invt.Stopwords.Contains(words[k]) || words[k].Equals("")))
                 {
                     splitwords.Add(words[k]);
                    }
@@ -42,34 +42,40 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible,Inverter invt)
-        {
-            Dictionary<Document, double []> found = new Dictionary<Document, double[]>();
-            double [] count = new double[querywords.Count];
-            for(int t =0; t<querywords.Count; t++)
-            {
-                count[t] = 0;
-            }
-       
-            for(int i=0; i<querywords.Count; i++)
-            { 
-               List<Document> available =  invt.Table[querywords[i]].Keys.ToList();
-                foreach (Document t in available) {
-                    count[i] = invt.Table[querywords[i]][t].Count;
-                    if (typesPossible.Count>0)
-                    {
-                        if (typesPossible.Contains(t.Type))
-                        {
-                            found.Add(t, count);
-                        }
+        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
+            Dictionary<Document, double[]> found = new Dictionary<Document, double[]>();
+            //double[] count = new double[querywords.Count];
+            //for (int t = 0; t < querywords.Count; t++) {
+            //    count[t] = 0;
+            //}
+            for (int i = 0; i < querywords.Count; i++) {
+                try {
+                    List<Document> available = invt.Table[querywords[i]].Keys.ToList();
+                    foreach (var item in available) {
+                        if (!found.ContainsKey(item))
+                            found.Add(item, new double[querywords.Count]);
+                        found[item][i] = invt.Table[querywords[i]][item].Count;
                     }
-                    else
-                    {
-                        found.Add(t, count);
-                    }
-              }
+                }
+                catch (KeyNotFoundException) { };
+
             }
-             return found;
+            //for(int i=0; i<querywords.Count; i++)
+            //{
+            //    List<Document> available = invt.Table[querywords[i]].Keys.ToList();
+            //    foreach (Document t in available) {
+            //        count[i] = invt.Table[querywords[i]][t].Count;
+            //        if (typesPossible.Count > 0) {
+            //            if (typesPossible.Contains(t.Type)) {
+            //                found.Add(t, count);
+            //            }
+            //        }
+            //        else {
+            //            found.Add(t, count);
+            //        }
+            //    }
+            //}
+            return found;
         }
         public static String TypeChecker(String [] s)
         { 

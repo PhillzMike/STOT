@@ -106,7 +106,8 @@ namespace Engine
                 if(wordsDistance[i] != 0) {
                     //TODO: Check the formula u used here
                     //finalScore += (1 - (1 / wordsDistance[i]))/(i-prevWord);
-                    finalScore += (1 / (wordsDistance[i] * (i - prevWord)));
+                    //Remember dividing an int by an int would return int
+                    finalScore += (1.0 / (wordsDistance[i] * (i - prevWord)));
                     prevWord = i;
                 }
              

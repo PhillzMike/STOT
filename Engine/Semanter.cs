@@ -433,8 +433,13 @@ namespace Engine
                     candidates.Add(wordVariation,_dictionary[wordVariation]);
             }
 
-            if(candidates.Count > 0)
-                return (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String,int>).Keys.ToList<string>();
+            if (candidates.Count > 0) {
+                //TODO cleanup
+                IEnumerable<KeyValuePair<String, int>> ME = candidates.OrderByDescending(x => x.Value).Take(top);
+                return candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>();
+                 
+                //return (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String, int>).Keys.ToList<string>();
+            }
                 //return candidates.Keys.ToList<string>();
 
             // known_edits2()
@@ -446,7 +451,7 @@ namespace Engine
             }
 
             //return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).First().Key : word;
-            return (candidates.Count > 0) ? (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String,int>).Keys.ToList<string>() : new List<String>();
+            return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>() : new List<String>();
         }
         /// <summary>
         /// Corrects the word.
@@ -457,7 +462,11 @@ namespace Engine
             if(string.IsNullOrWhiteSpace(word)) {
                 return "";
             }
-            return CorrectWord(word,1)[0];
+            List<String> result = CorrectWord(word, 1);
+            if (result.Count > 0) {
+                return CorrectWord(word, 1)[0];
+            }
+            return word;
         }
 
 

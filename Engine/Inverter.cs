@@ -19,7 +19,16 @@ namespace Engine {
         /// </summary>
         /// <param name="StopWords">The path to a File COntaining all the stop words.</param>
         /// <exception cref="IOException">The specified path could not be Read</exception>
-        public Inverter(String StopWords):this(){
+        public Inverter(String StopWords,String DictionaryPath,String CommonWordsPath,List<String> BooksPaths){
+            _samantha = new Semanter(DictionaryPath,CommonWordsPath);
+            //TODO tomiwas idea about weight distribution based on file size
+            //TODO Add FileName
+            foreach(String BookPath in BooksPaths)
+                _samantha.AddToDictionary(BookPath,1);
+            _stopwords = new HashSet<string>();
+            _documentCount = 0;
+            invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
+            _files = new Dictionary<string,Document>();
             try {
                 foreach(String stp in File.ReadAllLines(StopWords))
                     _stopwords.Add(stp);
@@ -28,16 +37,6 @@ namespace Engine {
             }
         }
       
-        /// <summary>
-        /// Initializes a new instance of the <see cref="Inverter"/> class without any stop words to be ignored.
-        /// </summary>
-        public Inverter() {
-            //TODO construct semanter:)
-            _stopwords = new HashSet<string>();
-            _documentCount = 0;
-            invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
-            _files = new Dictionary<string,Document>();
-        }
         /// <summary>
         /// Gets the semanter used in this inverter.
         /// </summary>
@@ -95,7 +94,8 @@ namespace Engine {
         /// <param name="doc">The document to be added.</param>
         public void AddDocument(String[] words,Document doc) {
             int i = 0;
-            foreach(String word in words) {
+            foreach(String addWord in words) {
+                string word =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
                 if(_stopwords.Contains(word)) {
                     continue;
                 }
@@ -167,11 +167,15 @@ namespace Engine {
             return newDoc;
         }
 
-        public void SaveThis() {
-            //TODO
-            using (Stream stream = File.Open("../../Inverter.stot", FileMode.Create)) {
-                new BinaryFormatter().Serialize(stream, this);
-                stream.Close();
+        public void SaveThis(string SavePath) {
+            try {
+                using(Stream stream = File.Open("SavePath",FileMode.Create)) {
+                    new BinaryFormatter().Serialize(stream,this);
+                    stream.Close();
+                }
+            } catch(Exception ex) {
+
+                throw new Exception("There was an Error trying to Save the Inverted Index",ex);
             }
         }
     }

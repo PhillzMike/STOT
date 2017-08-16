@@ -14,11 +14,19 @@ namespace Engine
     public class Semanter
     {
         private Dictionary<String,int> _dictionary;
+        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","'","\t","\n","\r" };
         public Semanter(String toDictionary,String toCommon) {
             _dictionary = new Dictionary<string,int>();
             LoadToDictionary(File.ReadAllText(toDictionary));
             LoadToDictionary(File.ReadAllText(toCommon),2);
-
+        }
+        /// <summary>
+        /// Adds a Book to dictionary with specified weight.
+        /// </summary>
+        /// <param name="toBook">To book.</param>
+        /// <param name="weight">The weight.</param>
+        public void AddToDictionary(String toBook,int weight) {
+            LoadToDictionary(File.ReadAllText(toBook),weight);
         }
         /// <summary>
         /// Loads the words in the string (Space or new Line  "\n" delimeter) to dictionary.
@@ -26,7 +34,7 @@ namespace Engine
         /// <param name="words">The words to be loaded.</param>
         /// <param name="weight">The weight of each word in the Dictionary NOTE: words with higher weight will be suggested first.</param>
         private void LoadToDictionary(String words,int weight) {
-        foreach(string word in words.Split((new string[] { " ","\t","\n" }),StringSplitOptions.RemoveEmptyEntries).ToList()) {
+        foreach(string word in words.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries).ToList()) {
             string trimmedWord = word.Trim().ToLower();
                 if(_dictionary.ContainsKey(trimmedWord))
                     _dictionary[trimmedWord]+=weight;

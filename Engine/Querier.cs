@@ -11,10 +11,14 @@ namespace Engine
     public static class Querier
     {
         public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
-        static char [ ]punc = { ' ', ',',':', '(',')','?', '!',';','-','[',']','"'};
+        
         public static List<Document> Search(String query,Inverter invt) {
            List<Format> typesPossible = new List<Format>();
-           String [] words = query.Split(punc, StringSplitOptions.RemoveEmptyEntries);
+           String [] words = query.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
+            //TODO autocorrect shii
+           for(int i = 0;i < words.Length;i++) {
+                words[i] = invt.Samantha.StemWord(words[i].ToLower().Trim());
+           }
            List<String> splitwords = new List<String>();
            typesPossible = PossibleType(TypeChecker(words));
            DocsFound(splitwords, typesPossible,invt);
@@ -33,7 +37,7 @@ namespace Engine
         public static List<String> AutoComplete(String querywords)
         {
             //TODO review this later
-            String[] splitwords = querywords.Split(punc, StringSplitOptions.RemoveEmptyEntries);
+            String[] splitwords = querywords.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
             // return Semanter.Suggestions(splitwords);
             return null;
         }

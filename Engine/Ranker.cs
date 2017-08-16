@@ -18,6 +18,7 @@ namespace Engine
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
         public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results,Inverter invt) {
+            //TODO: add a feature that makes searching for a particular document by name possible
             for (int i = 0; i < query.Count; i++) {
                 query[i] = query[i].ToLower();
             }
@@ -30,17 +31,21 @@ namespace Engine
 
             }
             //Calculating Tf-Idf weighting of each word in the query
+            
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
+                //TODO: Check the tf-idf weighting of the query
                 queryVector[i] = TfWeight(queryVector[i]);// * IDFWeight(Results.Count);
             }
             //Calculating the cosine of the angles between the query vector and the document vectors
             double[] cosOfAngle = new double[queryVector.Length];
             int counter = 0;
             List<Document> sortedDocument = new List<Document>();
+            //SortedDictionary<double, Document> sortedDocument2 = new SortedDictionary<double, Document>();
             foreach (Document item in Results.Keys) {
-                cosOfAngle[counter++] = (GetCOSAngle(queryVector, Results[item])) * 0.7;
-                cosOfAngle[counter] += GetScoreBasedOnPos(query, item,invt) * 0.3;
+                cosOfAngle[counter] = (GetCOSAngle(queryVector, Results[item])) * 0.7;
+                cosOfAngle[counter++] += GetScoreBasedOnPos(query, item,invt) * 0.3;
+                //sortedDocument2.Add(cosOfAngle[counter - 1], item);
                 sortedDocument.Add(item);
             }
             //Sorting the documents based on the cosine of the angles
@@ -112,7 +117,7 @@ namespace Engine
         }
         private static List<int> CalculateBestDiff(List<string> query, Dictionary<string,List<int>> dic) {
             //TODO: This function should locate the region of the best score used in the document
-            //TODO: I hope this works, cause It would take a bit for me to understand what I've written
+            //TODO: I hope this works, cause if it doesn't.....
             int score;
             
             List<int> output = new List<int>();
@@ -130,7 +135,7 @@ namespace Engine
                 int j = 0;
                 first.Add(int.MaxValue);
                 second.Add(int.MaxValue);
-                //FIXME: I really need to check the guy
+                //TODO: I really need to check the guy
                 while(second.Count == 0) {
                     score = 0;
                     output.Add(score);

@@ -2,6 +2,7 @@
 
 namespace Engine
 {
+    [Serializable]
     /// <summary>
     /// The Representation Of the available documents within the code.
     /// </summary>

@@ -12,12 +12,12 @@ namespace Engine
     {
         public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
         static char [ ]punc = { ' ', ',',':', '(',')','?', '!',';','-','[',']','"'};
-        public static List<Document> Search(String query) {
+        public static List<Document> Search(String query,Inverter invt) {
            List<Format> typesPossible = new List<Format>();
            String [] words = query.Split(punc, StringSplitOptions.RemoveEmptyEntries);
            List<String> splitwords = new List<String>();
            typesPossible = PossibleType(TypeChecker(words));
-           DocsFound(splitwords, typesPossible);
+           DocsFound(splitwords, typesPossible,invt);
            
             for (int k= 0; k<words.Length; k++)
             {
@@ -28,7 +28,7 @@ namespace Engine
                 }
             if (splitwords.Count == 0)
                 throw new ArgumentNullException("File doesn't Exist");
-            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible));
+            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt);
         }
         public static List<String> AutoComplete(String querywords)
         {
@@ -38,7 +38,7 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible)
+        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible,Inverter invt)
         {
             Dictionary<Document, double []> found = new Dictionary<Document, double[]>();
             double [] count = new double[querywords.Count];
@@ -49,9 +49,9 @@ namespace Engine
        
             for(int i=0; i<querywords.Count; i++)
             { 
-               List<Document> available =  Inverter.Table[querywords[i]].Keys.ToList();
+               List<Document> available =  invt.Table[querywords[i]].Keys.ToList();
                 foreach (Document t in available) {
-                    count[i] = Inverter.Table[querywords[i]][t].Count;
+                    count[i] = invt.Table[querywords[i]][t].Count;
                     if (typesPossible.Count>0)
                     {
                         if (typesPossible.Contains(t.Type))

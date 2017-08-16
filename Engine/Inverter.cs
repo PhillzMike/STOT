@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Runtime.CompilerServices;
 using System.Threading;
 using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
 
-[assembly: InternalsVisibleTo("InverterTest")]
+//TODO [assembly: InternalsVisibleTo("InverterTest")]
+
 namespace Engine {
-   
+    [Serializable]
     /// <summary>
     /// Uploads tokens from a file into the inverted index Table
     /// Author 3dO
@@ -30,11 +32,20 @@ namespace Engine {
         /// Initializes a new instance of the <see cref="Inverter"/> class without any stop words to be ignored.
         /// </summary>
         public Inverter() {
+            //TODO construct semanter:)
             _stopwords = new HashSet<string>();
             _documentCount = 0;
             invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
             _files = new Dictionary<string,Document>();
         }
+        /// <summary>
+        /// Gets the semanter used in this inverter.
+        /// </summary>
+        /// <value>
+        /// The semanters.
+        /// </value>
+        public Semanter Samantha { get => _samantha; }
+        private Semanter _samantha;
 
         /// <summary>
         /// Gets the files currently Stored in the Inverted Index Table.
@@ -149,10 +160,19 @@ namespace Engine {
         /// </summary>
         /// <param name="words">The words in the new Document.</param>
         /// <param name="doc">The document modified.</param>
-        public void ModifyDocument(String[] words,Document doc) {
+        public Document ModifyDocument(String[] words,Document doc) {
             Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastAccessTime);
             doc.Delete();
             AddDocument(words,newDoc);
+            return newDoc;
+        }
+
+        public void SaveThis() {
+            //TODO
+            using (Stream stream = File.Open("../../Inverter.stot", FileMode.Create)) {
+                new BinaryFormatter().Serialize(stream, this);
+                stream.Close();
+            }
         }
     }
 }

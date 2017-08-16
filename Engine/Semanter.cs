@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 
 namespace Engine
 {
+    [Serializable]
     /// <summary>
     /// IDK
     /// Author 3dO

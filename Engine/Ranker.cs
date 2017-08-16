@@ -18,10 +18,12 @@ namespace Engine
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
         public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results,Inverter invt) {
+            //TODO we need to index every word in a document except the stop words
             //TODO: add a feature that makes searching for a particular document by name possible
-            for (int i = 0; i < query.Count; i++) {
-                query[i] = query[i].ToLower();
-            }
+            //TODO: Remember to tell Teni to review her DocsFound method
+            //for (int i = 0; i < query.Count; i++) {
+            //    query[i] = query[i].ToLower();
+            //}
             //Calculating Tf-Idf wieghting of each word in a document
             foreach (Document item in Results.Keys) {
                 double[] x = Results[item];
@@ -35,25 +37,29 @@ namespace Engine
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
                 //TODO: Check the tf-idf weighting of the query
-                queryVector[i] = TfWeight(queryVector[i]);// * IDFWeight(Results.Count);
+                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count, invt);
             }
             //Calculating the cosine of the angles between the query vector and the document vectors
-            double[] cosOfAngle = new double[queryVector.Length];
+            //double[] cosOfAngle = new double[queryVector.Length];
+            List<double> cosOfAngle = new List<double>();
             int counter = 0;
+            List<double> secondGuy = new List<double>();
             List<Document> sortedDocument = new List<Document>();
             //SortedDictionary<double, Document> sortedDocument2 = new SortedDictionary<double, Document>();
             foreach (Document item in Results.Keys) {
-                cosOfAngle[counter] = (GetCOSAngle(queryVector, Results[item])) * 0.7;
-                cosOfAngle[counter++] += GetScoreBasedOnPos(query, item,invt) * 0.3;
-                //sortedDocument2.Add(cosOfAngle[counter - 1], item);
+                cosOfAngle.Add((GetCOSAngle(queryVector, Results[item]))*0.7);
+                secondGuy.Add(GetScoreBasedOnPos(query, item, invt));
+                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * 0.3;
+                //sortedDocument2.Add(cosOfAngle[counter++], item);
                 sortedDocument.Add(item);
             }
+
             //Sorting the documents based on the cosine of the angles
-            for(int i = 1; i < cosOfAngle.Length; i++) {
+            for (int i = 1; i < cosOfAngle.Count; i++) {
                 double key = cosOfAngle[i];
                 Document docKey = sortedDocument[i];
                 int j = i - 1;
-                while(j>0 && cosOfAngle[j] > key) {
+                while (j >= 0 && cosOfAngle[j] < key) {
                     cosOfAngle[j + 1] = cosOfAngle[j];
                     sortedDocument[j + 1] = sortedDocument[j];
                     j--;
@@ -61,6 +67,9 @@ namespace Engine
                 cosOfAngle[j + 1] = key;
                 sortedDocument[j + 1] = docKey;
             }
+            //foreach (var item in sortedDocument2.Keys) {
+            //    sortedDocument.Add(sortedDocument2[item]);
+            //}
             return sortedDocument;
         }
         private static double GetCOSAngle(double[] queryVector, double[] docVector) {
@@ -77,7 +86,8 @@ namespace Engine
             return sum / (fD * sD);
         }
         private static double GetScoreBasedOnPos(List<string> query,Document doc,Inverter invt) {
-            double score = Math.Tan((45 / query.Count)*ScoreBasedOnConWords(query,doc,invt));
+            double degree = (45.0 /(query.Count - 1)) * ScoreBasedOnConWords(query, doc, invt);
+            double score = Math.Tan((degree*Math.PI)/180);
             return score;
         }
         private static double ScoreBasedOnConWords(List<string> query,Document doc,Inverter invt) {
@@ -85,7 +95,7 @@ namespace Engine
             Dictionary<string, List<int>> positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
                 //TODO Check this guy
-                if (invt.Table[item].ContainsKey(doc))
+                if (invt.Table.ContainsKey(item) && invt.Table[item].ContainsKey(doc))
                     positions.Add(item, new List<int>(invt.Table[item][doc]));
                 else
                     positions.Add(item, new List<int>());
@@ -94,8 +104,9 @@ namespace Engine
             int prevWord = -1;
             for (int i = 0; i < wordsDistance.Count; i++) {
                 if(wordsDistance[i] != 0) {
-                    //TODO: Check the formula u used here,again
-                    finalScore += (1 - (1 / wordsDistance[i]))/(i-prevWord);
+                    //TODO: Check the formula u used here
+                    //finalScore += (1 - (1 / wordsDistance[i]))/(i-prevWord);
+                    finalScore += (1 / (wordsDistance[i] * (i - prevWord)));
                     prevWord = i;
                 }
              
@@ -123,7 +134,7 @@ namespace Engine
             List<int> output = new List<int>();
             for(int k = 1; k < query.Count; k++) {
                 //while the first guy is not present
-                while (dic[query[k - 1]].Count == 0) {
+                if (dic[query[k - 1]].Count == 0) {
                     score = 0;
                     continue;
                 }
@@ -133,34 +144,36 @@ namespace Engine
                 score = int.MaxValue;
                 int i = 0;
                 int j = 0;
-                first.Add(int.MaxValue);
-                second.Add(int.MaxValue);
+                
                 //TODO: I really need to check the guy
                 while(second.Count == 0) {
                     score = 0;
                     output.Add(score);
-                    if (k - 1 < query.Count)
+                    if (k+1 < query.Count)
                         k++;
                     else {
-                        output.Add(score);
+                       // output.Add(score);
                         return output;
                     }
                     second = new List<int>(dic[query[k]]);
                 }
+                first.Add(int.MaxValue);
+                second.Add(int.MaxValue);
                 //Check if the list contains an element first, it would not contain any element if the document does not contain
                 //the word in the first place
-                    //So as to ignore the maxValue guyz
-                    for (int count = 0; count < first.Count + second.Count - 2; count++) {
+                //So as to ignore the maxValue guyz
+                for (int count = 0; count < first.Count + second.Count - 2; count++) {
                         if (first[i] < second[j]) {
-                            score = (score < first[i] - second[j]) ? score : first[i] - second[j];
+                            score = (score < (second[j] - first[i])) ? score : second[j] - first[i];
                             i++;
                         }
                         else if (first[i] > second[j]) {
-                            score = (score < (second[j] - first[i])) ? score : second[j] - first[i];
+                            score = (score < (first[i] - second[j])) ? score : first[i] - second[j];
                             j++;
                         }
 
                     }
+         output.Add(score);
             }
             return output;
         }

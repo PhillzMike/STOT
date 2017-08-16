@@ -1,14 +1,46 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Engine
 {
     /// <summary>
     /// IDK
-    /// Author Timi
+    /// Author 3dO
     /// </summary>
     public class Semanter
     {
+        private Dictionary<String,int> _dictionary;
+        public Semanter(String toDictionary,String toCommon) {
+            _dictionary = new Dictionary<string,int>();
+            LoadToDictionary(File.ReadAllText(toDictionary));
+            LoadToDictionary(File.ReadAllText(toCommon),2);
+
+        }
+        /// <summary>
+        /// Loads the words in the string (Space or new Line  "\n" delimeter) to dictionary.
+        /// </summary>
+        /// <param name="words">The words to be loaded.</param>
+        /// <param name="weight">The weight of each word in the Dictionary NOTE: words with higher weight will be suggested first.</param>
+        private void LoadToDictionary(String words,int weight) {
+        foreach(string word in words.Split((new string[] { " ","\t","\n" }),StringSplitOptions.RemoveEmptyEntries).ToList()) {
+            string trimmedWord = word.Trim().ToLower();
+                if(_dictionary.ContainsKey(trimmedWord))
+                    _dictionary[trimmedWord]+=weight;
+                else {
+                    _dictionary.Add(trimmedWord,weight);
+                }
+        }
+        }
+        /// <summary>
+        /// Loads the words in the string (Space or new Line  "\n" delimeter) to dictionary.
+        /// </summary>
+        /// <param name="words">The words to be loaded.</param>
+        private void LoadToDictionary(String words) {
+            LoadToDictionary(words,1);
+        }
        
         /// <summary>
         /// Suggest Search Queries Similar to the Passed in query
@@ -16,6 +48,9 @@ namespace Engine
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
         public List<String> Suggestions(List<String> query) {
+            //Autocorrect from dictionary
+            //Filename
+            //words in my inverted index
             return null;
         }
         /// <summary>
@@ -23,10 +58,13 @@ namespace Engine
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public String Correct(List<String> query) {
+        public List<String> Correct(List<String> query,int noOfResults) {
             return null;
         }
-
+        /// <summary>
+        /// The Stemmer transforms a word into its root form.
+        /// Implementing the Porter Stemming Algorithm
+        /// </summary>
         #region Stemmer
         // The passed in word turned into a char array. 
         // Quicker to use to rebuilding strings each time a change is made.
@@ -356,6 +394,117 @@ namespace Engine
             private void ReplaceEnd(string s) {
                 if(MeasureConsontantSequence() > 0) SetEnd(s);
             }
+        #endregion
+        /// <summary>
+        /// The Correcter Corrects the specified word using the Set dictionary
+        /// </summary>
+        #region Correcter
+        /// <summary>
+        /// Corrects the word .
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="top">The max number of corrections to be suggested.</param>
+        /// <returns>
+        /// A list containing the specified number of suggestions correcting the specified word.
+        /// </returns>
+        public List<string> CorrectWord(string word,int top) {
+            top = (top <= 1) ? 1:top;
+            if(string.IsNullOrEmpty(word))
+                return new List<String>();
+            word = word.ToLower();
+            // known and common
+            if(_dictionary.ContainsKey(word)&&_dictionary[word]>2)
+                return new List<String> { word };
+
+            List<String> list = Edits(word);
+            Dictionary<string,int> candidates = new Dictionary<string,int>();
+
+            foreach(string wordVariation in list) {
+                if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
+                    candidates.Add(wordVariation,_dictionary[wordVariation]);
+            }
+
+            if(candidates.Count > 0)
+                return (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String,int>).Keys.ToList<string>();
+                //return candidates.Keys.ToList<string>();
+
+            // known_edits2()
+            foreach(string item in list) {
+                foreach(string wordVariation in Edits(item)) {
+                    if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
+                        candidates.Add(wordVariation,_dictionary[wordVariation]);
+                }
+            }
+
+            //return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).First().Key : word;
+            return (candidates.Count > 0) ? (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String,int>).Keys.ToList<string>() : new List<String>();
+        }
+        /// <summary>
+        /// Corrects the word.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
+        public string CorrectWord(string word) {
+            if(string.IsNullOrWhiteSpace(word)) {
+                return "";
+            }
+            return CorrectWord(word,1)[0];
+        }
+
+
+            private List<string> Edits(string word) {
+            var splits = new List<Tuple<string,string>>();
+            var transposes = new List<string>();
+            var deletes = new List<string>();
+            var replaces = new List<string>();
+            var inserts = new List<string>();
+
+            // Splits
+            for(int i = 0;i < word.Length;i++) {
+                var tuple = new Tuple<string,string>(word.Substring(0,i),word.Substring(i));
+                splits.Add(tuple);
+            }
+
+            // Deletes
+            for(int i = 0;i < splits.Count;i++) {
+                string a = splits[i].Item1;
+                string b = splits[i].Item2;
+                if(!string.IsNullOrEmpty(b)) {
+                    deletes.Add(a + b.Substring(1));
+                }
+            }
+
+            // Transposes
+            for(int i = 0;i < splits.Count;i++) {
+                string a = splits[i].Item1;
+                string b = splits[i].Item2;
+                if(b.Length > 1) {
+                    transposes.Add(a + b[1] + b[0] + b.Substring(2));
+                }
+            }
+
+            // Replaces
+            for(int i = 0;i < splits.Count;i++) {
+                string a = splits[i].Item1;
+                string b = splits[i].Item2;
+                if(!string.IsNullOrEmpty(b)) {
+                    for(char c = 'a';c <= 'z';c++) {
+                        replaces.Add(a + c + b.Substring(1));
+                    }
+                }
+            }
+
+            // Inserts
+            for(int i = 0;i < splits.Count;i++) {
+                string a = splits[i].Item1;
+                string b = splits[i].Item2;
+                for(char c = 'a';c <= 'z';c++) {
+                    inserts.Add(a + c + b);
+                }
+            }
+
+            return deletes.Union(transposes).Union(replaces).Union(inserts).ToList();
+        }
 #endregion
     }
 }

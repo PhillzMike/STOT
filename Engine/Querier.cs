@@ -31,8 +31,9 @@ namespace Engine
                    }
                 }
             if (splitwords.Count == 0)
-                throw new ArgumentNullException("File doesn't Exist");
-            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt);
+                return DocsFound(splitwords, typesPossible, invt).Keys.ToList<Document>();
+            //throw new ArgumentNullException("File doesn't Exist");
+            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt.DocumentCount);
         }
         public static List<String> AutoComplete(String querywords)
         {
@@ -42,23 +43,33 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<Document, double[]> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
-            Dictionary<Document, double[]> found = new Dictionary<Document, double[]>();
+        private static Dictionary<Document, Dictionary<string,List<int>>> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
+        Dictionary<Document, Dictionary<string,List<int>>> found = new Dictionary<Document, Dictionary<string,List<int>>>();
             //double[] count = new double[querywords.Count];
             //for (int t = 0; t < querywords.Count; t++) {
             //    count[t] = 0;
             //}
-            for (int i = 0; i < querywords.Count; i++) {
+            
+            foreach (string word in querywords) {
+                
                 try {
-                    List<Document> available = invt.Table[querywords[i]].Keys.ToList();
+                    List<Document> available = invt.Table[word].Keys.ToList();
                     foreach (var item in available) {
-                        if (!found.ContainsKey(item))
-                            found.Add(item, new double[querywords.Count]);
-                        found[item][i] = invt.Table[querywords[i]][item].Count;
+                        if (!found.ContainsKey(item)) {
+                            found.Add(item, new Dictionary<string, List<int>>());
+                        }
+                        found[item].Add(word, invt.Table[word][item]);
                     }
                 }
-                catch (KeyNotFoundException) { };
-
+                catch (KeyNotFoundException) {
+                }
+            }
+            if (querywords.Count<=0) {
+                List<Document> available = invt.Files.Values.ToList<Document>();
+                foreach (var item in available) {
+                    if (!found.ContainsKey(item)) 
+                        found.Add(item, new Dictionary<string,List<int>>());
+                }
             }
             //for(int i=0; i<querywords.Count; i++)
             //{

@@ -11,46 +11,46 @@ namespace Engine
     /// </summary>
     public static class Ranker
     {
+        private static Dictionary<Document, Dictionary<string, List<int>>> Results;
         /// <summary>
         /// Searches the query.
         /// </summary>
         /// <param name="query">The query.</param>
-        /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies each word in the query is found in this document.</param>
+        /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies (in ascending order) each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
-        public static List<Document> SearchQuery(List<String> query, Dictionary<Document,double[]> Results,Inverter invt) {
-            //TODO we need to index every word in a document except the stop words
+        public static List<Document> SearchQuery(List<String> query, Dictionary<Document, Dictionary<string, List<int>>> Results,int documentCount) {
             //TODO: add a feature that makes searching for a particular document by name possible
-            //TODO: Remember to tell Teni to review her DocsFound method
-            //for (int i = 0; i < query.Count; i++) {
-            //    query[i] = query[i].ToLower();
-            //}
             //Calculating Tf-Idf wieghting of each word in a document
+            Ranker.Results = Results;
+            List<double[]> CountOfAllWords = new List<double[]>();
             foreach (Document item in Results.Keys) {
-                double[] x = Results[item];
-                for(int i = 0; i < x.Length; i++) {
-                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count,invt);
+                Dictionary<string, List<int>> positions = Results[item];
+                double[] x= new double[query.Count];
+                int iCounter = 0;
+                foreach(string word in positions.Keys) {
+                    x[iCounter++] = positions[word].Count;
                 }
-
+                for(int i = 0; i < x.Length; i++) {
+                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count,documentCount);
+                }
+                CountOfAllWords.Add(x);
             }
+
             //Calculating Tf-Idf weighting of each word in the query
-            
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
                 //TODO: Check the tf-idf weighting of the query
-                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count, invt);
+                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count,documentCount);
             }
+
             //Calculating the cosine of the angles between the query vector and the document vectors
-            //double[] cosOfAngle = new double[queryVector.Length];
             List<double> cosOfAngle = new List<double>();
-            int counter = 0;
             List<double> secondGuy = new List<double>();
             List<Document> sortedDocument = new List<Document>();
-            //SortedDictionary<double, Document> sortedDocument2 = new SortedDictionary<double, Document>();
             foreach (Document item in Results.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, Results[item]))*0.7);
-                secondGuy.Add(GetScoreBasedOnPos(query, item, invt));
+                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[cosOfAngle.Count]))*0.7);
+                secondGuy.Add(GetScoreBasedOnPos(query, item));
                 cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * 0.3;
-                //sortedDocument2.Add(cosOfAngle[counter++], item);
                 sortedDocument.Add(item);
             }
 
@@ -67,9 +67,6 @@ namespace Engine
                 cosOfAngle[j + 1] = key;
                 sortedDocument[j + 1] = docKey;
             }
-            //foreach (var item in sortedDocument2.Keys) {
-            //    sortedDocument.Add(sortedDocument2[item]);
-            //}
             return sortedDocument;
         }
         private static double GetCOSAngle(double[] queryVector, double[] docVector) {
@@ -85,20 +82,26 @@ namespace Engine
             sD = Math.Sqrt(sD);
             return sum / (fD * sD);
         }
-        private static double GetScoreBasedOnPos(List<string> query,Document doc,Inverter invt) {
-            double degree = (45.0 /(query.Count - 1)) * ScoreBasedOnConWords(query, doc, invt);
+        private static double GetScoreBasedOnPos(List<string> query,Document doc) {
+            //TODO: remember to consider a situation of one word in the query
+            double degree = (45.0 /(query.Count - 1)) * ScoreBasedOnConWords(query, doc);
             double score = Math.Tan((degree*Math.PI)/180);
             return score;
         }
-        private static double ScoreBasedOnConWords(List<string> query,Document doc,Inverter invt) {
+        private static double ScoreBasedOnConWords(List<string> query,Document doc) {
+            //TODO: remember to tell joda that everything semanter did to yje invt guyz, it should do also to query
             double finalScore = 0;
-            Dictionary<string, List<int>> positions = new Dictionary<string,List<int>>();
+            var positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
-                //TODO Check this guy
-                if (invt.Table.ContainsKey(item) && invt.Table[item].ContainsKey(doc))
-                    positions.Add(item, new List<int>(invt.Table[item][doc]));
+               // positions.Add(item, Results[doc][item]);
+                //if (invt.Table.ContainsKey(item) && invt.Table[item].ContainsKey(doc))
+                //    positions.Add(item, new List<int>(invt.Table[item][doc]));
+                //else
+                //    positions.Add(item, new List<int>());
+                if (Results.ContainsKey(doc) && Results[doc].ContainsKey(item))
+                    positions.Add(item, Results[doc][item]);
                 else
-                    positions.Add(item, new List<int>());
+                   positions.Add(item, new List<int>());
             }
             var wordsDistance = CalculateBestDiff(query, positions);
             int prevWord = -1;
@@ -132,7 +135,7 @@ namespace Engine
             //TODO: I hope this works, cause if it doesn't.....
             int score;
             
-            List<int> output = new List<int>();
+            var output = new List<int>();
             for(int k = 1; k < query.Count; k++) {
                 //while the first guy is not present
                 if (dic[query[k - 1]].Count == 0) {
@@ -174,18 +177,21 @@ namespace Engine
                         }
 
                     }
-         output.Add(score);
+            output.Add(score);
             }
             return output;
         }
+        //Author: Seyi
         public static double[] GetVector(List<string> a) {
-            List<double> voice = new List<double>();
-            HashSet<string> m = new HashSet<string>(a);
+            var voice = new List<double>();
+            var m = new HashSet<string>(a);
+            
             int counter;
             foreach (string f in m) {
-                counter= 0;
-                for(int i = 0; i < a.Count; i++) {
-                    if(f.Equals(a[i])) {
+                //voice.Add(a.FindAll(x => x == f).Count);
+                counter = 0;
+                for (int i = 0; i < a.Count; i++) {
+                    if (f.Equals(a[i])) {
                         counter++;
                     }
                 }
@@ -193,11 +199,11 @@ namespace Engine
             }
             return voice.ToArray();
         }
-        public static double TfWeight(double count) {
+        private static double TfWeight(double count) {
             return (count == 0) ? 0 : 1 + Math.Log(count);
         }
-        private static double IDFWeight(int noOfDocuments,Inverter invt) {
-            return Math.Log(invt.DocumentCount/noOfDocuments);
+        private static double IDFWeight(int noOfDocuments,int documentCount) {
+            return Math.Log(documentCount/noOfDocuments);
         }
     }
 }

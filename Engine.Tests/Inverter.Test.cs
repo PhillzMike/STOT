@@ -13,12 +13,13 @@ namespace Engine.Tests
         [TestMethod]
         public void Inverter(){
             string query = "United States of America";
-            invt = new Inverter(@"C:\Users\Phillz Mike\Source\Repos\stot\Engine\stopwords.txt", @"C:\Users\Phillz Mike\Source\Repos\stot\Dictionary.txt"
-                                , @"C:\Users\Phillz Mike\Source\Repos\stot\commonSfw.txt",new List<string>());
-            var y = Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", (new Dictionary<string, Document>()),invt);
-            //invt.SaveThis();
+          //  invt = new Inverter(@"C:\Users\Phillz Mike\Source\Repos\stot\Engine\stopwords.txt", @"C:\Users\Phillz Mike\Source\Repos\stot\Dictionary.txt"
+          //                      , @"C:\Users\Phillz Mike\Source\Repos\stot\commonSfw.txt", new List<string>());
+            invt = Engine.Inverter.Load("Tester");
+            Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock",invt);
+           // invt.SaveThis("Tester");
             //Console.WriteLine();
-            //var z = Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", y, invt);
+           // Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", invt.Files, invt);
             List<Document> x = Querier.Search(query, invt);
             Assert.AreEqual(1,1);
         }

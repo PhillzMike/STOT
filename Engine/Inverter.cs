@@ -96,7 +96,7 @@ namespace Engine {
             int i = 0;
             foreach(String addWord in words) {
                 string word =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
-                if(_stopwords.Contains(word)) {
+                if (_stopwords.Contains(word)) {
                     continue;
                 }
                 if(invertedIndexTable.ContainsKey(word)) {
@@ -162,14 +162,14 @@ namespace Engine {
         /// <param name="doc">The document modified.</param>
         public Document ModifyDocument(String[] words,Document doc) {
             Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastAccessTime);
-            doc.Delete();
+            DeleteDocument(doc);
             AddDocument(words,newDoc);
             return newDoc;
         }
 
         public void SaveThis(string SavePath) {
             try {
-                using(Stream stream = File.Open("SavePath",FileMode.Create)) {
+                using(Stream stream = File.Open(SavePath,FileMode.Create)) {
                     new BinaryFormatter().Serialize(stream,this);
                     stream.Close();
                 }
@@ -177,6 +177,20 @@ namespace Engine {
 
                 throw new Exception("There was an Error trying to Save the Inverted Index",ex);
             }
+        }
+        public static Inverter Load(string loadID) {
+            Inverter invt = null ;
+            try {
+                using (Stream stream = File.Open(loadID, FileMode.Open)) {
+                    var bform = new BinaryFormatter();
+                    invt = (Inverter)(bform.Deserialize(stream));
+                    stream.Close();
+                };
+            }
+            catch (FileNotFoundException) {
+                //TODO Remember to create an exception class for this search Engine and remove null
+            }
+            return invt;
         }
     }
 }

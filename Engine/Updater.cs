@@ -21,14 +21,24 @@ namespace Engine {
                 else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0) 
                         Streamer.ModifyFile(files[item], invt);
             }
+            Dictionary<string,Exception> ErrorList = new Dictionary<string,Exception>();
             //adding file
             //creating a document object and pass into streamer.adddfile
-            foreach (String location in pathfiles) {
-                if (!files.ContainsKey(location)) {
-                    Document newdoc = GetDocumentFrom(location);
-                    Streamer.AddFileFrom(newdoc, invt);
+            foreach(String location in pathfiles) {
+                if(!files.ContainsKey(location)) {
+                    try {
+                        Document newdoc = GetDocumentFrom(location);
+                        Streamer.AddFileFrom(newdoc,invt);
+                    } catch(Exception ex) {
+                        ErrorList.Add(location,ex);
+                    }
+                } else {
+                    ErrorList.Add(location,new Exception("The File Type is Currently Not supported by this App"));
                 }
             }
+            if(ErrorList.Count > 0) { }
+            //Todo create new Exception
+            //throw new Exception("Couldn't withdraw some Files");
         }
         private static Document GetDocumentFrom(String path) {
             string posString = path.Substring(path.LastIndexOf("\\") + 1);

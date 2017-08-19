@@ -53,12 +53,12 @@ namespace Engine
             foreach (string word in querywords) {
                 
                 try {
-                    List<Document> available = invt.Table[word].Keys.ToList();
+                    Document[] available = invt.AllDocumentsContainingWord(word);
                     foreach (var item in available) {
                         if (!found.ContainsKey(item)) {
                             found.Add(item, new Dictionary<string, List<int>>());
                         }
-                        found[item].Add(word, invt.Table[word][item]);
+                        found[item].Add(word, invt.PositionsWordOccursInDocument(word,item).ToList());
                     }
                 }
                 catch (KeyNotFoundException) {

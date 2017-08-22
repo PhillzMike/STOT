@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Hello");
             this.TxtSearch1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
             this.BtnClick = new MaterialSkin.Controls.MaterialRaisedButton();
             this.listBox1 = new System.Windows.Forms.ListBox();
@@ -50,6 +51,7 @@
             this.TxtSearch1.TabIndex = 0;
             this.TxtSearch1.TabStop = false;
             this.TxtSearch1.UseSystemPasswordChar = false;
+            this.TxtSearch1.TextChanged += new System.EventHandler(this.TxtSearch1_TextChanged);
             // 
             // BtnClick
             // 
@@ -78,9 +80,11 @@
             // 
             // listView1
             // 
-            this.listView1.Location = new System.Drawing.Point(12, 79);
+            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
+            listViewItem2});
+            this.listView1.Location = new System.Drawing.Point(12, 128);
             this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(600, 531);
+            this.listView1.Size = new System.Drawing.Size(600, 482);
             this.listView1.TabIndex = 3;
             this.listView1.UseCompatibleStateImageBehavior = false;
             // 
@@ -96,6 +100,7 @@
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Name = "SearchPage";
             this.Text = "SearchPage";
+            this.Load += new System.EventHandler(this.SearchPage_Load);
             this.ResumeLayout(false);
             this.PerformLayout();
 

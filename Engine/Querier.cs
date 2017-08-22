@@ -33,6 +33,8 @@ namespace Engine
             if (splitwords.Count == 0)
                 return DocsFound(splitwords, typesPossible, invt).Keys.ToList<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
+            //TODO addwrong words to Dictionary
+            //TODO search for all wrong words corrections even if the word is correct
             return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt.DocumentCount);
         }
         public static List<String> AutoComplete(String querywords)

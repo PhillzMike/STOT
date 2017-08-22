@@ -15,11 +15,22 @@ namespace Engine {
                 pathfile= Directory.EnumerateFiles(path, "*."+doc.ToString(),SearchOption.AllDirectories).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
+            bool RemovedFile = false;
             foreach (String item in files.Keys.ToArray<String>()) {
-                if (!pathfiles.Contains(item)) 
+                if (!pathfiles.Contains(item))
+                {
                     Streamer.RemoveFile(files[item], invt);
-                else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0) 
-                        Streamer.ModifyFile(files[item], invt);
+                    RemovedFile = true;
+                }
+                else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0)
+                {
+                    Streamer.ModifyFile(files[item], invt);
+                    RemovedFile = true;
+                }
+            }
+            if (RemovedFile)
+            {
+                invt.GarbageCollector();
             }
             Dictionary<string,Exception> ErrorList = new Dictionary<string,Exception>();
             //adding file

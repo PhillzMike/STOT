@@ -31,7 +31,7 @@ namespace Engine
                    }
                 }
             if (splitwords.Count == 0)
-                return DocsFound(splitwords, typesPossible, invt).Keys.ToList<Document>();
+                return DocsFound(splitwords, typesPossible, invt)[""].Keys.ToList<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
             //TODO addwrong words to Dictionary
             //TODO search for all wrong words corrections even if the word is correct
@@ -45,8 +45,8 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<Document, Dictionary<string,List<int>>> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
-        Dictionary<Document, Dictionary<string,List<int>>> found = new Dictionary<Document, Dictionary<string,List<int>>>();
+        private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
+        var found = new Dictionary<string, Dictionary<Document, List<int>>>();
             //double[] count = new double[querywords.Count];
             //for (int t = 0; t < querywords.Count; t++) {
             //    count[t] = 0;
@@ -57,20 +57,22 @@ namespace Engine
                 try {
                     Document[] available = invt.AllDocumentsContainingWord(word);
                     foreach (var item in available) {
-                        if (!found.ContainsKey(item)) {
-                            found.Add(item, new Dictionary<string, List<int>>());
+                        if (!found.ContainsKey(word)) {
+                            found.Add(word, new Dictionary<Document, List<int>>());
                         }
-                        found[item].Add(word, invt.PositionsWordOccursInDocument(word,item).ToList());
+                        found[word].Add(item, invt.PositionsWordOccursInDocument(word,item).ToList());
                     }
                 }
                 catch (KeyNotFoundException) {
+                    found.Add(word,new Dictionary<Document, List<int>>());
                 }
             }
             if (querywords.Count<=0) {
                 List<Document> available = invt.Files.Values.ToList<Document>();
+                found.Add("", new Dictionary<Document, List<int>>());
                 foreach (var item in available) {
-                    if (!found.ContainsKey(item)) 
-                        found.Add(item, new Dictionary<string,List<int>>());
+                    if (!found[""].ContainsKey(item)) 
+                        found[""].Add(item, new List<int>());
                 }
             }
             //for(int i=0; i<querywords.Count; i++)

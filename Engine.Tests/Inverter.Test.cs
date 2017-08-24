@@ -17,13 +17,13 @@ namespace Engine.Tests
             sw.Start();
             string query = "United States of America";
             Double t1 = sw.ElapsedMilliseconds;
-            //     invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
-            //                     ,"../../../Resources/commonSfw.txt", new List<string>());
-          
+            //invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
+            //                , "../../../Resources/commonSfw.txt", new List<string>());
+
             invt = Engine.Inverter.Load("Tester");
             Double t2 = sw.ElapsedMilliseconds;
-            //  Updater.Crawler("../../../Resources/Mock",invt);
-            //    invt.SaveThis("Tester");
+            Updater.Crawler("../../../Resources/Mock", invt);
+            //invt.SaveThis("Tester");
             //Console.WriteLine();
             // Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", invt.Files, invt);
 

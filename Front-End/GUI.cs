@@ -11,6 +11,8 @@ using MaterialSkin;
 using MaterialSkin.Animations;
 using MaterialSkin.Controls;
 using System.IO;
+using Engine;
+
 namespace Front_End {
     /// <summary>
     /// Implement Crawler at intervals and other classes
@@ -19,8 +21,10 @@ namespace Front_End {
     /// </summary>
     /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
     public partial class UNILAG:Form {
-        HomePage Home = new HomePage();
-        SearchPage Search=new SearchPage("");
+        public Inverter invt;
+        HomePage Home ;
+        SearchPage Search;
+       
         public UNILAG() {
             InitializeComponent();
             var skinManager = MaterialSkinManager.Instance;
@@ -28,12 +32,24 @@ namespace Front_End {
             //skinManager.AddFormToManage(this);
             skinManager.Theme = MaterialSkinManager.Themes.LIGHT;
             skinManager.ColorScheme = new ColorScheme(Primary.Green300, Primary.Green400, Primary.Green400, Accent.Blue200, TextShade.WHITE);
+
+            this.IsMdiContainer = true;
+            //LoadHomePage();
+            invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
+                              ,"../../../Resources/commonSfw.txt",new List<string>());
+            //  invt = Engine.Inverter.Load("Tester");
+            Updater.Crawler("../../../Resources/Mock",invt);
+            invt.SaveThis("Tester");
+            LoadHomePage();
+            LoadSearchPage("");
+            Search.Close();
+
+
         }
 
         private void UNILAG_Load(object sender, EventArgs e)
         {
-            this.IsMdiContainer = true;
-            LoadHomePage();
+
         }
 
         public void LoadHomePage()

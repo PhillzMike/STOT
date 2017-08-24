@@ -33,6 +33,8 @@ namespace Engine
             if (splitwords.Count == 0)
                 return DocsFound(splitwords, typesPossible, invt).Keys.ToList<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
+            //TODO addwrong words to Dictionary
+            //TODO search for all wrong words corrections even if the word is correct
             return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt.DocumentCount);
         }
         public static List<String> AutoComplete(String querywords)
@@ -53,12 +55,12 @@ namespace Engine
             foreach (string word in querywords) {
                 
                 try {
-                    List<Document> available = invt.Table[word].Keys.ToList();
+                    Document[] available = invt.AllDocumentsContainingWord(word);
                     foreach (var item in available) {
                         if (!found.ContainsKey(item)) {
                             found.Add(item, new Dictionary<string, List<int>>());
                         }
-                        found[item].Add(word, invt.Table[word][item]);
+                        found[item].Add(word, invt.PositionsWordOccursInDocument(word,item).ToList());
                     }
                 }
                 catch (KeyNotFoundException) {

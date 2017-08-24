@@ -4,6 +4,7 @@ using System.Runtime.CompilerServices;
 using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
+using System.Linq;
 
 //TODO [assembly: InternalsVisibleTo("InverterTest")]
 
@@ -75,8 +76,8 @@ namespace Engine {
         /// The Inverted Index Table.
         /// </value>
         //TODO 3dO synchronize
-        public Dictionary<string,Dictionary<Document,List<int>>> Table { get => invertedIndexTable; }
-        private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
+        //TODO Move to Database
+          private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
 
         /// <summary>
         /// Gets the stopwords which are ignored in this inverted Index Table.
@@ -144,9 +145,16 @@ namespace Engine {
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
         }
+        public String[] AllWordsInTable {
+           get=> invertedIndexTable.Keys.ToArray<String>();
+        }
+        public Document[] AllDocumentsContainingWord(string Word) { return invertedIndexTable[Word].Keys.ToArray<Document>(); }
+        public int[] PositionsWordOccursInDocument(string Word,Document doc) {
+            return invertedIndexTable[Word][doc].ToArray();
+        }
         private void GC() {
-            foreach(string word in Table.Keys) {
-                foreach(Document doc in Table[word].Keys) {
+            foreach(string word in AllWordsInTable) {
+                foreach(Document doc in AllDocumentsContainingWord(word)) {
                     if(!doc.Exists) {
                         RemoveDocument(word,doc);
                     }

@@ -14,11 +14,12 @@ namespace Engine.Tests {
             //for (int i = 0; i < x.Length; i++) {
             //    x[i] = Engine.Ranker.TfWeight(x[i]);
             //}
+            //Assert.AreEqual(3, x[4]);
             Assert.AreEqual(2, x[0]);
             Assert.AreEqual(3, x[1]);
             Assert.AreEqual(2, x[2]);
             Assert.AreEqual(1, x[3]);
-            //Assert.AreEqual(3, x[3]);
+            
             //Console.Read();
         }
     }

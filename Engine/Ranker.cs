@@ -12,6 +12,8 @@ namespace Engine
     public static class Ranker
     {
         private static Dictionary<Document, Dictionary<string, List<int>>> Results;
+        private static double noOfWordsWeight = 0.7;
+        private static double consecutiveWeight = 0.3;
         /// <summary>
         /// Searches the query.
         /// </summary>
@@ -23,6 +25,7 @@ namespace Engine
             //Calculating Tf-Idf wieghting of each word in a document
             Ranker.Results = Results;
             List<double[]> CountOfAllWords = new List<double[]>();
+            //TODO Confirmed there is a bug here
             foreach (Document item in Results.Keys) {
                 Dictionary<string, List<int>> positions = Results[item];
                 double[] x= new double[query.Count];
@@ -30,8 +33,8 @@ namespace Engine
                 foreach(string word in positions.Keys) {
                     x[iCounter++] = positions[word].Count;
                 }
-                for(int i = 0; i < x.Length; i++) {
-                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count,documentCount);
+                for (int i = 0; i < x.Length; i++) {
+                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count, documentCount);
                 }
                 CountOfAllWords.Add(x);
             }
@@ -39,7 +42,6 @@ namespace Engine
             //Calculating Tf-Idf weighting of each word in the query
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
-                //TODO: Check the tf-idf weighting of the query
                 queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count,documentCount);
             }
 
@@ -48,13 +50,13 @@ namespace Engine
             List<double> secondGuy = new List<double>();
             List<Document> sortedDocument = new List<Document>();
             foreach (Document item in Results.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[cosOfAngle.Count]))*0.7);
+                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[cosOfAngle.Count]))*noOfWordsWeight);
                 secondGuy.Add(GetScoreBasedOnPos(query, item));
-                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * 0.3;
+                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * consecutiveWeight;
                 sortedDocument.Add(item);
             }
 
-            //Sorting the documents based on the cosine of the angles
+            //Sorting the documents based on the cosine of the angles using insertion sort
             for (int i = 1; i < cosOfAngle.Count; i++) {
                 double key = cosOfAngle[i];
                 Document docKey = sortedDocument[i];
@@ -69,6 +71,9 @@ namespace Engine
             }
             return sortedDocument;
         }
+        //private static bool IsIt(List<string> query) {
+        //    return (query.Count > 1) && query[0].StartsWith("\"") && query[query.Count - 1].EndsWith("\"");
+        //}
         private static double GetCOSAngle(double[] queryVector, double[] docVector) {
             double sum = 0;
             double fD = 0;
@@ -82,14 +87,20 @@ namespace Engine
             sD = Math.Sqrt(sD);
             return sum / (fD * sD);
         }
+        /// <summary>
+        /// Gets the score based on positions of elements in the query.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="doc">The document.</param>
+        /// <returns> a score between 0 and 1 based on the positions of elements in the query or 0 if the query contains only one element</returns>
         private static double GetScoreBasedOnPos(List<string> query,Document doc) {
-            //TODO: remember to consider a situation of one word in the query
+            if (query.Count == 1)
+                return 0;
             double degree = (45.0 /(query.Count - 1)) * ScoreBasedOnConWords(query, doc);
             double score = Math.Tan((degree*Math.PI)/180);
             return score;
         }
         private static double ScoreBasedOnConWords(List<string> query,Document doc) {
-            //TODO: remember to tell joda that everything semanter did to yje invt guyz, it should do also to query
             double finalScore = 0;
             var positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
@@ -108,7 +119,7 @@ namespace Engine
             for (int i = 0; i < wordsDistance.Count; i++) {
                 if(wordsDistance[i] != 0) {
                     //TODO: Check the formula u used here
-                    //finalScore += (1 - (1 / wordsDistance[i]))/(i-prevWord);
+                    //finalScore += (1.0 - (1 / wordsDistance[i]))/(i-prevWord);
                     //Remember dividing an int by an int would return int
                     finalScore += (1.0 / (wordsDistance[i] * (i - prevWord)));
                     prevWord = i;
@@ -131,8 +142,6 @@ namespace Engine
             return finalScore;
         }
         private static List<int> CalculateBestDiff(List<string> query, Dictionary<string,List<int>> dic) {
-            //TODO: This function should locate the region of the best score used in the document
-            //TODO: I hope this works, cause if it doesn't.....
             int score;
             
             var output = new List<int>();
@@ -156,7 +165,6 @@ namespace Engine
                     if (k+1 < query.Count)
                         k++;
                     else {
-                       // output.Add(score);
                         return output;
                     }
                     second = new List<int>(dic[query[k]]);
@@ -185,7 +193,7 @@ namespace Engine
         public static double[] GetVector(List<string> a) {
             var voice = new List<double>();
             var m = new HashSet<string>(a);
-            
+            //var voice = new double[m.Count];
             int counter;
             foreach (string f in m) {
                 //voice.Add(a.FindAll(x => x == f).Count);
@@ -197,6 +205,12 @@ namespace Engine
                 }
                 voice.Add(counter);
             }
+            //var enumerate = m.GetEnumerator();
+            //for(int i = 0; i < voice.Length; i++) {
+            //    enumerate.MoveNext();
+            //    voice[i] = a.FindAll(x => x == enumerate.Current).Count;
+
+            //}
             return voice.ToArray();
         }
         private static double TfWeight(double count) {
@@ -205,5 +219,17 @@ namespace Engine
         private static double IDFWeight(int noOfDocuments,int documentCount) {
             return Math.Log(documentCount/noOfDocuments);
         }
+        public static double NoOfWordsWeight {
+            get => noOfWordsWeight;
+            set {
+                if (value <= 0 && value >= 1) { 
+                    noOfWordsWeight = value;
+                    consecutiveWeight = 1 - value;
+                }else
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        public static double ConsecutiveWeight { get => consecutiveWeight;}
     }
+
 }

@@ -9,8 +9,7 @@ namespace Engine
     /// Author Teni
     /// </summary>
     public static class Querier
-    {
-        //public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
+    { 
         
         public static List<Document> Search(String query,Inverter invt) {
            List<Format> typesPossible = new List<Format>();

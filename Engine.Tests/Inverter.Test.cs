@@ -23,7 +23,7 @@ namespace Engine.Tests
             invt = Engine.Inverter.Load("Tester");
             Double t2 = sw.ElapsedMilliseconds;
             Updater.Crawler("../../../Resources/Mock", invt);
-            //invt.SaveThis("Tester");
+            invt.SaveThis("Tester");
             //Console.WriteLine();
             // Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", invt.Files, invt);
 

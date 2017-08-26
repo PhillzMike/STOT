@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
 namespace Engine
 {
     /// <summary>
@@ -11,9 +10,11 @@ namespace Engine
     /// </summary>
     public static class Ranker
     {
+        //TODO Optimize Ranker, takes way too much time
         private static Dictionary<string, Dictionary<Document, List<int>>> Results;
         private static double noOfWordsWeight = 0.7;
         private static double consecutiveWeight = 0.3;
+        private static int howFarApartTheWordsCanBe = 2;
         /// <summary>
         /// Searches the query.
         /// </summary>
@@ -87,9 +88,7 @@ namespace Engine
                 fD += Math.Pow(queryVector[i], 2);
                 sD += Math.Pow(docVector[i], 2);
             }
-            fD = Math.Sqrt(fD);
-            sD = Math.Sqrt(sD);
-            return sum / (fD * sD);
+            return sum / (Math.Sqrt(fD * sD));
         }
         /// <summary>
         /// Gets the score based on positions of elements in the query.
@@ -105,45 +104,69 @@ namespace Engine
             return score;
         }
         private static double ScoreBasedOnConWords(List<string> query,Document doc) {
-            double finalScore = 0;
             var positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
-                //positions.Add(item, Results[doc][item]);
-                //if (invt.Table.ContainsKey(item) && invt.Table[item].ContainsKey(doc))
-                //    positions.Add(item, new List<int>(invt.Table[item][doc]));
-                //else
-                //    positions.Add(item, new List<int>());
                 if (Results[item].ContainsKey(doc))
                     positions.Add(item, Results[item][doc]);
                 else
                     positions.Add(item, new List<int>());
             }
-            var wordsDistance = CalculateBestDiff(query, positions);
-            int prevWord = -1;
-            for (int i = 0; i < wordsDistance.Count; i++) {
-                if(wordsDistance[i] != 0) {
-                    //TODO: Check the formula u used here
-                    //finalScore += (1.0 - (1 / wordsDistance[i]))/(i-prevWord);
-                    //Remember dividing an int by an int would return int
-                    finalScore += (1.0 / (wordsDistance[i] * (i - prevWord)));
+            return GetBest(query,positions,doc);
+        }
+        //TODO Change the return type to a tuple of the score and d pos the best match was found
+        private static double GetBest(List<string> query, Dictionary<string, List<int>> dic, Document doc) {
+            int count = 0;
+            string firstWord = query[count];
+            while (dic[firstWord].Count == 0)
+                firstWord = query[++count];
+            double finalScore = -1;
+            double score;
+            for(int i = 0; i < dic[firstWord].Count; i++) {
+                score = GetSum(GetBestDiff(firstWord, query, dic, i));
+                if (finalScore < score) {
+                    finalScore = score;
+                    doc.Relevance = dic[firstWord][i].ToString();
+                }
+                finalScore = (finalScore > score) ? finalScore : score;
+            }
+            return finalScore;
+        }
+        private static int[] GetBestDiff(string first, List<string> query, Dictionary<string, List<int>> dic, int pos) {
+            //Using the first word in the query that appears at position pos to calculate best difference
+            bool found = false;
+            int[] output = new int[query.Count];
+            for (int i = 1; i < query.Count; i++) {
+                int min = int.MaxValue;
+                int absoluteDiff;
+                for (int j = 0; j < dic[query[i]].Count; j++) {
+                    found = true;
+                    absoluteDiff = Math.Abs(dic[first][pos] - dic[query[i]][j]);
+                    if (absoluteDiff >= howFarApartTheWordsCanBe*query.Count) {
+                        break;
+                    }
+                    min = (min < absoluteDiff) ? min : absoluteDiff;
+                }
+                if (found)
+                    output[i] = min;
+            }
+
+            return output;
+        }
+        private static double GetSum(int[] scores) {
+            //trying to get the best score
+            double sum = 0;
+            int prevWord = 0;
+            for (int i = 1; i < scores.Length; i++) {
+                if (scores[i] != 0) {
+                    //If the relative position of 2 differnt guyz from the refernce word is the same
+                    if (scores[i] == scores[prevWord])
+                        scores[prevWord] *= -1;
+                    sum += (1.0 / (Math.Abs(scores[i] - scores[prevWord])) * (i - prevWord));
                     prevWord = i;
                 }
-             
-            }
-            //for(int i = 0; i < query.Count-1; i++) {
-            //    int firstScore = wordsDistance[i];
-            //    if (firstScore == 0)
-            //        continue;
-            //    for (int j = i + 1; j < query.Count; j++) {
-            //        int secondScore = wordsDistance[j];
-            //        if (secondScore == 0)
-            //            continue;
-            //        finalScore = 
-
-            //    }
                     
-            //}
-            return finalScore;
+            }
+            return sum;
         }
         private static List<int> CalculateBestDiff(List<string> query, Dictionary<string,List<int>> dic) {
             int score;
@@ -193,28 +216,12 @@ namespace Engine
             }
             return output;
         }
-        //Author: Seyi
-        public static double[] GetVector(List<string> a) {
+        private static double[] GetVector(List<string> a) {
             var voice = new List<double>();
             var m = new HashSet<string>(a);
-            //var voice = new double[m.Count];
-            int counter;
             foreach (string f in m) {
-                //voice.Add(a.FindAll(x => x == f).Count);
-                counter = 0;
-                for (int i = 0; i < a.Count; i++) {
-                    if (f.Equals(a[i])) {
-                        counter++;
-                    }
-                }
-                voice.Add(counter);
+                voice.Add(a.FindAll(x => x == f).Count);
             }
-            //var enumerate = m.GetEnumerator();
-            //for(int i = 0; i < voice.Length; i++) {
-            //    enumerate.MoveNext();
-            //    voice[i] = a.FindAll(x => x == enumerate.Current).Count;
-
-            //}
             return voice.ToArray();
         }
         private static double TfWeight(double count) {
@@ -223,6 +230,14 @@ namespace Engine
         private static double IDFWeight(int noOfDocuments,int documentCount) {
             return Math.Log(documentCount/noOfDocuments);
         }
+        //TODO use Code contract here
+        /// <summary>
+        /// Gets or sets the weight given based on the number of the types the words occur in the document
+        /// </summary>
+        /// <value>
+        /// The weight given between 0 and 1
+        /// </value>
+        /// <exception cref="System.ArgumentOutOfRangeException">thrown when a value less than 0 or greater than 1 is given has the weight</exception>
         public static double NoOfWordsWeight {
             get => noOfWordsWeight;
             set {
@@ -233,7 +248,20 @@ namespace Engine
                     throw new ArgumentOutOfRangeException();
             }
         }
+        /// <summary>
+        /// Gets weight given based on the how the words in the query appear in the documents
+        /// </summary>
+        /// <value>
+        /// The consecutive weight.
+        /// </value>
         public static double ConsecutiveWeight { get => consecutiveWeight;}
+        /// <summary>
+        /// Gets or sets the how far apart the words could be.
+        /// </summary>
+        /// <value>
+        /// the number of words in between the words
+        /// </value>
+        public static int HowFarApartTheWordsCanBe { get => howFarApartTheWordsCanBe; set => howFarApartTheWordsCanBe = value; }
     }
 
 }

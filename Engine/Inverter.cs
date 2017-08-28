@@ -148,7 +148,21 @@ namespace Engine {
         public String[] AllWordsInTable {
            get=> invertedIndexTable.Keys.ToArray<String>();
         }
-        public Document[] AllDocumentsContainingWord(string Word) { return invertedIndexTable[Word].Keys.ToArray<Document>(); }
+        /// <summary>
+        /// Returns all documents Containing this word, returns an empty array if the word isn't in any document
+        /// </summary>
+        /// <param name="Word">The word to be searched for</param>
+        /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
+        public Document[] AllDocumentsContainingWord(string Word) {
+            if (invertedIndexTable.ContainsKey(Word)){
+                return invertedIndexTable[Word].Keys.ToArray<Document>();
+            }
+            else
+            {
+                return new Document[0];
+            }
+            
+        }
         public int[] PositionsWordOccursInDocument(string Word,Document doc) {
             return invertedIndexTable[Word][doc].ToArray();
         }

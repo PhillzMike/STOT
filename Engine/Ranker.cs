@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
+using System.Diagnostics;
 namespace Engine
 {
     /// <summary>
@@ -10,6 +11,7 @@ namespace Engine
     /// </summary>
     public static class Ranker
     {
+        private static Stopwatch sw = new Stopwatch();
         //TODO Optimize Ranker, takes way too much time
         private static Dictionary<string, Dictionary<Document, List<int>>> Results;
         private static double noOfWordsWeight = 0.7;
@@ -24,9 +26,12 @@ namespace Engine
         public static List<Document> SearchQuery(List<String> query, Dictionary<string, Dictionary<Document, List<int>>> Results,int documentCount) {
             //TODO: add a feature that makes searching for a particular document by name possible
             //Calculating Tf-Idf wieghting of each word in a document
+            sw.Start();
+            double t = sw.ElapsedMilliseconds;
             Ranker.Results = Results;
             Dictionary<Document, double[]> CountOfAllWords = new Dictionary<Document, double[]>();
             int count = 0;
+            double t2 = sw.ElapsedMilliseconds;
             foreach (string item in Results.Keys) {
                 Dictionary<Document, List<int>> positions = Results[item];
                 //double[] x = new double[query.Count];
@@ -37,19 +42,20 @@ namespace Engine
                 }
                 count++;
             }
+            double t3 = sw.ElapsedMilliseconds;
             foreach (Document item in CountOfAllWords.Keys) {
                 for (int i = 0; i < query.Count; i++) {
                     CountOfAllWords[item][i] = TfWeight(CountOfAllWords[item][i]) * IDFWeight(CountOfAllWords.Count, documentCount);
                 }
             }
 
-
+            double t4 = sw.ElapsedMilliseconds;
             //Calculating Tf-Idf weighting of each word in the query
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
                 queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(CountOfAllWords.Count,documentCount);
             }
-
+            double t5 = sw.ElapsedMilliseconds;
             //Calculating the cosine of the angles between the query vector and the document vectors
             List<double> cosOfAngle = new List<double>();
             List<double> secondGuy = new List<double>();
@@ -60,7 +66,8 @@ namespace Engine
                 cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * consecutiveWeight;
                 sortedDocument.Add(item);
             }
-
+            double t9 = sw.ElapsedMilliseconds;
+            //double t6 = sw.ElapsedMilliseconds;
             //Sorting the documents based on the cosine of the angles using insertion sort
             for (int i = 1; i < cosOfAngle.Count; i++) {
                 double key = cosOfAngle[i];
@@ -74,6 +81,7 @@ namespace Engine
                 cosOfAngle[j + 1] = key;
                 sortedDocument[j + 1] = docKey;
             }
+            double t10 = sw.ElapsedMilliseconds;
             return sortedDocument;
         }
         //private static bool IsIt(List<string> query) {
@@ -104,6 +112,7 @@ namespace Engine
             return score;
         }
         private static double ScoreBasedOnConWords(List<string> query,Document doc) {
+            double t7 = sw.ElapsedMilliseconds;
             var positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
                 if (Results[item].ContainsKey(doc))
@@ -129,6 +138,7 @@ namespace Engine
                 }
                 finalScore = (finalScore > score) ? finalScore : score;
             }
+            double t8 = sw.ElapsedMilliseconds;
             return finalScore;
         }
         private static int[] GetBestDiff(string first, List<string> query, Dictionary<string, List<int>> dic, int pos) {

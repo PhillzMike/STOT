@@ -15,10 +15,10 @@ namespace Engine.Tests
         public void Inverter(){
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            string query = "United States of America";
+            string query = "Fasipe Victor Snow Asia";
             Double t1 = sw.ElapsedMilliseconds;
-            //invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
-            //                , "../../../Resources/commonSfw.txt", new List<string>());
+          //  invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
+               //          , "../../../Resources/commonSfw.txt", new List<string>());
 
             invt = Engine.Inverter.Load("Tester");
             Double t2 = sw.ElapsedMilliseconds;
@@ -26,7 +26,7 @@ namespace Engine.Tests
             invt.SaveThis("Tester");
             //Console.WriteLine();
             // Updater.Crawler("C:\\Users\\Phillz Mike\\Source\\Repos\\stot\\Engine\\Mock", invt.Files, invt);
-
+            Double t3 = sw.ElapsedMilliseconds;
             List<Document> x = Querier.Search(query, invt);
             Double time = sw.ElapsedMilliseconds;
             Assert.AreEqual(1,1);

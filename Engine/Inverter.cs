@@ -96,22 +96,36 @@ namespace Engine {
         public void AddDocument(String[] words,Document doc) {
             int i = 0;
             foreach(String addWord in words) {
-                string word =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
+                string word = Samantha.StemWord(addWord.ToLower().Trim());
+                string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
                 if (_stopwords.Contains(word)) {
                     continue;
                 }
-                if(invertedIndexTable.ContainsKey(word)) {
-                    if(invertedIndexTable[word].ContainsKey(doc)) {
-                        invertedIndexTable[word][doc].Add(i++);
-                    } else {
-                        invertedIndexTable[word].Add(doc,new List<int> { i++ });
-                    }
-                } else {
-                    invertedIndexTable.Add(word,new Dictionary<Document,List<int>> {{ doc,new List<int> { i++ } } });
+                AddWordToTable(word, doc, i);
+                if (!word.Equals(correctedword))
+                {
+                    AddWordToTable(correctedword, doc, i);
                 }
             }
             _files.Add(doc.Address,doc);
             _documentCount++;
+        }
+        private void AddWordToTable(String word,Document doc,int i) {
+            if (invertedIndexTable.ContainsKey(word))
+            {
+                if (invertedIndexTable[word].ContainsKey(doc))
+                {
+                    invertedIndexTable[word][doc].Add(i++);
+                }
+                else
+                {
+                    invertedIndexTable[word].Add(doc, new List<int> { i++ });
+                }
+            }
+            else
+            {
+                invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i++ } } });
+            }
         }
 
         /// <summary>

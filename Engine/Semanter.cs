@@ -14,7 +14,8 @@ namespace Engine
     public class Semanter
     {
         private Dictionary<String,int> _dictionary;
-        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","'","\t","\n","\r" };
+        //TODO remove ' from words like don't
+        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","\t","\n","\r" };
         public Semanter(String toDictionary,String toCommon) {
             _dictionary = new Dictionary<string,int>();
             LoadToDictionary(File.ReadAllText(toDictionary));

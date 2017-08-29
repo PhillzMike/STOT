@@ -11,8 +11,8 @@ namespace Engine {
             pathfiles = new List<string>();
             List<String> pathfile = new List<string>();
             //run a for loop on this for all types in format
-            foreach (Format doc in Enum.GetValues(typeof(Format))) {
-                pathfile= Directory.EnumerateFiles(path, "*."+doc.ToString(),SearchOption.AllDirectories).ToList<string>();
+            foreach (string doc in invt.Formats[""]) {
+                pathfile= Directory.EnumerateFiles(path, "*."+doc,SearchOption.AllDirectories).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
             bool RemovedFile = false;
@@ -56,8 +56,7 @@ namespace Engine {
             int posOfType = posString.LastIndexOf(".");
             string ofName = posString.Substring(0, posOfType);
             string ofType = posString.Substring(posOfType + 1);
-            Enum.TryParse<Format>(ofType, out Format type1);
-           return new Document(ofName, path, type1, new FileInfo(path).LastWriteTime);
+           return new Document(ofName, path, ofType, new FileInfo(path).LastWriteTime);
         }
     }
 }

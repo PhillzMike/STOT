@@ -17,18 +17,33 @@ namespace Engine
         //public static List<String> stopwords = File.ReadAllLines("../../../../engine/stopwords.txt").ToList<string>();
 
         public static List<Document> Search(String query,Inverter invt) {
+            invt.Samantha.StemWord("United");
             sw.Start();
-            List<Format> typesPossible = new List<Format>();
-           String [] words = query.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
+            List<long> times= new List<long>();
+            HashSet<String> typesPossible = new HashSet<string>();
+            String [] words = query.Split(new string[] { " ",",","(",")","?","!",";","-","[","]","\"","\t","\n","\r" }, StringSplitOptions.RemoveEmptyEntries);
+            foreach (string type in TypeChecker(words))
+            {
+                foreach (string format in invt.Formats[type])
+                    typesPossible.Add(format);
+            }
+            if (typesPossible.Count == 0)
+            {
+                foreach (string format in invt.Formats[""])
+                    typesPossible.Add(format);
+            }
+            //TODO replace all ' with nothing and remove types
             double t1 = sw.ElapsedMilliseconds;
             //TODO autocorrect shii
            for( int j = 0;j < words.Length;j++) {
+                times.Add(sw.ElapsedMilliseconds);
                 words[j] = invt.Samantha.StemWord(words[j].ToLower().Trim());
-           }
+                times.Add(sw.ElapsedMilliseconds);
+            }
             double t2= sw.ElapsedMilliseconds;
             List<String> splitwords = new List<String>();
             //TODO  Dont call typepossible when not needed
-           typesPossible = PossibleType(TypeChecker(words));
+          //TODO typesPossible = PossibleType(TypeChecker(words));
             //Useless lineDocsFound(splitwords, typesPossible,invt);
             double t3 = sw.ElapsedMilliseconds;
             for (int k= 0; k<words.Length; k++)
@@ -39,14 +54,15 @@ namespace Engine
                    }
                 }
             double t4 = sw.ElapsedMilliseconds;
-            if (splitwords.Count == 0)
-                return DocsFound(splitwords, typesPossible, invt)[""].Keys.ToList<Document>();
+            Dictionary<string, Dictionary<Document, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
+            if ((splitwords.Count == 0)||(Results.Values.Count<=1))
+                return Results[""].Keys.ToList<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
             //TODO "words within quote"
             //TODO addwrong words to Dictionary
             //TODO search for all wrong words corrections even if the word is correct
             double t5 = sw.ElapsedMilliseconds;
-            List<Document> i = Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt.DocumentCount);
+            List<Document> i = Ranker.SearchQuery(splitwords, Results,invt.DocumentCount);
             double t6 = sw.ElapsedMilliseconds;
             return null;
         }
@@ -58,7 +74,7 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
+        private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
             t7 = sw.ElapsedMilliseconds;
             var found = new Dictionary<string, Dictionary<Document, List<int>>>();
             //double[] count = new double[querywords.Count];
@@ -106,40 +122,35 @@ namespace Engine
             //}
            return found;
         }
-        public static String TypeChecker(String [] s)
-        { 
+        public static List<string> TypeChecker(String [] s)
+        {
+            List<string> type = new List<string>();
         for (int i = 0; i < s.Length; i++) {
                 if (s[i].ToLower().Equals("type"))
-                { if (s[i + 1].Equals(":"))
-                     {
-                      string type = s[i + 2];
-                      s[i] = s[i + 1] = s[i + 2] = "";
-                      return type;  
+                {
+                    if ((i + 2) < s.Length || s[i + 1].Equals(":"))
+                    {
+                        type.Add(s[i + 2]);
+                        s[i] = s[i + 1] = s[i + 2] = "";
                     }
-                }//TODO Else return null         
-            }
-            return "";
-    }
-        public static List<Format> PossibleType(string s)
-        {
-            List<Format> typesPossible = new List<Format>();
-            foreach ( string m in Enum.GetNames(typeof(Format))){
-                bool teni = true;
-                for (int i = 0; i < s.Length; i++) {
-                  if (!(s[i] == m[i]))
-                {
-                        teni = false; 
-               }     
-             }
-                if (teni)
-                {
-                    Enum.TryParse<Format>(m, out Format doctype);
-                    typesPossible.Add(doctype);
+                    else if ((i + 1) < s.Length || s[i + 1].StartsWith(":"))
+                    {
+                        type.Add(s[i + 1].Substring(1));
+                        s[i] = s[i + 1] = "";
+                    }
                 }
+                else if ((i + 2) < s.Length || s[i].ToLower().Equals("type:"))
+                {
+                    type.Add(s[i + 1]);
+                    s[i] = s[i + 1] = "";
+                }
+                else if (s[i].ToLower().StartsWith("type:")) {
+                    type.Add(s[i].Substring(5));
+                    s[i] = "";
+                }   
             }
-            return typesPossible;
-        }
-        
+            return type;
+    }
 
     }
 }

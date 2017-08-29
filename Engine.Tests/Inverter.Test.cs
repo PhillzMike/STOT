@@ -12,15 +12,16 @@ namespace Engine.Tests
     {
         Inverter invt;
         [TestMethod]
-        public void Inverter(){
+        public void Inverter() {
             Stopwatch sw = new Stopwatch();
             sw.Start();
-            string query = "Fasipe Victor Snow Asia";
-            Double t1 = sw.ElapsedMilliseconds;
-          //  invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
-               //          , "../../../Resources/commonSfw.txt", new List<string>());
+            string query = "United States of America type: txt";
+            Double t1 = sw.ElapsedMilliseconds; 
+            //invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
+                  //       , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
 
             invt = Engine.Inverter.Load("Tester");
+            invt.Samantha.StemWord("");
             Double t2 = sw.ElapsedMilliseconds;
             Updater.Crawler("../../../Resources/Mock", invt);
             invt.SaveThis("Tester");

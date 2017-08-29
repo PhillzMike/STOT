@@ -36,7 +36,7 @@ namespace Front_End {
             this.IsMdiContainer = true;
             //LoadHomePage();
             invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
-                              ,"../../../Resources/commonSfw.txt",new List<string>());
+                              ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
             //  invt = Engine.Inverter.Load("Tester");
             Updater.Crawler("../../../Resources/Mock",invt);
             invt.SaveThis("Tester");

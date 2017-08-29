@@ -20,7 +20,9 @@ namespace Engine {
         /// </summary>
         /// <param name="StopWords">The path to a File COntaining all the stop words.</param>
         /// <exception cref="IOException">The specified path could not be Read</exception>
-        public Inverter(String StopWords,String DictionaryPath,String CommonWordsPath,List<String> BooksPaths){
+        public Inverter(String StopWords,String DictionaryPath,String CommonWordsPath,String FormatsPath,List<String> BooksPaths){
+            Formats = new Dictionary<string, List<string>>();
+            AddToFormats(File.ReadAllLines(FormatsPath));
             _samantha = new Semanter(DictionaryPath,CommonWordsPath);
             //TODO tomiwas idea about weight distribution based on file size
             //TODO Add FileName
@@ -37,6 +39,25 @@ namespace Engine {
                 throw new IOException("The specified path could not be Read",ex);
             }
         }
+        private void AddToFormats(string[] types)
+        {
+            foreach(string type in types)
+            {
+                for(int i = 0; i <= type.Length; i++)
+                {
+                    string sub = type.Substring(0, i);
+                    if (Formats.ContainsKey(sub))
+                    {
+                            Formats[sub].Add(type);
+                    }
+                    else
+                    {
+                        Formats.Add(sub, new List<string> { type } );
+                    }
+                }
+            }
+        }
+        public Dictionary<string, List<string>> Formats;
       
         /// <summary>
         /// Gets the semanter used in this inverter.

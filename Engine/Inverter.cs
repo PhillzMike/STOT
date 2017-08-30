@@ -115,7 +115,23 @@ namespace Engine {
         /// <param name="words">The words in the Documents in Form of a List of Strings.</param>
         /// <param name="doc">The document to be added.</param>
         public void AddDocument(String[] words,Document doc) {
-            int i = 0;
+            int i = -1;
+            foreach(string addWord in Semanter.Splitwords(doc.Name+" " + doc.Type).Reverse())
+            {
+                string word = Samantha.StemWord(addWord);
+                string correctedword = Samantha.StemWord(Samantha.CorrectWord(addWord));
+                if (_stopwords.Contains(word))
+                {
+                    continue;
+                }
+                AddWordToTable(word, doc, i);
+                if (!word.Equals(correctedword))
+                {
+                    AddWordToTable(correctedword, doc, i);
+                }
+                i--;
+            }
+            i = 0;
             foreach(String addWord in words) {
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
                 string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
@@ -127,6 +143,7 @@ namespace Engine {
                 {
                     AddWordToTable(correctedword, doc, i);
                 }
+                i++;
             }
             _files.Add(doc.Address,doc);
             _documentCount++;
@@ -136,16 +153,16 @@ namespace Engine {
             {
                 if (invertedIndexTable[word].ContainsKey(doc))
                 {
-                    invertedIndexTable[word][doc].Add(i++);
+                    invertedIndexTable[word][doc].Add(i);
                 }
                 else
                 {
-                    invertedIndexTable[word].Add(doc, new List<int> { i++ });
+                    invertedIndexTable[word].Add(doc, new List<int> { i });
                 }
             }
             else
             {
-                invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i++ } } });
+                invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
             }
         }
 

@@ -14,8 +14,16 @@ namespace Engine
     public class Semanter
     {
         private Dictionary<String,int> _dictionary;
-        //TODO remove ' from words like don't
         public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","\t","\n","\r" };
+        public static string[] Splitwords(string query) {
+            return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
+        }
+        public static string[] Splitwords(string query,string except)
+        {
+            List<string> puncs = new List<string> { " ", ",", ":", "(", ")", "?", "!", ";", "-", "[", "]", "\"", "\t", "\n", "\r" };
+            puncs.Remove(except);
+            return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+        }
         public Semanter(String toDictionary,String toCommon) {
             _dictionary = new Dictionary<string,int>();
             LoadToDictionary(File.ReadAllText(toDictionary));

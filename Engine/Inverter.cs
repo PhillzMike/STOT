@@ -6,8 +6,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 
-//TODO [assembly: InternalsVisibleTo("InverterTest")]
-
 namespace Engine {
     [Serializable]
     /// <summary>
@@ -25,7 +23,6 @@ namespace Engine {
             AddToFormats(File.ReadAllLines(FormatsPath));
             _samantha = new Semanter(DictionaryPath,CommonWordsPath);
             //TODO tomiwas idea about weight distribution based on file size
-            //TODO Add FileName
             foreach(String BookPath in BooksPaths)
                 _samantha.AddToDictionary(BookPath,1);
             _stopwords = new HashSet<string>();
@@ -193,7 +190,7 @@ namespace Engine {
         /// </summary>
         public void GarbageCollector() {
             //TODO 3dO test 
-            //Deadlock avoidance
+            //Deadlock avoidance in database
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
         }

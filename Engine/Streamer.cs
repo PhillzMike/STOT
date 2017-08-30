@@ -29,7 +29,6 @@ namespace Engine {
         /// <param name="doc">The document.</param>
         /// <param name="invt">The Inverted Index.</param>
         public static void RemoveFile(Document doc,Inverter invt) {
-            //TODO 3dO call garbage collector in Updater
             invt.DeleteDocument(doc);
         }
         /// <summary>

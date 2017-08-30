@@ -29,9 +29,7 @@ namespace Engine {
                 }
             }
             if (RemovedFile)
-            {
                 invt.GarbageCollector();
-            }
             Dictionary<string,Exception> ErrorList = new Dictionary<string,Exception>();
             //adding file
             //creating a document object and pass into streamer.adddfile

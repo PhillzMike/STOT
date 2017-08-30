@@ -15,6 +15,7 @@ namespace Engine
     {
         static Stopwatch sw = new Stopwatch();
         static double t7, t8, t9, t10;
+        static bool needsRanking;
         public static List<Document> Search(String query,Inverter invt) {
             sw.Start();
             //Separate words, remove punctiations,make lowercase
@@ -73,34 +74,28 @@ namespace Engine
                 return new List<Document>();
             //search for documents
             Dictionary<string, Dictionary<Document, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
-          //TODO  if (Results.Values.keCount<=1)
-               // return Results.Values.ToList();
+            if (!needsRanking)
+                return new List<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
             //TODO "words within quote"
             double t4 = sw.ElapsedMilliseconds;
-            List<Document> i = Ranker.SearchQuery(splitwords, Results,invt.DocumentCount);
-            double t5 = sw.ElapsedMilliseconds;
-            return null;
-        }
-        public static List<String> AutoComplete(String querywords)
-        {
-            //TODO review this later
-            String[] splitwords = querywords.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
-            // return Semanter.Suggestions(splitwords);
-            return null;
+            return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount); ;
         }
 
         private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+            needsRanking = false;
             t7 = sw.ElapsedMilliseconds;
             var found = new Dictionary<string, Dictionary<Document, List<int>>>();
             t8 = sw.ElapsedMilliseconds;
             foreach (string word in querywords) {
                     Document[] available = invt.AllDocumentsContainingWord(word);
-                    if ((available.Length == 0)&&(!found.ContainsKey(word)))
-                    {
-                        found.Add(word, new Dictionary<Document, List<int>>());
-                    }
-                    foreach (var item in available) {
+                if ((available.Length == 0) && (!found.ContainsKey(word)))
+                {
+                    found.Add(word, new Dictionary<Document, List<int>>());
+                }
+                else if ((available.Length > 0) && (!needsRanking))
+                    needsRanking = true;
+                foreach (var item in available) {
                     if (typesPossible.Contains(item.Type))
                     {
                         if (!found.ContainsKey(word))
@@ -109,7 +104,7 @@ namespace Engine
                         }
                         found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
                     }
-                    }
+                }
             }
             t9 = sw.ElapsedMilliseconds;
             /*removed cuz i think when no legal(non-stopword) words are present, we shouldn't automatically return all docs as result

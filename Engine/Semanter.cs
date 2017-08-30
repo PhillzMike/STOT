@@ -66,7 +66,7 @@ namespace Engine
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
-        public List<String> Suggestions(List<String> query,, int noOfResults) {
+        public List<String> Suggestions(List<String> query, int noOfResults) {
             //TODO suggest queries
             //Autocorrect from dictionary
             //Filename

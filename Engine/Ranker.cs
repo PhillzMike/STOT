@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Diagnostics;
+using System.Threading;
+
 namespace Engine
 {
     /// <summary>
@@ -61,11 +63,24 @@ namespace Engine
             List<double> secondGuy = new List<double>();
             List<Document> sortedDocument = new List<Document>();
             foreach (Document item in CountOfAllWords.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item]))*noOfWordsWeight);
-                secondGuy.Add(GetScoreBasedOnPos(query, item));
-                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * consecutiveWeight;
-                sortedDocument.Add(item);
+
+                //Thread thread = new Thread(() =>
+                //{
+                    cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item])) * noOfWordsWeight);
+                    secondGuy.Add(GetScoreBasedOnPos(query, item));
+                    cosOfAngle[cosOfAngle.Count - 1] += secondGuy[secondGuy.Count - 1] * consecutiveWeight;
+                    sortedDocument.Add(item);
+                //})
+                //{
+                //    Priority = ThreadPriority.Highest
+                //};
+                //thread.Start();
             }
+            //Thread.CurrentThread.Priority = ThreadPriority.Lowest;
+            //while(sortedDocument.Count != CountOfAllWords.Keys.Count)
+            //{
+            //    Thread.Yield();
+            //}
             double t9 = sw.ElapsedMilliseconds;
             //double t6 = sw.ElapsedMilliseconds;
             //Sorting the documents based on the cosine of the angles using insertion sort

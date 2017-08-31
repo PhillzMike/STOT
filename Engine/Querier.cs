@@ -23,32 +23,26 @@ namespace Engine
             //Obtains possible types searched by this code
             //methods take to long to load y?HashSet<String> typesPossible=TypeChecker(words,invt,t);
             HashSet<String> typesPossible = new HashSet<string>();
-            for (int k = 0; k < words.Count; k++)
-            {
-                if (words[k].Equals("type"))
-                {
-                    if ((k + 2) < words.Count && words[k + 1].Equals(":"))
-                    {
+            for (int k = 0; k < words.Count; k++) {
+                if (words[k].Equals("type")) {
+                    if ((k + 2) < words.Count && words[k + 1].Equals(":")) {
                         typesPossible.UnionWith(invt.Formats[words[k + 2]]);
                         words.RemoveRange(k, 3);
                         k--;
                     }
-                    else if ((k + 1) < words.Count && words[k + 1].StartsWith(":"))
-                    {
+                    else if ((k + 1) < words.Count && words[k + 1].StartsWith(":")) {
                         typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
                         words.RemoveRange(k, 2);
                         k--;
                     }
                 }
-                else if ((k + 2) < words.Count && words[k].Equals("type" + ":"))
-                {
+                else if ((k + 2) < words.Count && words[k].Equals("type" + ":")) {
                     typesPossible.UnionWith(invt.Formats[words[k + 1]]);
                     words.RemoveRange(k, 2);
                     k--;
                     //words[k] = words[k + 1] = "";
                 }
-                else if (words[k].StartsWith("type:"))
-                {
+                else if (words[k].StartsWith("type:")) {
                     typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
                     words.RemoveAt(k);
                     k--;
@@ -57,7 +51,7 @@ namespace Engine
             double t1 = sw.ElapsedMilliseconds;
             //Fill with all types if no types possible found
             if (typesPossible.Count == 0) 
-             typesPossible.UnionWith(invt.Formats[""]);
+                typesPossible.UnionWith(invt.Formats[""]);
             double t2 = sw.ElapsedMilliseconds;
             //Stem words and remove stopwords
             // slower words = words.Except(invt.Stopwords).ToList();
@@ -101,14 +95,12 @@ namespace Engine
                         found.Add(word, new Dictionary<Document, List<int>>());
                     }
                     foreach (var item in available) {
-                    if (typesPossible.Contains(item.Type))
-                    {
-                        if (!found.ContainsKey(word))
-                        {
-                            found.Add(word, new Dictionary<Document, List<int>>());
+                        if (typesPossible.Contains(item.Type)) {
+                            if (!found.ContainsKey(word)) {
+                                found.Add(word, new Dictionary<Document, List<int>>());
+                            }
+                            found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
                         }
-                        found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
-                    }
                     }
             }
             t9 = sw.ElapsedMilliseconds;

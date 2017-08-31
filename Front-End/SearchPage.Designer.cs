@@ -28,11 +28,20 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.ListViewItem listViewItem2 = new System.Windows.Forms.ListViewItem("Hello");
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SearchPage));
             this.TxtSearch1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
             this.BtnClick = new MaterialSkin.Controls.MaterialRaisedButton();
             this.listBox1 = new System.Windows.Forms.ListBox();
-            this.listView1 = new System.Windows.Forms.ListView();
+            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
+            this.linkLabel1 = new System.Windows.Forms.LinkLabel();
+            this.label1 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.SearchTime = new System.Windows.Forms.Label();
+            this.ResultsWindow = new System.Windows.Forms.FlowLayoutPanel();
+            this.Pages = new System.Windows.Forms.FlowLayoutPanel();
+            this.tableLayoutPanel1.SuspendLayout();
+            this.ResultsWindow.SuspendLayout();
             this.SuspendLayout();
             // 
             // TxtSearch1
@@ -78,22 +87,104 @@
             this.listBox1.TabIndex = 2;
             this.listBox1.Visible = false;
             // 
-            // listView1
+            // tableLayoutPanel1
             // 
-            this.listView1.Items.AddRange(new System.Windows.Forms.ListViewItem[] {
-            listViewItem2});
-            this.listView1.Location = new System.Drawing.Point(12, 128);
-            this.listView1.Name = "listView1";
-            this.listView1.Size = new System.Drawing.Size(600, 482);
-            this.listView1.TabIndex = 3;
-            this.listView1.UseCompatibleStateImageBehavior = false;
+            this.tableLayoutPanel1.AutoSize = true;
+            this.tableLayoutPanel1.ColumnCount = 1;
+            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
+            this.tableLayoutPanel1.Controls.Add(this.linkLabel1, 0, 0);
+            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 1);
+            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 2);
+            this.tableLayoutPanel1.Location = new System.Drawing.Point(23, 3);
+            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
+            this.tableLayoutPanel1.Padding = new System.Windows.Forms.Padding(2);
+            this.tableLayoutPanel1.RowCount = 3;
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 61.36364F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.63636F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
+            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1505, 104);
+            this.tableLayoutPanel1.TabIndex = 6;
+            this.tableLayoutPanel1.Visible = false;
+            // 
+            // linkLabel1
+            // 
+            this.linkLabel1.AutoSize = true;
+            this.linkLabel1.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.linkLabel1.Location = new System.Drawing.Point(5, 2);
+            this.linkLabel1.Name = "linkLabel1";
+            this.linkLabel1.Size = new System.Drawing.Size(153, 23);
+            this.linkLabel1.TabIndex = 0;
+            this.linkLabel1.TabStop = true;
+            this.linkLabel1.Text = "Document Name";
+            // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label1.Location = new System.Drawing.Point(5, 25);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(95, 13);
+            this.label1.TabIndex = 1;
+            this.label1.Text = "Document address";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label2.Location = new System.Drawing.Point(5, 40);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(1495, 62);
+            this.label2.TabIndex = 2;
+            this.label2.Text = resources.GetString("label2.Text");
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(12, 125);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(105, 13);
+            this.label3.TabIndex = 7;
+            this.label3.Text = "Results Obtained in: ";
+            // 
+            // SearchTime
+            // 
+            this.SearchTime.AutoSize = true;
+            this.SearchTime.Location = new System.Drawing.Point(124, 125);
+            this.SearchTime.Name = "SearchTime";
+            this.SearchTime.Size = new System.Drawing.Size(0, 13);
+            this.SearchTime.TabIndex = 8;
+            // 
+            // ResultsWindow
+            // 
+            this.ResultsWindow.BackColor = System.Drawing.SystemColors.Control;
+            this.ResultsWindow.Controls.Add(this.tableLayoutPanel1);
+            this.ResultsWindow.Location = new System.Drawing.Point(12, 141);
+            this.ResultsWindow.Name = "ResultsWindow";
+            this.ResultsWindow.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
+            this.ResultsWindow.Size = new System.Drawing.Size(1551, 684);
+            this.ResultsWindow.TabIndex = 9;
+            // 
+            // Pages
+            // 
+            this.Pages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Pages.BackColor = System.Drawing.Color.Transparent;
+            this.Pages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.Pages.Location = new System.Drawing.Point(503, 871);
+            this.Pages.Name = "Pages";
+            this.Pages.Size = new System.Drawing.Size(562, 37);
+            this.Pages.TabIndex = 10;
             // 
             // SearchPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(672, 552);
-            this.Controls.Add(this.listView1);
+            this.ClientSize = new System.Drawing.Size(1600, 920);
+            this.Controls.Add(this.Pages);
+            this.Controls.Add(this.ResultsWindow);
+            this.Controls.Add(this.SearchTime);
+            this.Controls.Add(this.label3);
             this.Controls.Add(this.listBox1);
             this.Controls.Add(this.BtnClick);
             this.Controls.Add(this.TxtSearch1);
@@ -101,6 +192,10 @@
             this.Name = "SearchPage";
             this.Text = "SearchPage";
             this.Load += new System.EventHandler(this.SearchPage_Load);
+            this.tableLayoutPanel1.ResumeLayout(false);
+            this.tableLayoutPanel1.PerformLayout();
+            this.ResultsWindow.ResumeLayout(false);
+            this.ResultsWindow.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -111,6 +206,13 @@
         private MaterialSkin.Controls.MaterialSingleLineTextField TxtSearch1;
         private MaterialSkin.Controls.MaterialRaisedButton BtnClick;
         private System.Windows.Forms.ListBox listBox1;
-        private System.Windows.Forms.ListView listView1;
+        private System.Windows.Forms.TableLayoutPanel tableLayoutPanel1;
+        private System.Windows.Forms.LinkLabel linkLabel1;
+        private System.Windows.Forms.Label label1;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label SearchTime;
+        private System.Windows.Forms.FlowLayoutPanel ResultsWindow;
+        private System.Windows.Forms.FlowLayoutPanel Pages;
     }
 }

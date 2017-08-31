@@ -35,16 +35,14 @@ namespace Front_End {
 
             this.IsMdiContainer = true;
             //LoadHomePage();
-            invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
-                              ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
+            // invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
+            //                  ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
             //  invt = Engine.Inverter.Load("Tester");
-            Updater.Crawler("../../../Resources/Mock",invt);
-            invt.SaveThis("Tester");
-            LoadHomePage();
+            //   Updater.Crawler("../../../Resources/Mock",invt);
+            //   invt.SaveThis("Tester");
             LoadSearchPage("");
-            Search.Close();
-
-
+            LoadHomePage();
+            Home.Close();
         }
 
         private void UNILAG_Load(object sender, EventArgs e)

@@ -7,11 +7,9 @@ using MongoDB.Bson;
 using MongoDB.Driver;
 namespace Engine
 {
-    class Store
-    {
-        public void JustAMethod()
-        {
-            
+    class Store {
+        public void JustAMethod() {
+
         }
     }
 }

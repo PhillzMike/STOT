@@ -66,7 +66,7 @@ namespace Engine
             if (splitwords.Count == 0)
                 return new List<Document>();
             //search for documents
-            Dictionary<string, Dictionary<Document, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
+            Dictionary<Document, Dictionary<String, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
           //TODO  if (Results.Values.keCount<=1)
                // return Results.Values.ToList();
             //throw new ArgumentNullException("File doesn't Exist");
@@ -74,7 +74,7 @@ namespace Engine
             double t4 = sw.ElapsedMilliseconds;
             List<Document> i = Ranker.SearchQuery(splitwords, Results,invt.DocumentCount);
             double t5 = sw.ElapsedMilliseconds;
-            return null;
+            return i;
         }
         public static List<String> AutoComplete(String querywords)
         {
@@ -84,25 +84,45 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+        private static Dictionary<Document, Dictionary<string,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
             t7 = sw.ElapsedMilliseconds;
-            var found = new Dictionary<string, Dictionary<Document, List<int>>>();
-            t8 = sw.ElapsedMilliseconds;
-            foreach (string word in querywords) {
-                    Document[] available = invt.AllDocumentsContainingWord(word);
-                    if ((available.Length == 0)&&(!found.ContainsKey(word)))
-                    {
-                        found.Add(word, new Dictionary<Document, List<int>>());
-                    }
-                    foreach (var item in available) {
-                        if (typesPossible.Contains(item.Type)) {
-                            if (!found.ContainsKey(word)) {
-                                found.Add(word, new Dictionary<Document, List<int>>());
-                            }
-                            found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
+            var positions = new Dictionary<Document, Dictionary<string, List<int>>>();
+            foreach (string item in new HashSet<string>(querywords)) {
+                Document[] available = invt.AllDocumentsContainingWord(item);
+                foreach (var doc in available) {
+                    if (typesPossible.Contains(doc.Type)) {
+                        if (!positions.ContainsKey(doc)) {
+                            positions.Add(doc, new Dictionary<string, List<int>>());
                         }
+                        positions[doc].Add(item, invt.PositionsWordOccursInDocument(item, doc).ToList());
                     }
+                }
             }
+            foreach (var doc in positions.Keys)
+            {
+                foreach (var item in querywords)
+                {
+                    if (!positions[doc].ContainsKey(item))
+                        positions[doc].Add(item, new List<int>());
+                }
+            }
+            t8 = sw.ElapsedMilliseconds;
+            //var found = new Dictionary<string, Dictionary<Document, List<int>>>();
+            //foreach (string word in querywords) {
+            //        Document[] available = invt.AllDocumentsContainingWord(word);
+            //        if ((available.Length == 0)&&(!found.ContainsKey(word)))
+            //        {
+            //            found.Add(word, new Dictionary<Document, List<int>>());
+            //        }
+            //        foreach (var item in available) {
+            //            if (typesPossible.Contains(item.Type)) {
+            //                if (!found.ContainsKey(word)) {
+            //                    found.Add(word, new Dictionary<Document, List<int>>());
+            //                }
+            //                found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
+            //            }
+            //        }
+            //}
             t9 = sw.ElapsedMilliseconds;
             /*removed cuz i think when no legal(non-stopword) words are present, we shouldn't automatically return all docs as result
              * there is no result, if they wanna see it all there will be an option for them
@@ -115,7 +135,7 @@ namespace Engine
                 }
             }*/
             t10 = sw.ElapsedMilliseconds;
-           return found;
+           return positions;
         }
         public static HashSet<string> TypeChecker(List<string> s,Inverter invt,double x)
         {

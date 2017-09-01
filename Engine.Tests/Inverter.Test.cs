@@ -19,7 +19,7 @@ namespace Engine.Tests {
             invt = Engine.Inverter.Load("Tester");
 
             Double t2 = sw.ElapsedMilliseconds;
-            Updater.Crawler("../../../Resources/Mock", invt);
+            //Updater.Crawler("../../../Resources/Mock", invt);
             Double t3 = sw.ElapsedMilliseconds;
             // invt.SaveThis("Tester");
             Double t4 = sw.ElapsedMilliseconds;
@@ -37,11 +37,11 @@ namespace Engine.Tests {
             "Primary colors are blue yellow red","Olamide is a fish","I love food don't mock me","Deji is a pseudo programmer even at rural weddings"};
             List<List<Document>> results = new List<List<Document>>();
             List<long> time = new List<long>();
-        //    for (int i = 0; i < 1000; i++) {
+            for (int i = 0; i < 1000; i++) {
                 foreach (string query in queries)
                     results.Add(Querier.Search(query, invt));
                 time.Add(sw.ElapsedMilliseconds);
-         //   }
+            }
             double endTime = sw.ElapsedMilliseconds;
             double proveSWisOn;
             try { throw new Exception(); } catch { proveSWisOn = sw.ElapsedMilliseconds; }

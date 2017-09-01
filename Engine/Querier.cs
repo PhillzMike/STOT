@@ -74,7 +74,7 @@ namespace Engine
             double t4 = sw.ElapsedMilliseconds;
             List<Document> i = Ranker.SearchQuery(splitwords, Results,invt.DocumentCount);
             double t5 = sw.ElapsedMilliseconds;
-            return null;
+            return i;
         }
         public static List<String> AutoComplete(String querywords)
         {

@@ -201,6 +201,12 @@ namespace Engine {
         public String[] AllWordsInTable {
            get=> invertedIndexTable.Keys.ToArray<String>();
         }
+        public bool WordIsInDoc(string word,Document doc)
+        {
+            if (invertedIndexTable.ContainsKey(word))
+                return (invertedIndexTable[word].ContainsKey(doc));
+            return false;
+        }
         /// <summary>
         /// Returns all documents Containing this word, returns an empty array if the word isn't in any document
         /// </summary>

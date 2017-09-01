@@ -28,7 +28,7 @@ namespace Engine.Tests {
             Double t5 = sw.ElapsedMilliseconds;
 
 
-            List<Document> x = Querier.Search(" United    abstract  State's    type:t   of     America type :p", invt);
+            List<Document> x = Querier.Search(" United    abstract  State's       of     America ", invt);
             Double Firsttime = sw.ElapsedMilliseconds - t5;
             sw.Restart();
             string[] queries = {" United    abstract   State's    type:t   of     America type :p",
@@ -37,11 +37,11 @@ namespace Engine.Tests {
             "Primary colors are blue yellow red","Olamide is a fish","I love food don't mock me","Deji is a pseudo programmer even at rural weddings"};
             List<List<Document>> results = new List<List<Document>>();
             List<long> time = new List<long>();
-            for (int i = 0; i < 1000; i++) {
+        //    for (int i = 0; i < 1000; i++) {
                 foreach (string query in queries)
                     results.Add(Querier.Search(query, invt));
                 time.Add(sw.ElapsedMilliseconds);
-            }
+         //   }
             double endTime = sw.ElapsedMilliseconds;
             double proveSWisOn;
             try { throw new Exception(); } catch { proveSWisOn = sw.ElapsedMilliseconds; }

@@ -14,7 +14,8 @@ namespace Engine
     public static class Querier
     {
         static Stopwatch sw = new Stopwatch();
-        static double t7, t8, t9, t10;
+        static double t7, t8, t10;
+        static bool needsRanking;
         public static List<Document> Search(String query,Inverter invt) {
             sw.Start();
             //Separate words, remove punctiations,make lowercase
@@ -23,27 +24,37 @@ namespace Engine
             //Obtains possible types searched by this code
             //methods take to long to load y?HashSet<String> typesPossible=TypeChecker(words,invt,t);
             HashSet<String> typesPossible = new HashSet<string>();
-            for (int k = 0; k < words.Count; k++) {
-                if (words[k].Equals("type")) {
-                    if ((k + 2) < words.Count && words[k + 1].Equals(":")) {
-                        typesPossible.UnionWith(invt.Formats[words[k + 2]]);
+            for (int k = 0; k < words.Count; k++)
+            {
+                if (words[k].Equals("type"))
+                {
+                    if ((k + 2) < words.Count && words[k + 1].Equals(":"))
+                    {
+                        if (invt.Formats.ContainsKey(words[k + 2]))
+                            typesPossible.UnionWith(invt.Formats[words[k + 2]]);
                         words.RemoveRange(k, 3);
                         k--;
                     }
-                    else if ((k + 1) < words.Count && words[k + 1].StartsWith(":")) {
-                        typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
+                    else if ((k + 1) < words.Count && words[k + 1].StartsWith(":"))
+                    {
+                        if (invt.Formats.ContainsKey(words[k + 1].Substring(1)))
+                            typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
                         words.RemoveRange(k, 2);
                         k--;
                     }
                 }
-                else if ((k + 2) < words.Count && words[k].Equals("type" + ":")) {
-                    typesPossible.UnionWith(invt.Formats[words[k + 1]]);
+                else if ((k + 1) < words.Count && words[k].Equals("type:"))
+                {
+                    if (invt.Formats.ContainsKey(words[k + 1]))
+                        typesPossible.UnionWith(invt.Formats[words[k + 1]]);
                     words.RemoveRange(k, 2);
                     k--;
                     //words[k] = words[k + 1] = "";
                 }
-                else if (words[k].StartsWith("type:")) {
-                    typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
+                else if (words[k].StartsWith("type:"))
+                {
+                    if (invt.Formats.ContainsKey(words[k].Substring(5)))
+                        typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
                     words.RemoveAt(k);
                     k--;
                 }
@@ -66,15 +77,13 @@ namespace Engine
             if (splitwords.Count == 0)
                 return new List<Document>();
             //search for documents
-            Dictionary<Document, Dictionary<String, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
-          //TODO  if (Results.Values.keCount<=1)
-               // return Results.Values.ToList();
+            Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
+            if (!needsRanking)
+                return Results.Keys.ToList();
             //throw new ArgumentNullException("File doesn't Exist");
             //TODO "words within quote"
             double t4 = sw.ElapsedMilliseconds;
-            List<Document> i = Ranker.SearchQuery(splitwords, Results,invt.DocumentCount);
-            double t5 = sw.ElapsedMilliseconds;
-            return i;
+            return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount); 
         }
         public static List<String> AutoComplete(String querywords)
         {
@@ -84,58 +93,48 @@ namespace Engine
             return null;
         }
 
-        private static Dictionary<Document, Dictionary<string,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+        private static Dictionary<Document, Dictionary<string, List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+            needsRanking = false;
             t7 = sw.ElapsedMilliseconds;
-            var positions = new Dictionary<Document, Dictionary<string, List<int>>>();
-            foreach (string item in new HashSet<string>(querywords)) {
-                Document[] available = invt.AllDocumentsContainingWord(item);
-                foreach (var doc in available) {
-                    if (typesPossible.Contains(doc.Type)) {
-                        if (!positions.ContainsKey(doc)) {
-                            positions.Add(doc, new Dictionary<string, List<int>>());
-                        }
-                        positions[doc].Add(item, invt.PositionsWordOccursInDocument(item, doc).ToList());
-                    }
-                }
-            }
-            foreach (var doc in positions.Keys)
-            {
-                foreach (var item in querywords)
-                {
-                    if (!positions[doc].ContainsKey(item))
-                        positions[doc].Add(item, new List<int>());
-                }
-            }
+            var found = new Dictionary<Document, Dictionary<string, List<int>>>();
             t8 = sw.ElapsedMilliseconds;
-            //var found = new Dictionary<string, Dictionary<Document, List<int>>>();
-            //foreach (string word in querywords) {
-            //        Document[] available = invt.AllDocumentsContainingWord(word);
-            //        if ((available.Length == 0)&&(!found.ContainsKey(word)))
-            //        {
-            //            found.Add(word, new Dictionary<Document, List<int>>());
-            //        }
-            //        foreach (var item in available) {
-            //            if (typesPossible.Contains(item.Type)) {
-            //                if (!found.ContainsKey(word)) {
-            //                    found.Add(word, new Dictionary<Document, List<int>>());
-            //                }
-            //                found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
-            //            }
-            //        }
-            //}
-            t9 = sw.ElapsedMilliseconds;
-            /*removed cuz i think when no legal(non-stopword) words are present, we shouldn't automatically return all docs as result
-             * there is no result, if they wanna see it all there will be an option for them
-             if (querywords.Count<=0) {
-                List<Document> available = invt.Files.Values.ToList<Document>();
-                found.Add("", new Dictionary<Document, List<int>>());
-                foreach (var item in available) {
-                    if (!found[""].ContainsKey(item)) 
-                        found[""].Add(item, new List<int>());
+            HashSet<Document> available = new HashSet<Document>();
+            foreach (string word in querywords)
+                available.UnionWith(invt.AllDocumentsContainingWord(word));
+            foreach (Document x in available)
+            {
+                if (typesPossible.Contains(x.Type)&& x.Exists)
+                {
+                    Dictionary<string, List<int>> wordDict = new Dictionary<string, List<int>>();
+                    foreach (string word in querywords)
+                    {
+
+                       
+                        if (invt.WordIsInDoc(word, x))
+                        {
+                            if (!wordDict.ContainsKey(word))
+                            {
+                                wordDict.Add(word, invt.PositionsWordOccursInDocument(word, x).ToList());
+                            }
+                        }
+                        else
+                        {
+                            if (!wordDict.ContainsKey(word))
+                            {
+                                wordDict.Add(word, new List<int>());
+                            }
+                        }
+                           
+                    }
+                    found.Add(x, wordDict);
                 }
-            }*/
+            }
+            if (available.Count > 1)
+            {
+                needsRanking = true;
+            }
             t10 = sw.ElapsedMilliseconds;
-           return positions;
+            return found;
         }
         public static HashSet<string> TypeChecker(List<string> s,Inverter invt,double x)
         {
@@ -160,7 +159,7 @@ namespace Engine
                         i--;
                     }
                 }
-                else if ((i + 2) < s.Count && s[i].Equals("type"+":"))
+                else if ((i + 1) < s.Count && s[i].Equals("type:"))
                 {
                     type.UnionWith(invt.Formats[s[i + 1]]);
                     s.RemoveRange(i, 2);

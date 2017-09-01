@@ -20,6 +20,7 @@ namespace Engine
         }
         public static string[] Splitwords(string query,string except)
         {
+            //TODO split numbers 
             List<string> puncs = new List<string> { " ", ",", ":", "(", ")", "?", "!", ";", "-", "[", "]", "\"", "\t", "\n", "\r" };
             puncs.Remove(except);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -65,18 +66,21 @@ namespace Engine
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
-        public List<String> Suggestions(List<String> query) {
+        public List<String> Suggestions(List<String> query, int noOfResults) {
+            //TODO suggest queries
             //Autocorrect from dictionary
             //Filename
             //words in my inverted index
+            //Previous searches
             return null;
         }
         /// <summary>
-        /// Corrects the specified query.
+        /// Corrects the specified query. *For DID you mean, or showing results instead
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public List<String> Correct(List<String> query,int noOfResults) {
+        public List<String> Autocorrect(List<String> query) {
+            //TODO Autocorrect query
             return null;
         }
         /// <summary>
@@ -442,15 +446,8 @@ namespace Engine
                     candidates.Add(wordVariation,_dictionary[wordVariation]);
             }
 
-            if (candidates.Count > 0) {
-                //TODO cleanup
-                IEnumerable<KeyValuePair<String, int>> ME = candidates.OrderByDescending(x => x.Value).Take(top);
+            if (candidates.Count > 0) 
                 return candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>();
-                 
-                //return (candidates.OrderByDescending(x => x.Value).Take(top) as Dictionary<String, int>).Keys.ToList<string>();
-            }
-                //return candidates.Keys.ToList<string>();
-
             // known_edits2()
             foreach(string item in list) {
                 foreach(string wordVariation in Edits(item)) {
@@ -458,8 +455,6 @@ namespace Engine
                         candidates.Add(wordVariation,_dictionary[wordVariation]);
                 }
             }
-
-            //return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).First().Key : word;
             return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>() : new List<String>();
         }
         /// <summary>

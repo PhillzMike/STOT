@@ -6,8 +6,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 
-//TODO [assembly: InternalsVisibleTo("InverterTest")]
-
 namespace Engine {
     [Serializable]
     /// <summary>
@@ -25,7 +23,6 @@ namespace Engine {
             AddToFormats(File.ReadAllLines(FormatsPath));
             _samantha = new Semanter(DictionaryPath,CommonWordsPath);
             //TODO tomiwas idea about weight distribution based on file size
-            //TODO Add FileName
             foreach(String BookPath in BooksPaths)
                 _samantha.AddToDictionary(BookPath,1);
             _stopwords = new HashSet<string>();
@@ -146,6 +143,7 @@ namespace Engine {
                 i++;
             }
             _files.Add(doc.Address,doc);
+            LogMovement("../../../Resources/InvtLogs.txt", "Added doc : " + doc.Address);
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
@@ -164,6 +162,7 @@ namespace Engine {
             {
                 invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
             }
+            LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
         }
 
         /// <summary>
@@ -171,6 +170,7 @@ namespace Engine {
         /// </summary>
         /// <param name="doc">The document.</param>
         public void DeleteDocument(Document doc) {
+            LogMovement("../../../Resources/InvtLogs.txt", "Deletes" + doc.Address);
             Files.Remove(doc.Address);
             doc.Delete();
             _documentCount--;
@@ -186,6 +186,7 @@ namespace Engine {
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
+            LogMovement("../../../Resources/InvtLogs.txt", "Removed unused doc in word " + word);
         }
 
         /// <summary>
@@ -193,7 +194,7 @@ namespace Engine {
         /// </summary>
         public void GarbageCollector() {
             //TODO 3dO test 
-            //Deadlock avoidance
+            //Deadlock avoidance in database
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
         }
@@ -223,6 +224,7 @@ namespace Engine {
                 foreach(Document doc in AllDocumentsContainingWord(word)) {
                     if(!doc.Exists) {
                         RemoveDocument(word,doc);
+                       
                     }
                 }
 
@@ -265,6 +267,14 @@ namespace Engine {
                 //TODO Remember to create an exception class for this search Engine and remove null
             }
             return invt;
+        }
+        public static void LogMovement(string path, string message)
+        {
+            try
+            {
+                File.AppendAllText(path, message + "\n\r");
+            }
+            catch { }
         }
     }
 }

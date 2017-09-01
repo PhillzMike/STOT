@@ -39,7 +39,7 @@ namespace Front_End
             {
                 sw.Start();
                 Updater.Crawler("../../../Resources/Mock", invt);
-                while (sw.ElapsedMilliseconds < 6000) { }
+                while (sw.ElapsedMilliseconds < 60000) { }
             }
             //invt.SaveThis();
         }

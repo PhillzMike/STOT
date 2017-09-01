@@ -103,7 +103,10 @@ namespace Engine
                     {
                         if ((!needsRanking)) needsRanking = true;
                         if (typesPossible.Contains(item.Type))
-                            found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
+                        {
+                            if(!found[word].ContainsKey(item))
+                                found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
+                        }
                     }
                     
                 }

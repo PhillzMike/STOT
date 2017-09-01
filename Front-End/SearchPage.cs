@@ -9,24 +9,39 @@ using System.Threading.Tasks;
 using Engine;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Front_End
 {
     
     public partial class SearchPage : Form
     {
-        Inverter invt;
+        public Inverter invt;
+        public HomePage Homepage { get; set; }
         List<List<Document>> searchresults;
         int DocsPerPage=6;
         private Stopwatch sw = new Stopwatch();
-        public SearchPage(string ray)
+        
+        public SearchPage(Inverter invt)
         {
-            
             InitializeComponent();
-           invt = Inverter.Load("Tester");
-            TxtSearch1.Text = ray;
-            if(!(TxtSearch1.Text==""))
-                BtnClick_Click(new object(), new EventArgs());
+            this.invt = invt;
+        }
+        public string SearchTxt { set { TxtSearch1.Text = value; } }
+        public void OpenPage(){
+            if (!(TxtSearch1.Text == ""))
+                Search();
+        }
+        private void UpdateInverter()
+        {
+            Stopwatch sw = new Stopwatch();
+            while (true)
+            {
+                sw.Start();
+                Updater.Crawler("../../../Resources/Mock", invt);
+                while (sw.ElapsedMilliseconds < 6000) { }
+            }
+            //invt.SaveThis();
         }
         private List<List<Document>> DivideIntoPages(List<Document> fullList)
         {
@@ -46,8 +61,16 @@ namespace Front_End
                 ret.Add(page);
             return ret;
         }
- 
-        private void BtnClick_Click(object sender,EventArgs e) {
+
+        private void BtnClick_Click(object sender, EventArgs e) {
+            Search();
+            if ((TxtSearch1.Text.Equals("")) || searchresults.Count == 0)
+            {
+                Homepage.SearchTxt = TxtSearch1.Text;
+                Homepage.BringToFront();
+            }
+        }
+        private void Search() { 
             ResultsWindow.Controls.Clear();
             Pages.Controls.Clear();
             sw.Start();
@@ -82,21 +105,48 @@ namespace Front_End
         }
 
         private void TxtSearch1_TextChanged(object sender,EventArgs e) {
-            
+            //Autocorrect
+            KeyPressTimer.Stop();
+            KeyPressTimer.Start();
         }
 
         private void SearchPage_Load(object sender,EventArgs e) {
             //  invt = (this.MdiParent as UNILAG).invt;
+            Thread a = new Thread(new ThreadStart(UpdateInverter));
+            a.Start();
         }
 
         private void PageNumber(object sender, EventArgs e)
         {
+            Search();
             ResultsWindow.Controls.Clear();
             int.TryParse((sender as Button).Text, out int pageIndex);
             foreach (Document x in searchresults[pageIndex - 1])
             {
                 ResultsWindow.Controls.Add(new ResultCard(x));
             }
+        }
+
+        private void TxtSearch1_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void TxtSearch1_KeyPress(object sender, KeyPressEventArgs e){
+            if (e.KeyChar == 13) {
+                Search();
+            }
+        }
+
+        private void KeyPressTimer_Tick(object sender, EventArgs e)
+        {
+            Search();
+            if ((TxtSearch1.Text.Equals("")) || searchresults.Count == 0)
+            {
+                Homepage.SearchTxt = TxtSearch1.Text;
+                Homepage.BringToFront();
+            }
+            KeyPressTimer.Stop();
         }
     }
     public class ResultCard : TableLayoutPanel
@@ -109,6 +159,17 @@ namespace Front_End
                 Text = "[" + x.Type + "] " + x.Name,
                 Font = new System.Drawing.Font("Microsoft Sans Serif", 14F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)))
             };
+            title.Click += (o, i) =>
+             {
+                 try
+                 {
+                     Process.Start(x.Address);
+                 }
+                 catch
+                 {
+
+                 }
+             };
             Label adress = new Label
             {
                 AutoSize=true,

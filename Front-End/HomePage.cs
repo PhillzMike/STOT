@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -14,6 +15,8 @@ namespace Front_End
     public partial class HomePage : Form
     {
         BindingList<string> tree = new BindingList<string>();
+        public string SearchTxt { set { TxtSearch.Text = value; } }
+        public SearchPage Searchpage { get; set; }
         public HomePage()
         {
             InitializeComponent();
@@ -39,10 +42,24 @@ namespace Front_End
 
         private void MaterialRaisedButton1_Click(object sender, EventArgs e)
         {
-            (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
-            this.Close();
+            if (!OpenSearchPage()) { }
             //tree.Add("cdrghrghirtjjbrgigijg"+i++);
         }
+        private bool OpenSearchPage() {
+            if ((!TxtSearch.Text.Equals(""))&&Querier.Search(TxtSearch.Text,Searchpage.invt).Count > 0)
+            {
+                Searchpage.SearchTxt = TxtSearch.Text;
+                Searchpage.BringToFront();
+                
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+               
+        }
+
 
         private void MaterialRaisedButton2_Click(object sender, EventArgs e)
         {
@@ -52,10 +69,7 @@ namespace Front_End
 
         private void ListBox1_ItemSelected(object sender, EventArgs e)
         {
-            TxtSearch.Text = listBox1.SelectedItem.ToString();
-            this.Close();
-            (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
-           
+
         }
 
         private void ListBox1_KeyPress(object sender, KeyPressEventArgs e)
@@ -69,14 +83,11 @@ namespace Front_End
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {            
             tree.Clear();
+            OpenSearchPage();
             /*  foreach (string it in Engine.Querier.AutoComplete(TxtSearch.Text))
                   tree.Add(it);*/
             //Below Lines will open the search page the moment Querier.Search starts returning search Results
-           /* if(Querier.Search(TxtSearch.Text).Count > 0) {
-                (this.MdiParent as UNILAG).LoadSearchPage(TxtSearch.Text);
-                this.Close();
-                
-            };*/
+           
 
 
         }

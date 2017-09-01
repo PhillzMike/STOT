@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SearchPage));
             this.TxtSearch1 = new MaterialSkin.Controls.MaterialSingleLineTextField();
             this.BtnClick = new MaterialSkin.Controls.MaterialRaisedButton();
@@ -40,6 +41,7 @@
             this.SearchTime = new System.Windows.Forms.Label();
             this.ResultsWindow = new System.Windows.Forms.FlowLayoutPanel();
             this.Pages = new System.Windows.Forms.FlowLayoutPanel();
+            this.KeyPressTimer = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.ResultsWindow.SuspendLayout();
             this.SuspendLayout();
@@ -60,6 +62,8 @@
             this.TxtSearch1.TabIndex = 0;
             this.TxtSearch1.TabStop = false;
             this.TxtSearch1.UseSystemPasswordChar = false;
+            this.TxtSearch1.Click += new System.EventHandler(this.TxtSearch1_Click);
+            this.TxtSearch1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtSearch1_KeyPress);
             this.TxtSearch1.TextChanged += new System.EventHandler(this.TxtSearch1_TextChanged);
             // 
             // BtnClick
@@ -72,9 +76,9 @@
             this.BtnClick.MouseState = MaterialSkin.MouseState.HOVER;
             this.BtnClick.Name = "BtnClick";
             this.BtnClick.Primary = true;
-            this.BtnClick.Size = new System.Drawing.Size(40, 36);
+            this.BtnClick.Size = new System.Drawing.Size(73, 36);
             this.BtnClick.TabIndex = 1;
-            this.BtnClick.Text = "GO";
+            this.BtnClick.Text = "Search";
             this.BtnClick.UseVisualStyleBackColor = true;
             this.BtnClick.Click += new System.EventHandler(this.BtnClick_Click);
             // 
@@ -157,6 +161,8 @@
             // 
             // ResultsWindow
             // 
+            this.ResultsWindow.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Left) 
+            | System.Windows.Forms.AnchorStyles.Right)));
             this.ResultsWindow.BackColor = System.Drawing.SystemColors.Control;
             this.ResultsWindow.Controls.Add(this.tableLayoutPanel1);
             this.ResultsWindow.Location = new System.Drawing.Point(12, 141);
@@ -175,6 +181,11 @@
             this.Pages.Name = "Pages";
             this.Pages.Size = new System.Drawing.Size(562, 37);
             this.Pages.TabIndex = 10;
+            // 
+            // KeyPressTimer
+            // 
+            this.KeyPressTimer.Interval = 500;
+            this.KeyPressTimer.Tick += new System.EventHandler(this.KeyPressTimer_Tick);
             // 
             // SearchPage
             // 
@@ -214,5 +225,6 @@
         private System.Windows.Forms.Label SearchTime;
         private System.Windows.Forms.FlowLayoutPanel ResultsWindow;
         private System.Windows.Forms.FlowLayoutPanel Pages;
+        private System.Windows.Forms.Timer KeyPressTimer;
     }
 }

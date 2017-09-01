@@ -43,7 +43,9 @@ namespace Engine {
                 String[] words = x.Extract(doc.Address).Text.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries);
                 return invt.ModifyDocument(words,doc);
             } catch(Exception ex) {
-                throw new TextExtractionException("Could not extract Files from " + doc.Address,ex);
+                Inverter.LogMovement("../../../Resources/ErrorLog", "Extraction Error Path: " + doc.Address + " Error Message: "+ex.Message);
+                return null;
+               // throw new TextExtractionException("Could not extract Files from " + doc.Address,ex);
             }
         }
     }

@@ -16,8 +16,8 @@ namespace Engine.Tests
             Stopwatch sw = new Stopwatch();
             sw.Start();
             Double t1 = sw.ElapsedMilliseconds; 
-            //invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
-              //           , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
+           // invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
+             //            , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
             invt = Engine.Inverter.Load("Tester");
             
             Double t2 = sw.ElapsedMilliseconds;
@@ -38,8 +38,13 @@ namespace Engine.Tests
             "somebody thinks his dad is joking","Please i need to remember to remove numbers","How do you spell daenerys",
             "Primary colors are blue yellow red","Olamide is a fish","I love food don't mock me","Deji is a pseudo programmer even at rural weddings"};
             List<List<Document>> results = new List<List<Document>>();
-            foreach (string query in queries)
-                results.Add(Querier.Search(query, invt));
+            List<long> time = new List<long>();
+            for (int i = 0; i < 1000; i++)
+            {
+                foreach (string query in queries)
+                    results.Add(Querier.Search(query, invt));
+                time.Add(sw.ElapsedMilliseconds);
+            }
             double endTime = sw.ElapsedMilliseconds;
             double proveSWisOn;
             try { throw new Exception(); }

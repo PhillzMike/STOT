@@ -21,7 +21,7 @@ namespace Front_End {
     /// </summary>
     /// <seealso cref="MaterialSkin.Controls.MaterialForm" />
     public partial class UNILAG:Form {
-        public Inverter invt;
+        private Inverter invt;
         HomePage Home ;
         SearchPage Search;
        
@@ -37,12 +37,16 @@ namespace Front_End {
             //LoadHomePage();
             // invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
             //                  ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
-            //  invt = Engine.Inverter.Load("Tester");
+              invt = Engine.Inverter.Load("Tester");
             //   Updater.Crawler("../../../Resources/Mock",invt);
             //   invt.SaveThis("Tester");
-            LoadSearchPage("");
+            LoadSearchPage();
+           // Search.Hide();
+            
             LoadHomePage();
-            Home.Close();
+            Search.BringToFront();
+            Search.Homepage = Home;
+            Home.Searchpage = Search;
         }
 
         private void UNILAG_Load(object sender, EventArgs e)
@@ -55,14 +59,16 @@ namespace Front_End {
             Home = new HomePage() {
                 MdiParent = this,
                 Width = this.Width - 20,
-                Height = this.Height - 43
+                Height = this.Height - 43,
+                Location = new Point(0, 0)
+                
             };
             Home.Show();
         }
 
-        public void LoadSearchPage(string jello)
+        public void LoadSearchPage()
         {
-            Search = new SearchPage(jello) {
+            Search = new SearchPage(invt) {
                 MdiParent = this,
                 Width = this.Width - 20,
                 Height = this.Height - 43
@@ -72,9 +78,9 @@ namespace Front_End {
 
         private void UNILAG_SizeChanged(object sender,EventArgs e) {
             Home.Width = this.Width - 20;
-            Home.Height = this.Height - 43;
+            Home.Height = this.Height -43;
             Search.Width = this.Width - 20;
-            Search.Height = this.Height - 43;
+            Search.Height = this.Height -43;
         }
     }
 }

@@ -14,7 +14,7 @@ namespace Engine
     public static class Querier
     {
         static Stopwatch sw = new Stopwatch();
-        static double t7, t8, t9, t10;
+        static double t7, t8, t10;
         static bool needsRanking;
         public static List<Document> Search(String query,Inverter invt) {
             sw.Start();
@@ -30,27 +30,31 @@ namespace Engine
                 {
                     if ((k + 2) < words.Count && words[k + 1].Equals(":"))
                     {
-                        typesPossible.UnionWith(invt.Formats[words[k + 2]]);
+                        if (invt.Formats.ContainsKey(words[k+2]))
+                            typesPossible.UnionWith(invt.Formats[words[k + 2]]);
                         words.RemoveRange(k, 3);
                         k--;
                     }
                     else if ((k + 1) < words.Count && words[k + 1].StartsWith(":"))
                     {
-                        typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
+                        if (invt.Formats.ContainsKey(words[k+1].Substring(1)))
+                            typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
                         words.RemoveRange(k, 2);
                         k--;
                     }
                 }
-                else if ((k + 2) < words.Count && words[k].Equals("type" + ":"))
+                else if ((k + 1) < words.Count && words[k].Equals("type:"))
                 {
-                    typesPossible.UnionWith(invt.Formats[words[k + 1]]);
+                    if (invt.Formats.ContainsKey(words[k+1]))
+                        typesPossible.UnionWith(invt.Formats[words[k + 1]]);
                     words.RemoveRange(k, 2);
                     k--;
                     //words[k] = words[k + 1] = "";
                 }
                 else if (words[k].StartsWith("type:"))
                 {
-                    typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
+                    if(invt.Formats.ContainsKey(words[k].Substring(5)))
+                        typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
                     words.RemoveAt(k);
                     k--;
                 }
@@ -89,34 +93,21 @@ namespace Engine
             t8 = sw.ElapsedMilliseconds;
             foreach (string word in querywords) {
                     Document[] available = invt.AllDocumentsContainingWord(word);
-                if ((available.Length == 0) && (!found.ContainsKey(word)))
+                if (!found.ContainsKey(word))
                 {
                     found.Add(word, new Dictionary<Document, List<int>>());
                 }
-                else if ((available.Length > 0) && (!needsRanking))
-                    needsRanking = true;
+               
                 foreach (var item in available) {
-                    if (typesPossible.Contains(item.Type))
+                    if (item.Exists)
                     {
-                        if (!found.ContainsKey(word))
-                        {
-                            found.Add(word, new Dictionary<Document, List<int>>());
-                        }
-                        found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
+                        if ((!needsRanking)) needsRanking = true;
+                        if (typesPossible.Contains(item.Type))
+                            found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
                     }
+                    
                 }
             }
-            t9 = sw.ElapsedMilliseconds;
-            /*removed cuz i think when no legal(non-stopword) words are present, we shouldn't automatically return all docs as result
-             * there is no result, if they wanna see it all there will be an option for them
-             if (querywords.Count<=0) {
-                List<Document> available = invt.Files.Values.ToList<Document>();
-                found.Add("", new Dictionary<Document, List<int>>());
-                foreach (var item in available) {
-                    if (!found[""].ContainsKey(item)) 
-                        found[""].Add(item, new List<int>());
-                }
-            }*/
             t10 = sw.ElapsedMilliseconds;
            return found;
         }
@@ -143,7 +134,7 @@ namespace Engine
                         i--;
                     }
                 }
-                else if ((i + 2) < s.Count && s[i].Equals("type"+":"))
+                else if ((i + 1) < s.Count && s[i].Equals("type:"))
                 {
                     type.UnionWith(invt.Formats[s[i + 1]]);
                     s.RemoveRange(i, 2);

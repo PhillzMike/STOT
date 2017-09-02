@@ -18,6 +18,8 @@ namespace Engine
         static bool needsRanking;
         public static List<Document> Search(String query,Inverter invt) {
             sw.Start();
+            Semanter.Splitwords(query, ":").ToList();
+            double t0 = sw.ElapsedMilliseconds;
             //Separate words, remove punctiations,make lowercase
             List<String> words = Semanter.Splitwords(query,":").ToList();
             double t = sw.ElapsedMilliseconds;
@@ -129,7 +131,7 @@ namespace Engine
                     found.Add(x, wordDict);
                 }
             }
-            if (available.Count > 1)
+            if (found.Keys.Count > 1)
             {
                 needsRanking = true;
             }

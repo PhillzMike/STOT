@@ -27,7 +27,7 @@ namespace Front_End
             InitializeComponent();
             this.invt = invt;
         }
-        public string SearchTxt { set { TxtSearch1.Text = value; } }
+        public string SearchTxt { set { TxtSearch1.Text = value; TxtSearch1.SelectionStart = TxtSearch1.Text.Length; } }
         public void OpenPage(){
             if (!(TxtSearch1.Text == ""))
                 Search();
@@ -41,7 +41,7 @@ namespace Front_End
                 Updater.Crawler("../../../Resources/Mock", invt);
                 while (sw.ElapsedMilliseconds < 60000) { }
             }
-            //invt.SaveThis();
+            //TODO invt.SaveThis();
         }
         private List<List<Document>> DivideIntoPages(List<Document> fullList)
         {
@@ -118,7 +118,7 @@ namespace Front_End
 
         private void PageNumber(object sender, EventArgs e)
         {
-            Search();
+            //Search();
             ResultsWindow.Controls.Clear();
             int.TryParse((sender as Button).Text, out int pageIndex);
             foreach (Document x in searchresults[pageIndex - 1])

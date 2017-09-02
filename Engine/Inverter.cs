@@ -143,7 +143,7 @@ namespace Engine {
                 i++;
             }
             _files.Add(doc.Address,doc);
-            LogMovement("../../../Resources/InvtLogs.txt", "Added doc : " + doc.Address);
+            LogMovement("Logs/InvtLogs.txt", "Added doc : " + doc.Address);
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
@@ -162,7 +162,7 @@ namespace Engine {
             {
                 invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
             }
-            LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
+            LogMovement("Logs/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
         }
 
         /// <summary>
@@ -170,7 +170,7 @@ namespace Engine {
         /// </summary>
         /// <param name="doc">The document.</param>
         public void DeleteDocument(Document doc) {
-            LogMovement("../../../Resources/InvtLogs.txt", "Deletes" + doc.Address);
+            LogMovement("Logs/InvtLogs.txt", "Deletes" + doc.Address);
             Files.Remove(doc.Address);
             doc.Delete();
             _documentCount--;
@@ -186,7 +186,7 @@ namespace Engine {
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
-            LogMovement("../../../Resources/InvtLogs.txt", "Removed unused doc in word " + word);
+            LogMovement("Logs/InvtLogs.txt", "Removed unused doc in word " + word);
         }
 
         /// <summary>
@@ -225,7 +225,7 @@ namespace Engine {
         public int[] PositionsWordOccursInDocument(string Word,Document doc) {
             return invertedIndexTable[Word][doc].ToArray();
         }
-        private void GC() {
+        public void GC() {
             foreach(string word in AllWordsInTable) {
                 foreach(Document doc in AllDocumentsContainingWord(word)) {
                     if(!doc.Exists) {

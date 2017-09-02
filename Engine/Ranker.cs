@@ -51,13 +51,13 @@ namespace Engine
             double t5 = sw.ElapsedMilliseconds;
             //Calculating the cosine of the angles between the query vector and the document vectors
             List<double> cosOfAngle = new List<double>();
-            //List<double> secondGuy = new List<double>();
-            List<Document> sortedDocument = new List<Document>(CountOfAllWords.Keys);
+            List<double> secondGuy = new List<double>();
+            List<Document> sortedDocument = new List<Document>();
             foreach (Document item in CountOfAllWords.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item])) * noOfWordsWeight + GetScoreBasedOnPos(query, item) * consecutiveWeight) ;
-                //secondGuy.Add(GetScoreBasedOnPos(query, item));
-                //cosOfAngle[cosOfAngle.Count - 1] += secondGuy[secondGuy.Count - 1] * consecutiveWeight;
-                //sortedDocument.Add(item);
+                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item])) * noOfWordsWeight) ;
+                secondGuy.Add(GetScoreBasedOnPos(query, item));
+                cosOfAngle[cosOfAngle.Count - 1] += secondGuy[secondGuy.Count - 1] * consecutiveWeight;
+                sortedDocument.Add(item);
             }
             double t9 = sw.ElapsedMilliseconds;
             //double t6 = sw.ElapsedMilliseconds;
@@ -158,7 +158,7 @@ namespace Engine
                     //If the relative position of 2 differnt guyz from the refernce word is the same
                     if (scores[i] == scores[prevWord])
                         scores[prevWord] *= -1;
-                    sum += (1.0 / (Math.Abs(scores[i] - scores[prevWord])) * (i - prevWord));
+                    sum += (1.0 / (Math.Abs(scores[i] - scores[prevWord]) * (i - prevWord)));
                     prevWord = i;
                 }
                     

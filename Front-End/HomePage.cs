@@ -15,7 +15,7 @@ namespace Front_End
     public partial class HomePage : Form
     {
         BindingList<string> tree = new BindingList<string>();
-        public string SearchTxt { set { TxtSearch.Text = value; } }
+        public string SearchTxt { set { TxtSearch.Text = value; TxtSearch.SelectionStart = TxtSearch.Text.Length; } }
         public SearchPage Searchpage { get; set; }
         public HomePage()
         {

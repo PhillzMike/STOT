@@ -28,9 +28,7 @@ namespace Engine {
                     RemovedFile = true;
                 }
             }
-            if (RemovedFile)
-                invt.GarbageCollector();
-            Dictionary<string,Exception> ErrorList = new Dictionary<string,Exception>();
+            
             //adding file
             //creating a document object and pass into streamer.adddfile
             foreach(String location in pathfiles) {
@@ -39,15 +37,14 @@ namespace Engine {
                         Document newdoc = GetDocumentFrom(location);
                         Streamer.AddFileFrom(newdoc,invt);
                     } catch(Exception ex) {
-                        ErrorList.Add(location,ex);
+                        Inverter.LogMovement("log/ErrorLog.txt", "Could withdraw from " + location + "Error:" + ex.Message);
                     }
                 } else {
-                    ErrorList.Add(location,new Exception("The File Type is Currently Not supported by this App"));
+                    Inverter.LogMovement("log/ErrorLog.txt", "The File Type is Currently Not supported by this App "+location);
                 }
             }
-            if(ErrorList.Count > 0) { }
-            //Todo create new Exception
-            //throw new Exception("Couldn't withdraw some Files");
+            if (RemovedFile)
+                invt.GC();
         }
         private static Document GetDocumentFrom(String path) {
             string posString = path.Substring(path.LastIndexOf("\\") + 1);

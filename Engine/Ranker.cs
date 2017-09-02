@@ -104,11 +104,11 @@ namespace Engine
             double score = Math.Tan((degree*Math.PI)/180);
             return score;
         }
-        private static double ScoreBasedOnConWords(List<string> query,Document doc) {
-            double t7 = sw.ElapsedMilliseconds;
-            var positions = Results[doc];
-            return GetBest(query,positions,doc);
-        }
+        //private static double ScoreBasedOnConWords(List<string> query,Document doc) {
+        //    double t7 = sw.ElapsedMilliseconds;
+        //    var positions = Results[doc];
+        //    return GetBest(query,positions,doc);
+        //}
         //TODO Change the return type to a tuple of the score and d pos the best match was found
         private static double GetBest(List<string> query, Dictionary<string, List<int>> dic, Document doc) {
             int count = 0;

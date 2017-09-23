@@ -17,18 +17,17 @@ namespace Engine.Tests {
             // invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
             //            , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
             invt = Engine.Inverter.Load("Tester");
-
+            Querier.Invt = invt;
             Double t2 = sw.ElapsedMilliseconds;
             //Updater.Crawler("../../../Resources/Mock", invt);
             Double t3 = sw.ElapsedMilliseconds;
             // invt.SaveThis("Tester");
             Double t4 = sw.ElapsedMilliseconds;
-            //TODO figure out how and why first run slower
             invt.Samantha.StemWord("United");
             Double t5 = sw.ElapsedMilliseconds;
 
 
-            List<Document> x = Querier.Search(" United    abstract  State's       of     America ", invt);
+            List<Document> x = Querier.Search(" United    abstract  State's       of     America ");
             Double Firsttime = sw.ElapsedMilliseconds - t5;
             sw.Restart();
             string[] queries = {" United    abstract   State's    type:t   of     America type :p",
@@ -39,7 +38,7 @@ namespace Engine.Tests {
             List<long> time = new List<long>();
             for (int i = 0; i < 1000; i++) {
                 foreach (string query in queries)
-                    results.Add(Querier.Search(query, invt));
+                    results.Add(Querier.Search(query));
                 time.Add(sw.ElapsedMilliseconds);
             }
             double endTime = sw.ElapsedMilliseconds;

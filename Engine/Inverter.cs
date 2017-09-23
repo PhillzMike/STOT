@@ -115,12 +115,16 @@ namespace Engine {
             int i = -1;
             foreach(string addWord in Semanter.Splitwords(doc.Name+" " + doc.Type).Reverse())
             {
-                string word = Samantha.StemWord(addWord);
-                string correctedword = Samantha.StemWord(Samantha.CorrectWord(addWord));
-                if (_stopwords.Contains(word))
-                {
+                Samantha.AddWordToDictionary(addWord, 2);
+                //TODO trie together doc.Name
+                if (_stopwords.Contains(addWord)) {
                     continue;
                 }
+                
+                string word = Samantha.StemWord(addWord);
+                string correctedword = Samantha.StemWord(Samantha.CorrectWord(addWord));
+               
+               
                 AddWordToTable(word, doc, i);
                 if (!word.Equals(correctedword))
                 {
@@ -132,6 +136,7 @@ namespace Engine {
             foreach(String addWord in words) {
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
                 string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
+                Samantha.AddWordToDictionary(addWord, 1);
                 if (_stopwords.Contains(word)) {
                     continue;
                 }
@@ -143,7 +148,7 @@ namespace Engine {
                 i++;
             }
             _files.Add(doc.Address,doc);
-            LogMovement("Logs/InvtLogs.txt", "Added doc : " + doc.Address);
+            LogMovement("########Added document to index : " + doc.Address);
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
@@ -162,7 +167,7 @@ namespace Engine {
             {
                 invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
             }
-            LogMovement("Logs/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
+            LogMovement( "Added document " + doc.Address+ " under word \"" + word + "\"");
         }
 
         /// <summary>
@@ -170,7 +175,7 @@ namespace Engine {
         /// </summary>
         /// <param name="doc">The document.</param>
         public void DeleteDocument(Document doc) {
-            LogMovement("Logs/InvtLogs.txt", "Deletes" + doc.Address);
+            LogMovement("########Deletes document from index : " + doc.Address);
             Files.Remove(doc.Address);
             doc.Delete();
             _documentCount--;
@@ -186,15 +191,14 @@ namespace Engine {
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
-            LogMovement("Logs/InvtLogs.txt", "Removed unused doc in word " + word);
+            LogMovement("Removed unused document " + doc.Address+ " from word \"" + word+"\"");
         }
 
         /// <summary>
         /// Runs on a separate Thread, Deletes ALL Untracked Documents from the Inverted Index Table
         /// </summary>
         public void GarbageCollector() {
-            //TODO 3dO test 
-            //Deadlock avoidance in database
+            //TODO Deadlock avoidance in database
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
         }
@@ -243,7 +247,7 @@ namespace Engine {
         /// <param name="words">The words in the new Document.</param>
         /// <param name="doc">The document modified.</param>
         public Document ModifyDocument(String[] words,Document doc) {
-            Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastAccessTime);
+            Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastWriteTime);
             DeleteDocument(doc);
             AddDocument(words,newDoc);
             return newDoc;
@@ -261,24 +265,25 @@ namespace Engine {
             }
         }
         public static Inverter Load(string loadID) {
-            Inverter invt = null ;
+            Inverter invt;
             try {
                 using (Stream stream = File.Open(loadID, FileMode.Open)) {
                     var bform = new BinaryFormatter();
                     invt = (Inverter)(bform.Deserialize(stream));
                     stream.Close();
                 };
+                return invt;
             }
-            catch (FileNotFoundException) {
-                //TODO Remember to create an exception class for this search Engine and remove null
+            catch (Exception ex){
+                throw new Exception("An error occured trying to load Inverter from " + loadID + ". The path is either corrupted or doesn't exist",ex);
             }
-            return invt;
+          
         }
-        public static void LogMovement(string path, string message)
+        public static void LogMovement(string message)
         {
             try
             {
-                File.AppendAllText(path, message + "\n\r");
+                File.AppendAllText("ActivityLog.txt", "["+DateTime.Now.ToString()+"]"+ message + "\r\n");
             }
             catch { }
         }

@@ -14,14 +14,14 @@ namespace Engine
     public class Semanter
     {
         private Dictionary<String,int> _dictionary;
-        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","\t","\n","\r" };
+        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
         public static string[] Splitwords(string query) {
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
         }
         public static string[] Splitwords(string query,string except)
         {
-            //TODO split numbers 
-            List<string> puncs = new List<string> { " ", ",", ":", "(", ")", "?", "!", ";", "-", "[", "]", "\"", "\t", "\n", "\r" };
+            //TODO split numbers ?
+            List<string> puncs = punctuations.ToList();
             puncs.Remove(except);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
@@ -45,13 +45,22 @@ namespace Engine
         /// <param name="weight">The weight of each word in the Dictionary NOTE: words with higher weight will be suggested first.</param>
         private void LoadToDictionary(String words,int weight) {
         foreach(string word in words.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries).ToList()) {
-            string trimmedWord = word.Trim().ToLower();
-                if(_dictionary.ContainsKey(trimmedWord))
-                    _dictionary[trimmedWord]+=weight;
-                else {
-                    _dictionary.Add(trimmedWord,weight);
-                }
+                string trimmedWord = word.Trim().ToLower();
+                AddWordToDictionary(trimmedWord, weight);
         }
+        }
+        /// <summary>
+        /// Adds the word to dictionary and increments the weight if it already exists.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="weight">The weight.</param>
+        public void AddWordToDictionary(string word,int weight) {
+            if (_dictionary.ContainsKey(word))
+                _dictionary[word] += weight;
+            else 
+                _dictionary.Add(word, weight);
+            //TODO trie and add to trie(adding more than one word to trie)
+            
         }
         /// <summary>
         /// Loads the words in the string (Space or new Line  "\n" delimeter) to dictionary.
@@ -68,9 +77,9 @@ namespace Engine
         /// <returns>An array of suggested terms, sorted by relevance</returns>
         public List<String> Suggestions(List<String> query, int noOfResults) {
             //TODO suggest queries
+
             //Autocorrect from dictionary
             //Filename
-            //words in my inverted index
             //Previous searches
             return null;
         }
@@ -79,9 +88,12 @@ namespace Engine
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public List<String> Autocorrect(List<String> query) {
-            //TODO Autocorrect query
-            return null;
+        public List<String> Autocorrect(String query) {
+            List<string> results = new List<string>();
+            foreach(string word in query.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries).ToList()) {
+                results.Add(CorrectWord(word));
+            }
+            return results;
         }
         /// <summary>
         /// The Stemmer transforms a word into its root form.

@@ -10,22 +10,27 @@ namespace Engine {
             Dictionary<String, Document> files = invt.Files;
             pathfiles = new List<string>();
             List<String> pathfile = new List<string>();
+            Streamer.Invt = invt;
             //run a for loop on this for all types in format
-            foreach (string doc in invt.Formats[""]) {
-                pathfile= Directory.EnumerateFiles(path, "*."+doc,SearchOption.AllDirectories).ToList<string>();
+            foreach (string type in invt.Formats[""]) {
+                pathfile= Directory.EnumerateFiles(path, "*."+type,SearchOption.AllDirectories).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
             bool RemovedFile = false;
             foreach (String item in files.Keys.ToArray<String>()) {
                 if (!pathfiles.Contains(item))
                 {
-                    Streamer.RemoveFile(files[item], invt);
+                    Streamer.RemoveFile(files[item]);
                     RemovedFile = true;
                 }
                 else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0)
                 {
-                    Streamer.ModifyFile(files[item], invt);
-                    RemovedFile = true;
+                    try {
+                        Streamer.ModifyFile(files[item]);
+                        RemovedFile = true;
+                    } catch (Exception ex) {
+                        Inverter.LogMovement("!!!!!!!!!Error withdrawing from " + files[item].Address + " while modifying. ERROR MESSAGE:" + ex.Message);
+                    }
                 }
             }
             
@@ -35,16 +40,15 @@ namespace Engine {
                 if(!files.ContainsKey(location)) {
                     try {
                         Document newdoc = GetDocumentFrom(location);
-                        Streamer.AddFileFrom(newdoc,invt);
+                        Streamer.AddFileFrom(newdoc);
                     } catch(Exception ex) {
-                        Inverter.LogMovement("log/ErrorLog.txt", "Could withdraw from " + location + "Error:" + ex.Message);
+                        Inverter.LogMovement("!!!!!!!!!Error withdrawing from " + location + ". ERROR MESSAGE:" + ex.Message);
                     }
-                } else {
-                    Inverter.LogMovement("log/ErrorLog.txt", "The File Type is Currently Not supported by this App "+location);
                 }
             }
             if (RemovedFile)
                 invt.GC();
+           
         }
         private static Document GetDocumentFrom(String path) {
             string posString = path.Substring(path.LastIndexOf("\\") + 1);

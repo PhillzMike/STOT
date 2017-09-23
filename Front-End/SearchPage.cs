@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
-using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Engine;
 using System.Windows.Forms;
 using System.Diagnostics;
-using System.Threading;
 
 namespace Front_End
 {
@@ -19,30 +12,20 @@ namespace Front_End
         public Inverter invt;
         public HomePage Homepage { get; set; }
         List<List<Document>> searchresults;
+        //TODO change
         int DocsPerPage=6;
         private Stopwatch sw = new Stopwatch();
         
-        public SearchPage(Inverter invt)
+        public SearchPage()
         {
             InitializeComponent();
-            this.invt = invt;
         }
         public string SearchTxt { set { TxtSearch1.Text = value; TxtSearch1.SelectionStart = TxtSearch1.Text.Length; } }
         public void OpenPage(){
             if (!(TxtSearch1.Text == ""))
                 Search();
         }
-        private void UpdateInverter()
-        {
-            Stopwatch sw = new Stopwatch();
-            while (true)
-            {
-                sw.Start();
-                Updater.Crawler("../../../Resources/Mock", invt);
-                while (sw.ElapsedMilliseconds < 60000) { }
-            }
-            //TODO invt.SaveThis();
-        }
+        
         private List<List<Document>> DivideIntoPages(List<Document> fullList)
         {
             List<List<Document>> ret = new List<List<Document>>();
@@ -74,7 +57,7 @@ namespace Front_End
             ResultsWindow.Controls.Clear();
             Pages.Controls.Clear();
             sw.Start();
-            List<Document> searchresultlist = Querier.Search(TxtSearch1.Text, invt);
+            List<Document> searchresultlist = Querier.Search(TxtSearch1.Text);
             searchresults = DivideIntoPages(searchresultlist);
              SearchTime.Text = ((double)sw.ElapsedMilliseconds / 1000) + "";
             sw.Reset();
@@ -111,9 +94,7 @@ namespace Front_End
         }
 
         private void SearchPage_Load(object sender,EventArgs e) {
-            //  invt = (this.MdiParent as UNILAG).invt;
-            Thread a = new Thread(new ThreadStart(UpdateInverter));
-            a.Start();
+            
         }
 
         private void PageNumber(object sender, EventArgs e)

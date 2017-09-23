@@ -10,13 +10,17 @@ namespace Engine
     
     /// <summary>
     /// Author Teni
+    /// Don't forget to set Querir.invt before you begin
     /// </summary>
     public static class Querier
     {
         static Stopwatch sw = new Stopwatch();
+        //TODO remove stopwatch
         static double t7, t8, t10;
         static bool needsRanking;
-        public static List<Document> Search(String query,Inverter invt) {
+        public static Inverter Invt { set { invt = value; } }
+        static Inverter invt;
+        public static List<Document> Search(String query) {
             sw.Start();
             Semanter.Splitwords(query, ":").ToList();
             double t0 = sw.ElapsedMilliseconds;
@@ -79,7 +83,7 @@ namespace Engine
             if (splitwords.Count == 0)
                 return new List<Document>();
             //search for documents
-            Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
+            Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible);
             if (!needsRanking)
                 return Results.Keys.ToList();
             //throw new ArgumentNullException("File doesn't Exist");
@@ -91,11 +95,11 @@ namespace Engine
         {
             //TODO review this later
             String[] splitwords = querywords.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
-            // return Semanter.Suggestions(splitwords);
+          //  return Semanter.Suggestions(splitwords);
             return null;
         }
 
-        private static Dictionary<Document, Dictionary<string, List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+        private static Dictionary<Document, Dictionary<string, List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible) {
             needsRanking = false;
             t7 = sw.ElapsedMilliseconds;
             var found = new Dictionary<Document, Dictionary<string, List<int>>>();
@@ -138,7 +142,7 @@ namespace Engine
             t10 = sw.ElapsedMilliseconds;
             return found;
         }
-        public static HashSet<string> TypeChecker(List<string> s,Inverter invt,double x)
+        public static HashSet<string> TypeChecker(List<string> s,double x)
         {
             double start = sw.ElapsedMilliseconds;
             HashSet<string> type = new HashSet<string>();

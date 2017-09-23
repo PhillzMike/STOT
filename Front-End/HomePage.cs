@@ -46,7 +46,7 @@ namespace Front_End
             //tree.Add("cdrghrghirtjjbrgigijg"+i++);
         }
         private bool OpenSearchPage() {
-            if ((!TxtSearch.Text.Equals(""))&&Querier.Search(TxtSearch.Text,Searchpage.invt).Count > 0)
+            if ((!TxtSearch.Text.Equals(""))&&Querier.Search(TxtSearch.Text).Count > 0)
             {
                 Searchpage.SearchTxt = TxtSearch.Text;
                 Searchpage.BringToFront();

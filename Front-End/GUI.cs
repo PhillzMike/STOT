@@ -1,17 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 using MaterialSkin;
 using MaterialSkin.Animations;
 using MaterialSkin.Controls;
 using System.IO;
 using Engine;
+using System.Threading;
+using System.Diagnostics;
 
 namespace Front_End {
     /// <summary>
@@ -35,20 +32,45 @@ namespace Front_End {
 
             this.IsMdiContainer = true;
             //LoadHomePage();
-            // invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
-            //                  ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
-              invt = Engine.Inverter.Load("Tester");
-            //   Updater.Crawler("../../../Resources/Mock",invt);
-            //   invt.SaveThis("Tester");
+            try {
+                invt = Inverter.Load("Inverter.invt");
+                Inverter.LogMovement("^^^^^^^^^Succesfully loaded previous Inverter: ");
+            } catch(Exception ex)  {
+                Inverter.LogMovement("!!!!!!!!!Error loading previous Inverter: " + ex.Message);
+                invt = new Inverter("../../../Resources/stopwords.txt","../../../Resources/Dictionary.txt"
+                              ,"../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());
+                Updater.Crawler("../../../Resources/Mock", invt);
+                   invt.SaveThis("Tester");
+            }
+            //Set Querier
+            Querier.Invt = invt;
             LoadSearchPage();
-           // Search.Hide();
-            
+            // Search.Hide();
+
+
+            //Crawler
+            Thread a = new Thread(new ThreadStart(UpdateInverter));
+            a.Start();
+
             LoadHomePage();
             Search.BringToFront();
             Search.Homepage = Home;
             Home.Searchpage = Search;
         }
-
+        private void UpdateInverter() {
+            Stopwatch sw = new Stopwatch();
+            while (true) {
+                sw.Restart();
+                Updater.Crawler("../../../Resources/Mock", invt);
+                invt.SaveThis("Inverter.invt.temp");
+                File.Delete("Inverter.invt");
+                File.Move("Inverter.invt.temp", "Inverter.invt");
+                Inverter.LogMovement("lastSeen");
+                //TODO remove last lastseen
+                //Wait one minute
+                while (sw.ElapsedMilliseconds < 60000) { }
+            }
+        }
         private void UNILAG_Load(object sender, EventArgs e)
         {
 
@@ -68,11 +90,14 @@ namespace Front_End {
 
         public void LoadSearchPage()
         {
-            Search = new SearchPage(invt) {
+            Search = new SearchPage() {
                 MdiParent = this,
                 Width = this.Width - 20,
-                Height = this.Height - 43
+                Height = this.Height - 43,
+                 Location = new Point(0, 0)
+
             };
+            Search.invt = invt;
             Search.Show();
         }
 

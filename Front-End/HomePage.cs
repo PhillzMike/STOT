@@ -24,7 +24,8 @@ namespace Front_End
         private void HomePage_Load(object sender, EventArgs e)
         {
             listBox1.DataSource = tree;
-            tree.ListChanged += new ListChangedEventHandler(ItemSizeChanged);           
+            tree.ListChanged += new ListChangedEventHandler(ItemSizeChanged);
+            Location = new System.Drawing.Point(0, 0);
         }
         private void ItemSizeChanged(object sender,ListChangedEventArgs e)
         {

@@ -94,7 +94,7 @@ namespace Front_End
         }
 
         private void SearchPage_Load(object sender,EventArgs e) {
-            
+            Location = new System.Drawing.Point(0, 0);
         }
 
         private void PageNumber(object sender, EventArgs e)
@@ -128,6 +128,18 @@ namespace Front_End
                 Homepage.BringToFront();
             }
             KeyPressTimer.Stop();
+        }
+
+        private void Button1_Click(object sender, EventArgs e) {
+            //TODO remove
+            Stopwatch finito = new Stopwatch();
+            finito.Start();
+            while (finito.ElapsedMilliseconds < 100) { }
+                finito.Stop();
+                label4.Text = finito.ElapsedMilliseconds+"";
+                label5.Text = finito.ElapsedTicks + "";
+                label6.Text = (finito.ElapsedTicks/finito.ElapsedMilliseconds)+"";
+            
         }
     }
     public class ResultCard : TableLayoutPanel

@@ -9,6 +9,7 @@ namespace Engine {
     /// <para>to a File Stream</para>
     /// </summary>
     public static class Streamer {
+        //TODO Get Rid of Streamer
         public static Inverter Invt { set { invt=value; } }
         private static Inverter invt;
         static TextExtractor x = new TextExtractor();

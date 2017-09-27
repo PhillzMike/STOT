@@ -14,7 +14,7 @@ namespace Engine
     public class Semanter
     {
         private Dictionary<String,int> _dictionary;
-        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
+        public static string[] punctuations = { " ",",","@","#","$","%","^","&","*","+","=","`","~","<",">","/","\\","|",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
         public static string[] Splitwords(string query) {
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
         }
@@ -442,12 +442,12 @@ namespace Engine
         /// A list containing the specified number of suggestions correcting the specified word.
         /// </returns>
         public List<string> CorrectWord(string word,int top) {
-            top = (top <= 1) ? 1:top;
+            top = (top <0) ? 1:top;
             if(string.IsNullOrEmpty(word))
                 return new List<String>();
             word = word.ToLower();
             // known and common
-            if(_dictionary.ContainsKey(word)&&_dictionary[word]>2)
+            if(_dictionary.ContainsKey(word)&&_dictionary[word]>2&&top==1)
                 return new List<String> { word };
 
             List<String> list = Edits(word);
@@ -457,17 +457,19 @@ namespace Engine
                 if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
                     candidates.Add(wordVariation,_dictionary[wordVariation]);
             }
-
-            if (candidates.Count > 0) 
-                return candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>();
+            
             // known_edits2()
             foreach(string item in list) {
                 foreach(string wordVariation in Edits(item)) {
                     if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
-                        candidates.Add(wordVariation,_dictionary[wordVariation]);
+                        candidates.Add(wordVariation,_dictionary[wordVariation]/3);
                 }
             }
-            return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>() : new List<String>();
+            return (candidates.Count > 0) ? 
+                (top==0)?
+                    candidates.OrderByDescending(x=>x.Value).Select(k=>k.Key).ToList()
+                    :candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>()
+                : new List<String>();
         }
         /// <summary>
         /// Corrects the word.

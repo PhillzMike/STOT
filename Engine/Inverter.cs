@@ -33,7 +33,7 @@ namespace Engine {
                 foreach(String stp in File.ReadAllLines(StopWords))
                     _stopwords.Add(stp);
             } catch(Exception ex) {
-                throw new IOException("The specified path could not be Read",ex);
+                throw new IOException("The specified path for stopwords could not be Read", ex);
             }
         }
         private void AddToFormats(string[] types)
@@ -115,36 +115,32 @@ namespace Engine {
             int i = -1;
             foreach(string addWord in Semanter.Splitwords(doc.Name+" " + doc.Type).Reverse())
             {
-                Samantha.AddWordToDictionary(addWord, 2);
+               // Samantha.AddWordToDictionary(addWord, 2);
                 //TODO trie together doc.Name
                 if (_stopwords.Contains(addWord)) {
                     continue;
                 }
-                
                 string word = Samantha.StemWord(addWord);
-                string correctedword = Samantha.StemWord(Samantha.CorrectWord(addWord));
-               
-               
-                AddWordToTable(word, doc, i);
-                if (!word.Equals(correctedword))
-                {
+                HashSet<string> correctedwords = new HashSet<string> {word};
+                foreach (string Stemm in Samantha.CorrectWord(addWord, 2))
+                    correctedwords.Add(Samantha.StemWord(Stemm));
+                foreach(string correctedword in correctedwords)
                     AddWordToTable(correctedword, doc, i);
-                }
                 i--;
             }
             i = 0;
             foreach(String addWord in words) {
+                //Samantha.AddWordToDictionary(addWord, 1);
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
-                string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
-                Samantha.AddWordToDictionary(addWord, 1);
+                
                 if (_stopwords.Contains(word)) {
                     continue;
                 }
-                AddWordToTable(word, doc, i);
-                if (!word.Equals(correctedword))
-                {
+                HashSet<string> correctedwords = new HashSet<string> { word };
+                foreach (string Stemm in Samantha.CorrectWord(addWord, 3))
+                    correctedwords.Add(Samantha.StemWord(Stemm));
+                foreach (string correctedword in correctedwords)
                     AddWordToTable(correctedword, doc, i);
-                }
                 i++;
             }
             _files.Add(doc.Address,doc);

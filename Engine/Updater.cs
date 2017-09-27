@@ -13,7 +13,7 @@ namespace Engine {
             Streamer.Invt = invt;
             //run a for loop on this for all types in format
             foreach (string type in invt.Formats[""]) {
-                pathfile= Directory.EnumerateFiles(path, "*."+type,SearchOption.AllDirectories).ToList<string>();
+                pathfile= Directory.EnumerateFiles(path, "*."+type,SearchOption.AllDirectories).Select(Path.GetFullPath).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
             bool RemovedFile = false;

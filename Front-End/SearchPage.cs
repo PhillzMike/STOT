@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using Engine;
 using System.Windows.Forms;
 using System.Diagnostics;
+using System.Drawing;
 
 namespace Front_End
 {
     
     public partial class SearchPage : Form
     {
-        public Inverter invt;
         public HomePage Homepage { get; set; }
+        string searchTerm;
         List<List<Document>> searchresults;
         //TODO change
         int DocsPerPage=6;
@@ -57,13 +58,14 @@ namespace Front_End
             ResultsWindow.Controls.Clear();
             Pages.Controls.Clear();
             sw.Start();
+            searchTerm = TxtSearch1.Text;
             List<Document> searchresultlist = Querier.Search(TxtSearch1.Text);
             searchresults = DivideIntoPages(searchresultlist);
              SearchTime.Text = ((double)sw.ElapsedMilliseconds / 1000) + "";
             sw.Reset();
             if (searchresults.Count > 0){
                 foreach (Document x in searchresults[0]) {
-                    ResultsWindow.Controls.Add(new ResultCard(x));
+                    ResultsWindow.Controls.Add(new ResultCard(x,TxtSearch1.Text));
                 }
             }
             if (searchresults.Count > 1)
@@ -88,7 +90,7 @@ namespace Front_End
         }
 
         private void TxtSearch1_TextChanged(object sender,EventArgs e) {
-            //Autocorrect
+            //TODO Autocorrect
             KeyPressTimer.Stop();
             KeyPressTimer.Start();
         }
@@ -104,14 +106,10 @@ namespace Front_End
             int.TryParse((sender as Button).Text, out int pageIndex);
             foreach (Document x in searchresults[pageIndex - 1])
             {
-                ResultsWindow.Controls.Add(new ResultCard(x));
+                ResultsWindow.Controls.Add(new ResultCard(x,searchTerm));
             }
         }
-
-        private void TxtSearch1_Click(object sender, EventArgs e)
-        {
-
-        }
+        
 
         private void TxtSearch1_KeyPress(object sender, KeyPressEventArgs e){
             if (e.KeyChar == 13) {
@@ -129,22 +127,10 @@ namespace Front_End
             }
             KeyPressTimer.Stop();
         }
-
-        private void Button1_Click(object sender, EventArgs e) {
-            //TODO remove
-            Stopwatch finito = new Stopwatch();
-            finito.Start();
-            while (finito.ElapsedMilliseconds < 100) { }
-                finito.Stop();
-                label4.Text = finito.ElapsedMilliseconds+"";
-                label5.Text = finito.ElapsedTicks + "";
-                label6.Text = (finito.ElapsedTicks/finito.ElapsedMilliseconds)+"";
-            
-        }
     }
     public class ResultCard : TableLayoutPanel
     {
-        public ResultCard(Document x)
+        public ResultCard(Document x,String query)
         {
             LinkLabel title = new LinkLabel
             {
@@ -169,7 +155,7 @@ namespace Front_End
                 Text = x.LastModified.ToString() + " " + x.Address,
                 Font = new System.Drawing.Font("Microsoft Sans Serif", 7F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)))
             };
-            Label Relevance = new Label
+            LblBoldWords Relevance = new LblBoldWords(query)
             {
                 AutoSize = true,
                 Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0))),
@@ -187,6 +173,40 @@ namespace Front_End
             RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.63636F));
             RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
             Size = new System.Drawing.Size(1534, 107);
+        }
+    }
+    public class LblBoldWords : Label {
+        HashSet<String> bolded;
+        public LblBoldWords(String bold) {
+            this.bolded = new HashSet<string>();
+            bold = bold.ToLower();
+            String[] bolded = bold.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
+            this.bolded.UnionWith(bolded);
+        }
+        protected override void OnPaint(PaintEventArgs e) {
+            Point drawPoint = new Point(0, 0);
+            String[] relevantWords = Text.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
+            //Fonts
+            Font normalFont = this.Font;
+            Font boldFont = new Font(normalFont, FontStyle.Bold);
+            foreach(String word in relevantWords) {
+                Size boldSize = TextRenderer.MeasureText(word, boldFont);
+                Size normalSize = TextRenderer.MeasureText(word, normalFont);
+                if (drawPoint.X + boldSize.Width > Width) {
+                    drawPoint = new Point(0, drawPoint.Y + boldSize.Height);
+                }
+                if (bolded.Contains(word.ToLower())) {
+                    Rectangle boldRect = new Rectangle(drawPoint, boldSize);
+                    drawPoint = new Point(drawPoint.X + boldRect.Width, drawPoint.Y);
+                    TextRenderer.DrawText(e.Graphics, word, boldFont, boldRect, ForeColor);
+                } else {
+                    
+                    Rectangle normalRect = new Rectangle(drawPoint,normalSize);
+                    drawPoint = new Point(drawPoint.X + normalSize.Width, drawPoint.Y);
+                    TextRenderer.DrawText(e.Graphics, word, normalFont, normalRect, ForeColor);
+                }
+                
+            }
         }
     }
 }

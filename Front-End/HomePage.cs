@@ -40,7 +40,6 @@ namespace Front_End
                 listBox1.Visible = true;
             }
         }
-
         private void MaterialRaisedButton1_Click(object sender, EventArgs e)
         {
             if (!OpenSearchPage()) { }
@@ -60,19 +59,10 @@ namespace Front_End
             }
                
         }
-
-
-        private void MaterialRaisedButton2_Click(object sender, EventArgs e)
-        {
-            if(tree.Count > 0)
-            tree.RemoveAt(tree.Count-1);
-        }
-
         private void ListBox1_ItemSelected(object sender, EventArgs e)
         {
 
         }
-
         private void ListBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
@@ -80,7 +70,6 @@ namespace Front_End
                 ListBox1_ItemSelected(sender, e);
             }
         }
-
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {            
             tree.Clear();
@@ -92,7 +81,6 @@ namespace Front_End
 
 
         }
-
-       
+        
     }
 }

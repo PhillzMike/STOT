@@ -147,6 +147,12 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions\LblBoldWords.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Extensions\ResultCard.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="GUI.cs">
       <SubType>Form</SubType>
     </Compile>

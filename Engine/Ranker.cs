@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
-
+using System.Diagnostics;
 namespace Engine
 {
     /// <summary>
@@ -11,50 +11,64 @@ namespace Engine
     /// </summary>
     public static class Ranker
     {
-        private static Dictionary<Document, Dictionary<string, List<int>>> Results;
+        private static Stopwatch sw = new Stopwatch();
+        //TODO Optimize Ranker, takes way too much time
+        private static Dictionary<string, Dictionary<Document, List<int>>> Results;
+        private static double noOfWordsWeight = 0.7;
+        private static double consecutiveWeight = 0.3;
+        private static int howFarApartTheWordsCanBe = 2;
         /// <summary>
         /// Searches the query.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies (in ascending order) each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
-        public static List<Document> SearchQuery(List<String> query, Dictionary<Document, Dictionary<string, List<int>>> Results,int documentCount) {
+        public static List<Document> SearchQuery(List<String> query, Dictionary<string, Dictionary<Document, List<int>>> Results,int documentCount) {
             //TODO: add a feature that makes searching for a particular document by name possible
             //Calculating Tf-Idf wieghting of each word in a document
+            sw.Start();
+            double t = sw.ElapsedMilliseconds;
             Ranker.Results = Results;
-            List<double[]> CountOfAllWords = new List<double[]>();
-            foreach (Document item in Results.Keys) {
-                Dictionary<string, List<int>> positions = Results[item];
-                double[] x= new double[query.Count];
-                int iCounter = 0;
-                foreach(string word in positions.Keys) {
-                    x[iCounter++] = positions[word].Count;
+            Dictionary<Document, double[]> CountOfAllWords = new Dictionary<Document, double[]>();
+            int count = 0;
+            double t2 = sw.ElapsedMilliseconds;
+            foreach (string item in Results.Keys) {
+                Dictionary<Document, List<int>> positions = Results[item];
+                //double[] x = new double[query.Count];
+                foreach (Document doc in positions.Keys) {
+                    if (!CountOfAllWords.ContainsKey(doc))
+                        CountOfAllWords.Add(doc, new double[query.Count]);
+                    CountOfAllWords[doc][count] = positions[doc].Count;
                 }
-                for(int i = 0; i < x.Length; i++) {
-                    x[i] = TfWeight(x[i]) * IDFWeight(Results.Count,documentCount);
+                count++;
+            }
+            double t3 = sw.ElapsedMilliseconds;
+            foreach (Document item in CountOfAllWords.Keys) {
+                for (int i = 0; i < query.Count; i++) {
+                    CountOfAllWords[item][i] = TfWeight(CountOfAllWords[item][i]) * IDFWeight(CountOfAllWords.Count, documentCount);
                 }
-                CountOfAllWords.Add(x);
             }
 
+            double t4 = sw.ElapsedMilliseconds;
             //Calculating Tf-Idf weighting of each word in the query
             double[] queryVector = GetVector(query);
             for(int i = 0; i < queryVector.Length; i++) {
-                //TODO: Check the tf-idf weighting of the query
-                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(Results.Count,documentCount);
+                queryVector[i] = TfWeight(queryVector[i]) * IDFWeight(CountOfAllWords.Count,documentCount);
             }
-
+            double t5 = sw.ElapsedMilliseconds;
             //Calculating the cosine of the angles between the query vector and the document vectors
             List<double> cosOfAngle = new List<double>();
             List<double> secondGuy = new List<double>();
             List<Document> sortedDocument = new List<Document>();
-            foreach (Document item in Results.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[cosOfAngle.Count]))*0.7);
+            foreach (Document item in CountOfAllWords.Keys) {
+                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item]))*noOfWordsWeight);
                 secondGuy.Add(GetScoreBasedOnPos(query, item));
-                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * 0.3;
+                cosOfAngle[cosOfAngle.Count-1] += secondGuy[secondGuy.Count-1] * consecutiveWeight;
                 sortedDocument.Add(item);
             }
-
-            //Sorting the documents based on the cosine of the angles
+            double t9 = sw.ElapsedMilliseconds;
+            //double t6 = sw.ElapsedMilliseconds;
+            //Sorting the documents based on the cosine of the angles using insertion sort
             for (int i = 1; i < cosOfAngle.Count; i++) {
                 double key = cosOfAngle[i];
                 Document docKey = sortedDocument[i];
@@ -67,8 +81,12 @@ namespace Engine
                 cosOfAngle[j + 1] = key;
                 sortedDocument[j + 1] = docKey;
             }
+            double t10 = sw.ElapsedMilliseconds;
             return sortedDocument;
         }
+        //private static bool IsIt(List<string> query) {
+        //    return (query.Count > 1) && query[0].StartsWith("\"") && query[query.Count - 1].EndsWith("\"");
+        //}
         private static double GetCOSAngle(double[] queryVector, double[] docVector) {
             double sum = 0;
             double fD = 0;
@@ -78,61 +96,89 @@ namespace Engine
                 fD += Math.Pow(queryVector[i], 2);
                 sD += Math.Pow(docVector[i], 2);
             }
-            fD = Math.Sqrt(fD);
-            sD = Math.Sqrt(sD);
-            return sum / (fD * sD);
+            return sum / (Math.Sqrt(fD * sD));
         }
+        /// <summary>
+        /// Gets the score based on positions of elements in the query.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="doc">The document.</param>
+        /// <returns> a score between 0 and 1 based on the positions of elements in the query or 0 if the query contains only one element</returns>
         private static double GetScoreBasedOnPos(List<string> query,Document doc) {
-            //TODO: remember to consider a situation of one word in the query
+            if (query.Count == 1)
+                return 0;
             double degree = (45.0 /(query.Count - 1)) * ScoreBasedOnConWords(query, doc);
             double score = Math.Tan((degree*Math.PI)/180);
             return score;
         }
         private static double ScoreBasedOnConWords(List<string> query,Document doc) {
-            //TODO: remember to tell joda that everything semanter did to yje invt guyz, it should do also to query
-            double finalScore = 0;
+            double t7 = sw.ElapsedMilliseconds;
             var positions = new Dictionary<string,List<int>>();
             foreach (var item in query) {
-               // positions.Add(item, Results[doc][item]);
-                //if (invt.Table.ContainsKey(item) && invt.Table[item].ContainsKey(doc))
-                //    positions.Add(item, new List<int>(invt.Table[item][doc]));
-                //else
-                //    positions.Add(item, new List<int>());
-                if (Results.ContainsKey(doc) && Results[doc].ContainsKey(item))
-                    positions.Add(item, Results[doc][item]);
+                if (Results[item].ContainsKey(doc))
+                    positions.Add(item, Results[item][doc]);
                 else
-                   positions.Add(item, new List<int>());
+                    positions.Add(item, new List<int>());
             }
-            var wordsDistance = CalculateBestDiff(query, positions);
-            int prevWord = -1;
-            for (int i = 0; i < wordsDistance.Count; i++) {
-                if(wordsDistance[i] != 0) {
-                    //TODO: Check the formula u used here
-                    //finalScore += (1 - (1 / wordsDistance[i]))/(i-prevWord);
-                    //Remember dividing an int by an int would return int
-                    finalScore += (1.0 / (wordsDistance[i] * (i - prevWord)));
-                    prevWord = i;
+            return GetBest(query,positions,doc);
+        }
+        //TODO Change the return type to a tuple of the score and d pos the best match was found
+        private static double GetBest(List<string> query, Dictionary<string, List<int>> dic, Document doc) {
+            int count = 0;
+            string firstWord = query[count];
+            while (dic[firstWord].Count == 0)
+                firstWord = query[++count];
+            double finalScore = -1;
+            double score;
+            for(int i = 0; i < dic[firstWord].Count; i++) {
+                score = GetSum(GetBestDiff(firstWord, query, dic, i));
+                if (finalScore < score) {
+                    finalScore = score;
+                    doc.Relevance = dic[firstWord][i].ToString();
                 }
-             
+                finalScore = (finalScore > score) ? finalScore : score;
             }
-            //for(int i = 0; i < query.Count-1; i++) {
-            //    int firstScore = wordsDistance[i];
-            //    if (firstScore == 0)
-            //        continue;
-            //    for (int j = i + 1; j < query.Count; j++) {
-            //        int secondScore = wordsDistance[j];
-            //        if (secondScore == 0)
-            //            continue;
-            //        finalScore = 
-
-            //    }
-                    
-            //}
+            double t8 = sw.ElapsedMilliseconds;
             return finalScore;
         }
+        private static int[] GetBestDiff(string first, List<string> query, Dictionary<string, List<int>> dic, int pos) {
+            //Using the first word in the query that appears at position pos to calculate best difference
+            bool found = false;
+            int[] output = new int[query.Count];
+            for (int i = 1; i < query.Count; i++) {
+                int min = int.MaxValue;
+                int absoluteDiff;
+                for (int j = 0; j < dic[query[i]].Count; j++) {
+                    found = true;
+                    absoluteDiff = Math.Abs(dic[first][pos] - dic[query[i]][j]);
+                    if (absoluteDiff >= howFarApartTheWordsCanBe*query.Count) {
+                        break;
+                    }
+                    min = (min < absoluteDiff) ? min : absoluteDiff;
+                }
+                if (found)
+                    output[i] = min;
+            }
+
+            return output;
+        }
+        private static double GetSum(int[] scores) {
+            //trying to get the best score
+            double sum = 0;
+            int prevWord = 0;
+            for (int i = 1; i < scores.Length; i++) {
+                if (scores[i] != 0) {
+                    //If the relative position of 2 differnt guyz from the refernce word is the same
+                    if (scores[i] == scores[prevWord])
+                        scores[prevWord] *= -1;
+                    sum += (1.0 / (Math.Abs(scores[i] - scores[prevWord])) * (i - prevWord));
+                    prevWord = i;
+                }
+                    
+            }
+            return sum;
+        }
         private static List<int> CalculateBestDiff(List<string> query, Dictionary<string,List<int>> dic) {
-            //TODO: This function should locate the region of the best score used in the document
-            //TODO: I hope this works, cause if it doesn't.....
             int score;
             
             var output = new List<int>();
@@ -156,7 +202,6 @@ namespace Engine
                     if (k+1 < query.Count)
                         k++;
                     else {
-                       // output.Add(score);
                         return output;
                     }
                     second = new List<int>(dic[query[k]]);
@@ -181,21 +226,11 @@ namespace Engine
             }
             return output;
         }
-        //Author: Seyi
-        public static double[] GetVector(List<string> a) {
+        private static double[] GetVector(List<string> a) {
             var voice = new List<double>();
             var m = new HashSet<string>(a);
-            
-            int counter;
             foreach (string f in m) {
-                //voice.Add(a.FindAll(x => x == f).Count);
-                counter = 0;
-                for (int i = 0; i < a.Count; i++) {
-                    if (f.Equals(a[i])) {
-                        counter++;
-                    }
-                }
-                voice.Add(counter);
+                voice.Add(a.FindAll(x => x == f).Count);
             }
             return voice.ToArray();
         }
@@ -205,5 +240,38 @@ namespace Engine
         private static double IDFWeight(int noOfDocuments,int documentCount) {
             return Math.Log(documentCount/noOfDocuments);
         }
+        //TODO use Code contract here
+        /// <summary>
+        /// Gets or sets the weight given based on the number of the types the words occur in the document
+        /// </summary>
+        /// <value>
+        /// The weight given between 0 and 1
+        /// </value>
+        /// <exception cref="System.ArgumentOutOfRangeException">thrown when a value less than 0 or greater than 1 is given has the weight</exception>
+        public static double NoOfWordsWeight {
+            get => noOfWordsWeight;
+            set {
+                if (value <= 0 && value >= 1) { 
+                    noOfWordsWeight = value;
+                    consecutiveWeight = 1 - value;
+                }else
+                    throw new ArgumentOutOfRangeException();
+            }
+        }
+        /// <summary>
+        /// Gets weight given based on the how the words in the query appear in the documents
+        /// </summary>
+        /// <value>
+        /// The consecutive weight.
+        /// </value>
+        public static double ConsecutiveWeight { get => consecutiveWeight;}
+        /// <summary>
+        /// Gets or sets the how far apart the words could be.
+        /// </summary>
+        /// <value>
+        /// the number of words in between the words
+        /// </value>
+        public static int HowFarApartTheWordsCanBe { get => howFarApartTheWordsCanBe; set => howFarApartTheWordsCanBe = value; }
     }
+
 }

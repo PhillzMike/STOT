@@ -1,128 +1,155 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace Engine
 {
+    
     /// <summary>
     /// Author Teni
     /// </summary>
     public static class Querier
-    { 
-        
+    {
+        static Stopwatch sw = new Stopwatch();
+        static double t7, t8, t10;
+        static bool needsRanking;
         public static List<Document> Search(String query,Inverter invt) {
-           List<Format> typesPossible = new List<Format>();
-           String [] words = query.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
-            //TODO autocorrect shii
-           for(int i = 0;i < words.Length;i++) {
-                words[i] = invt.Samantha.StemWord(words[i].ToLower().Trim());
-           }
-           List<String> splitwords = new List<String>();
-           typesPossible = PossibleType(TypeChecker(words));
-           DocsFound(splitwords, typesPossible,invt);
-           
-            for (int k= 0; k<words.Length; k++)
+            sw.Start();
+            //Separate words, remove punctiations,make lowercase
+            List<String> words = Semanter.Splitwords(query,":").ToList();
+            double t = sw.ElapsedMilliseconds;
+            //Obtains possible types searched by this code
+            //methods take to long to load y?HashSet<String> typesPossible=TypeChecker(words,invt,t);
+            HashSet<String> typesPossible = new HashSet<string>();
+            for (int k = 0; k < words.Count; k++)
             {
-                if (!(invt.Stopwords.Contains(words[k]) || words[k].Equals("")))
+                if (words[k].Equals("type"))
                 {
-                    splitwords.Add(words[k]);
-                   }
+                    if ((k + 2) < words.Count && words[k + 1].Equals(":"))
+                    {
+                        if (invt.Formats.ContainsKey(words[k+2]))
+                            typesPossible.UnionWith(invt.Formats[words[k + 2]]);
+                        words.RemoveRange(k, 3);
+                        k--;
+                    }
+                    else if ((k + 1) < words.Count && words[k + 1].StartsWith(":"))
+                    {
+                        if (invt.Formats.ContainsKey(words[k+1].Substring(1)))
+                            typesPossible.UnionWith(invt.Formats[words[k + 1].Substring(1)]);
+                        words.RemoveRange(k, 2);
+                        k--;
+                    }
                 }
+                else if ((k + 1) < words.Count && words[k].Equals("type:"))
+                {
+                    if (invt.Formats.ContainsKey(words[k+1]))
+                        typesPossible.UnionWith(invt.Formats[words[k + 1]]);
+                    words.RemoveRange(k, 2);
+                    k--;
+                    //words[k] = words[k + 1] = "";
+                }
+                else if (words[k].StartsWith("type:"))
+                {
+                    if(invt.Formats.ContainsKey(words[k].Substring(5)))
+                        typesPossible.UnionWith(invt.Formats[words[k].Substring(5)]);
+                    words.RemoveAt(k);
+                    k--;
+                }
+            }
+            double t1 = sw.ElapsedMilliseconds;
+            //Fill with all types if no types possible found
+            if (typesPossible.Count == 0) 
+             typesPossible.UnionWith(invt.Formats[""]);
+            double t2 = sw.ElapsedMilliseconds;
+            //Stem words and remove stopwords
+            // slower words = words.Except(invt.Stopwords).ToList();
+            List<String> splitwords = new List<String>();
+            string stem;
+            foreach ( string word in words) {
+                stem = invt.Samantha.StemWord(word);
+                if (!(invt.Stopwords.Contains(stem)))
+                    splitwords.Add(stem);
+            }
+            double t3= sw.ElapsedMilliseconds;
             if (splitwords.Count == 0)
-                return DocsFound(splitwords, typesPossible, invt).Keys.ToList<Document>();
+                return new List<Document>();
+            //search for documents
+            Dictionary<string, Dictionary<Document, List<int>>> Results = DocsFound(splitwords, typesPossible, invt);
+            if (!needsRanking)
+                return new List<Document>();
             //throw new ArgumentNullException("File doesn't Exist");
-            //TODO addwrong words to Dictionary
-            //TODO search for all wrong words corrections even if the word is correct
-            return Ranker.SearchQuery(splitwords, DocsFound(splitwords, typesPossible,invt),invt.DocumentCount);
-        }
-        public static List<String> AutoComplete(String querywords)
-        {
-            //TODO review this later
-            String[] splitwords = querywords.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
-            // return Semanter.Suggestions(splitwords);
-            return null;
+            //TODO "words within quote"
+            double t4 = sw.ElapsedMilliseconds;
+            return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount); ;
         }
 
-        private static Dictionary<Document, Dictionary<string,List<int>>> DocsFound(List<String> querywords, List<Format> typesPossible, Inverter invt) {
-        Dictionary<Document, Dictionary<string,List<int>>> found = new Dictionary<Document, Dictionary<string,List<int>>>();
-            //double[] count = new double[querywords.Count];
-            //for (int t = 0; t < querywords.Count; t++) {
-            //    count[t] = 0;
-            //}
-            
+        private static Dictionary<string, Dictionary<Document,List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible, Inverter invt) {
+            needsRanking = false;
+            t7 = sw.ElapsedMilliseconds;
+            var found = new Dictionary<string, Dictionary<Document, List<int>>>();
+            t8 = sw.ElapsedMilliseconds;
             foreach (string word in querywords) {
-                
-                try {
                     Document[] available = invt.AllDocumentsContainingWord(word);
-                    foreach (var item in available) {
-                        if (!found.ContainsKey(item)) {
-                            found.Add(item, new Dictionary<string, List<int>>());
-                        }
-                        found[item].Add(word, invt.PositionsWordOccursInDocument(word,item).ToList());
-                    }
+                if (!found.ContainsKey(word))
+                {
+                    found.Add(word, new Dictionary<Document, List<int>>());
                 }
-                catch (KeyNotFoundException) {
-                }
-            }
-            if (querywords.Count<=0) {
-                List<Document> available = invt.Files.Values.ToList<Document>();
+               
                 foreach (var item in available) {
-                    if (!found.ContainsKey(item)) 
-                        found.Add(item, new Dictionary<string,List<int>>());
-                }
-            }
-            //for(int i=0; i<querywords.Count; i++)
-            //{
-            //    List<Document> available = invt.Table[querywords[i]].Keys.ToList();
-            //    foreach (Document t in available) {
-            //        count[i] = invt.Table[querywords[i]][t].Count;
-            //        if (typesPossible.Count > 0) {
-            //            if (typesPossible.Contains(t.Type)) {
-            //                found.Add(t, count);
-            //            }
-            //        }
-            //        else {
-            //            found.Add(t, count);
-            //        }
-            //    }
-            //}
-            return found;
-        }
-        public static String TypeChecker(String [] s)
-        { 
-        for (int i = 0; i < s.Length; i++) {
-                if (s[i].ToLower().Equals("type"))
-                { if (s[i + 1].Equals(":"))
-                     {
-                      string type = s[i + 2];
-                      s[i] = s[i + 1] = s[i + 2] = "";
-                      return type;  
+                    if (item.Exists)
+                    {
+                        if ((!needsRanking)) needsRanking = true;
+                        if (typesPossible.Contains(item.Type))
+                            found[word].Add(item, invt.PositionsWordOccursInDocument(word, item).ToList());
                     }
-                }         
-            }
-            return "";
-    }
-        public static List<Format> PossibleType(string s)
-        {
-            List<Format> typesPossible = new List<Format>();
-            foreach ( string m in Enum.GetNames(typeof(Format))){
-                bool teni = true;
-                for (int i = 0; i < s.Length; i++) {
-                  if (!(s[i] == m[i]))
-                {
-                        teni = false; 
-               }     
-             }
-                if (teni)
-                {
-                    Enum.TryParse<Format>(m, out Format doctype);
-                    typesPossible.Add(doctype);
+                    
                 }
             }
-            return typesPossible;
+            t10 = sw.ElapsedMilliseconds;
+           return found;
         }
-        
+        public static HashSet<string> TypeChecker(List<string> s,Inverter invt,double x)
+        {
+            double start = sw.ElapsedMilliseconds;
+            HashSet<string> type = new HashSet<string>();
+            double to;
+        for (int i = 0; i < s.Count; i++) {
+                double ta = sw.ElapsedMilliseconds;
+                if (s[i].Equals("type"))
+                {
+                    if ((i + 2) < s.Count && s[i + 1].Equals(":"))
+                    {
+                        type.UnionWith(invt.Formats[s[i + 2]]);
+                        s.RemoveRange(i,3);
+                        i--;
+                       // s[i] = s[i + 1] = s[i + 2] = "";
+                    }
+                    else if ((i + 1) < s.Count && s[i + 1].StartsWith(":"))
+                    {
+                        type.UnionWith(invt.Formats[s[i + 1].Substring(1)]);
+                        s.RemoveRange(i, 2);
+                        i--;
+                    }
+                }
+                else if ((i + 1) < s.Count && s[i].Equals("type:"))
+                {
+                    type.UnionWith(invt.Formats[s[i + 1]]);
+                    s.RemoveRange(i, 2);
+                    i--;
+                    //s[i] = s[i + 1] = "";
+                }
+                else if (s[i].StartsWith("type:")) {
+                    type.UnionWith(invt.Formats[s[i].Substring(5)]);
+                    s.RemoveAt(i);
+                    i--;
+                }
+                to = sw.ElapsedMilliseconds;
+            }
+            return type;
+    }
 
     }
 }

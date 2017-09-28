@@ -6,8 +6,6 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
 
-//TODO [assembly: InternalsVisibleTo("InverterTest")]
-
 namespace Engine {
     [Serializable]
     /// <summary>
@@ -20,10 +18,11 @@ namespace Engine {
         /// </summary>
         /// <param name="StopWords">The path to a File COntaining all the stop words.</param>
         /// <exception cref="IOException">The specified path could not be Read</exception>
-        public Inverter(String StopWords,String DictionaryPath,String CommonWordsPath,List<String> BooksPaths){
+        public Inverter(String StopWords,String DictionaryPath,String CommonWordsPath,String FormatsPath,List<String> BooksPaths){
+            Formats = new Dictionary<string, List<string>>();
+            AddToFormats(File.ReadAllLines(FormatsPath));
             _samantha = new Semanter(DictionaryPath,CommonWordsPath);
             //TODO tomiwas idea about weight distribution based on file size
-            //TODO Add FileName
             foreach(String BookPath in BooksPaths)
                 _samantha.AddToDictionary(BookPath,1);
             _stopwords = new HashSet<string>();
@@ -37,6 +36,25 @@ namespace Engine {
                 throw new IOException("The specified path could not be Read",ex);
             }
         }
+        private void AddToFormats(string[] types)
+        {
+            foreach(string type in types)
+            {
+                for(int i = 0; i <= type.Length; i++)
+                {
+                    string sub = type.Substring(0, i);
+                    if (Formats.ContainsKey(sub))
+                    {
+                            Formats[sub].Add(type);
+                    }
+                    else
+                    {
+                        Formats.Add(sub, new List<string> { type } );
+                    }
+                }
+            }
+        }
+        public Dictionary<string, List<string>> Formats;
       
         /// <summary>
         /// Gets the semanter used in this inverter.
@@ -94,24 +112,57 @@ namespace Engine {
         /// <param name="words">The words in the Documents in Form of a List of Strings.</param>
         /// <param name="doc">The document to be added.</param>
         public void AddDocument(String[] words,Document doc) {
-            int i = 0;
+            int i = -1;
+            foreach(string addWord in Semanter.Splitwords(doc.Name+" " + doc.Type).Reverse())
+            {
+                string word = Samantha.StemWord(addWord);
+                string correctedword = Samantha.StemWord(Samantha.CorrectWord(addWord));
+                if (_stopwords.Contains(word))
+                {
+                    continue;
+                }
+                AddWordToTable(word, doc, i);
+                if (!word.Equals(correctedword))
+                {
+                    AddWordToTable(correctedword, doc, i);
+                }
+                i--;
+            }
+            i = 0;
             foreach(String addWord in words) {
-                string word =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
+                string word = Samantha.StemWord(addWord.ToLower().Trim());
+                string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
                 if (_stopwords.Contains(word)) {
                     continue;
                 }
-                if(invertedIndexTable.ContainsKey(word)) {
-                    if(invertedIndexTable[word].ContainsKey(doc)) {
-                        invertedIndexTable[word][doc].Add(i++);
-                    } else {
-                        invertedIndexTable[word].Add(doc,new List<int> { i++ });
-                    }
-                } else {
-                    invertedIndexTable.Add(word,new Dictionary<Document,List<int>> {{ doc,new List<int> { i++ } } });
+                AddWordToTable(word, doc, i);
+                if (!word.Equals(correctedword))
+                {
+                    AddWordToTable(correctedword, doc, i);
                 }
+                i++;
             }
             _files.Add(doc.Address,doc);
+            LogMovement("../../../Resources/InvtLogs.txt", "Added doc : " + doc.Address);
             _documentCount++;
+        }
+        private void AddWordToTable(String word,Document doc,int i) {
+            if (invertedIndexTable.ContainsKey(word))
+            {
+                if (invertedIndexTable[word].ContainsKey(doc))
+                {
+                    invertedIndexTable[word][doc].Add(i);
+                }
+                else
+                {
+                    invertedIndexTable[word].Add(doc, new List<int> { i });
+                }
+            }
+            else
+            {
+                invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
+            }
+            LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
         }
 
         /// <summary>
@@ -119,6 +170,7 @@ namespace Engine {
         /// </summary>
         /// <param name="doc">The document.</param>
         public void DeleteDocument(Document doc) {
+            LogMovement("../../../Resources/InvtLogs.txt", "Deletes" + doc.Address);
             Files.Remove(doc.Address);
             doc.Delete();
             _documentCount--;
@@ -134,6 +186,7 @@ namespace Engine {
             if(invertedIndexTable[word].Keys.Count == 0) {
                 invertedIndexTable.Remove(word);
             }
+            LogMovement("../../../Resources/InvtLogs.txt", "Removed unused doc in word " + word);
         }
 
         /// <summary>
@@ -141,14 +194,28 @@ namespace Engine {
         /// </summary>
         public void GarbageCollector() {
             //TODO 3dO test 
-            //Deadlock avoidance
+            //Deadlock avoidance in database
             Thread a = new Thread(new ThreadStart(GC));
             a.Start();
         }
         public String[] AllWordsInTable {
            get=> invertedIndexTable.Keys.ToArray<String>();
         }
-        public Document[] AllDocumentsContainingWord(string Word) { return invertedIndexTable[Word].Keys.ToArray<Document>(); }
+        /// <summary>
+        /// Returns all documents Containing this word, returns an empty array if the word isn't in any document
+        /// </summary>
+        /// <param name="Word">The word to be searched for</param>
+        /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
+        public Document[] AllDocumentsContainingWord(string Word) {
+            if (invertedIndexTable.ContainsKey(Word)){
+                return invertedIndexTable[Word].Keys.ToArray<Document>();
+            }
+            else
+            {
+                return new Document[0];
+            }
+            
+        }
         public int[] PositionsWordOccursInDocument(string Word,Document doc) {
             return invertedIndexTable[Word][doc].ToArray();
         }
@@ -157,6 +224,7 @@ namespace Engine {
                 foreach(Document doc in AllDocumentsContainingWord(word)) {
                     if(!doc.Exists) {
                         RemoveDocument(word,doc);
+                       
                     }
                 }
 
@@ -199,6 +267,14 @@ namespace Engine {
                 //TODO Remember to create an exception class for this search Engine and remove null
             }
             return invt;
+        }
+        public static void LogMovement(string path, string message)
+        {
+            try
+            {
+                File.AppendAllText(path, message + "\n\r");
+            }
+            catch { }
         }
     }
 }

@@ -93,8 +93,6 @@ namespace Engine {
         /// <value>
         /// The Inverted Index Table.
         /// </value>
-        //TODO 3dO synchronize
-        //TODO Move to Database
           private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
 
         /// <summary>
@@ -112,11 +110,11 @@ namespace Engine {
         /// <param name="words">The words in the Documents in Form of a List of Strings.</param>
         /// <param name="doc">The document to be added.</param>
         public void AddDocument(String[] words,Document doc) {
-            int i = -1;
-            foreach(string addWord in Semanter.Splitwords(doc.Name+" " + doc.Type).Reverse())
+            int i = 0;
+            String NameToTrie="";
+            foreach(string addWord in Semanter.Splitwords(doc.Name))
             {
-               // Samantha.AddWordToDictionary(addWord, 2);
-                //TODO trie together doc.Name
+                NameToTrie += addWord + " ";
                 if (_stopwords.Contains(addWord)) {
                     continue;
                 }
@@ -126,11 +124,11 @@ namespace Engine {
                     correctedwords.Add(Samantha.StemWord(Stemm));
                 foreach(string correctedword in correctedwords)
                     AddWordToTable(correctedword, doc, i);
-                i--;
+                i++;
             }
-            i = 0;
-            foreach(String addWord in words) {
-                //Samantha.AddWordToDictionary(addWord, 1);
+            _samantha.TrieWord(NameToTrie,7);
+            AddWordToTable(doc.Type, doc, i++);
+            foreach (String addWord in words) {
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
                 
                 if (_stopwords.Contains(word)) {
@@ -148,6 +146,7 @@ namespace Engine {
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
+            _samantha.TrieWord(word,4);
             if (invertedIndexTable.ContainsKey(word))
             {
                 if (invertedIndexTable[word].ContainsKey(doc))
@@ -160,9 +159,8 @@ namespace Engine {
                 }
             }
             else
-            {
                 invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
-            }
+             
             LogMovement( "Added document " + doc.Address+ " under word \"" + word + "\"");
         }
 

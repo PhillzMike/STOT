@@ -13,14 +13,20 @@ namespace Engine
     /// </summary>
     public class Semanter
     {
-        private Dictionary<String,int> _dictionary;
+        Dictionary<String,int> _dictionary;
+        Dictionary<String, Dictionary<String, int>> Trie = new Dictionary<string, Dictionary<string, int>>();
         public static string[] punctuations = { " ",",","@","#","$","%","^","&","*","+","=","`","~","<",">","/","\\","|",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
         public static string[] Splitwords(string query) {
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
         }
         public static string[] Splitwords(string query,string except)
         {
-            //TODO split numbers ?
+            List<string> segments = new List<string>();
+            for(int i = 0; i < query.Length; i++) {
+                if (query[i] == '"') {
+
+                }
+            }
             List<string> puncs = punctuations.ToList();
             puncs.Remove(except);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -55,11 +61,12 @@ namespace Engine
         /// <param name="word">The word.</param>
         /// <param name="weight">The weight.</param>
         public void AddWordToDictionary(string word,int weight) {
+            if(weight!=1)
+                TrieWord(word,(weight<3)?3:weight);
             if (_dictionary.ContainsKey(word))
                 _dictionary[word] += weight;
             else 
                 _dictionary.Add(word, weight);
-            //TODO trie and add to trie(adding more than one word to trie)
             
         }
         /// <summary>
@@ -75,13 +82,34 @@ namespace Engine
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
-        public List<String> Suggestions(List<String> query, int noOfResults) {
-            //TODO suggest queries
+        public List<String> Suggestions(String query, int noOfResults) {
+            String[] Listwords = Splitwords(query.Trim().ToLower());
+            query = String.Join(" ", Listwords);
+            int noRemaining = noOfResults;
+            String PreWord="";
+            HashSet<String> Results = new HashSet<string>();
+            foreach(String word in Listwords) {
+                if (Trie.ContainsKey(query)) {
+                    foreach (String res in Trie[query].OrderByDescending(x => x.Value).Select(k => k.Key)) {
+                        if(Results.Add(PreWord + res))
+                            noRemaining--;
+                        if (noRemaining == 0) {
+                            break;
+                        }
+                    }
+                }
+                if (noRemaining == 0) {
+                    break;
+                }
+                PreWord += word + " ";
+                if(!query.Equals(word))
+                query = query.Substring(word.Length + 1);
+            }
 
             //Autocorrect from dictionary
             //Filename
             //Previous searches
-            return null;
+            return Results.ToList();
         }
         /// <summary>
         /// Corrects the specified query. *For DID you mean, or showing results instead
@@ -542,5 +570,24 @@ namespace Engine
             return deletes.Union(transposes).Union(replaces).Union(inserts).ToList();
         }
 #endregion
+
+        public void TrieWord(String word) {
+            TrieWord(word, 1);
+        }
+        public void TrieWord(String word,int weight) {
+            for (int i = 1; i < word.Length; i++) {
+                if (word[i] == ' ')
+                    TrieWord(word.Substring(i + 1), weight);
+                String key = word.Substring(0, i);
+                if (Trie.ContainsKey(key)){
+                    if (Trie[key].ContainsKey(word))
+                        Trie[key][word]+=weight;
+                    else
+                        Trie[key].Add(word, weight);
+                } else { 
+                    Trie.Add(key, new Dictionary<string, int> { { word, weight } });
+                }
+            }
+        }
     }
 }

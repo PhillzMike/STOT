@@ -78,8 +78,6 @@ namespace Front_End
                   tree.Add(it);*/
             //Below Lines will open the search page the moment Querier.Search starts returning search Results
            
-
-
         }
         
     }

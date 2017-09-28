@@ -239,5 +239,11 @@
       <Install>false</Install>
     </BootstrapperPackage>
   </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loading-dots.gif" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\loading-dots1.gif" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

@@ -42,6 +42,7 @@
             this.ResultsWindow = new System.Windows.Forms.FlowLayoutPanel();
             this.Pages = new System.Windows.Forms.FlowLayoutPanel();
             this.KeyPressTimer = new System.Windows.Forms.Timer(this.components);
+            this.StoreSearch = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.ResultsWindow.SuspendLayout();
             this.SuspendLayout();
@@ -84,11 +85,12 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
+            this.listBox1.Items.AddRange(new object[] {
+            "Power"});
             this.listBox1.Location = new System.Drawing.Point(12, 53);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(503, 69);
             this.listBox1.TabIndex = 2;
-            this.listBox1.Visible = false;
             // 
             // tableLayoutPanel1
             // 
@@ -186,6 +188,11 @@
             this.KeyPressTimer.Interval = 500;
             this.KeyPressTimer.Tick += new System.EventHandler(this.KeyPressTimer_Tick);
             // 
+            // StoreSearch
+            // 
+            this.StoreSearch.Interval = 20000;
+            this.StoreSearch.Tick += new System.EventHandler(this.StoreSearch_Tick);
+            // 
             // SearchPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -225,5 +232,6 @@
         private System.Windows.Forms.FlowLayoutPanel ResultsWindow;
         private System.Windows.Forms.FlowLayoutPanel Pages;
         private System.Windows.Forms.Timer KeyPressTimer;
+        private System.Windows.Forms.Timer StoreSearch;
     }
 }

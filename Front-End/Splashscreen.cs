@@ -1,15 +1,10 @@
 ﻿using Engine;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace Front_End {
@@ -19,48 +14,50 @@ namespace Front_End {
             this.CenterToScreen();
         }
         Inverter invt;
+        bool skippable =false, movedOn=false;
         UNILAG gui;
         private void Splashscreen_Shown(object sender, EventArgs e) {
             Thread a = new Thread(new ThreadStart(StartUp));
             a.Start();
         }
         void ChangeLabel(String Text) {
-            lblDetails.Text = Text;
+            this.Invoke(new Action(() =>lblDetails.Text = Text));
         }
         void StartUp() {
-            if (InvokeRequired) {
-                this.Invoke(new Action(() => ChangeLabel("Loading Database...")));
-            }
+                Thread.Sleep(300);
+                ChangeLabel("Loading Database");
             try {
+                //throw new Exception();
                 invt = Inverter.Load("Inverter.invt");
                 Inverter.LogMovement("^^^^^^^^^Succesfully loaded previous Inverter: ");
             } catch (Exception ex) {
-                if (InvokeRequired) {
-                    this.Invoke(new Action(() => ChangeLabel("Loading Database failed. Creating new one...")));
-                }
+                ChangeLabel("Loading Database failed. Creating new one");
                 Inverter.LogMovement("!!!!!!!!!Error loading previous Inverter: " + ex.Message);
                 invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
                                   , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string> { "../../../Resources/Sherlock.txt" });
             }
-            if (InvokeRequired) {
-                this.Invoke(new Action(() => ChangeLabel("Loading GUI...")));
-                this.Invoke(new Action(() => gui = new UNILAG()));
-            }
+            
+            ChangeLabel("Loading Interface");
+            this.Invoke(new Action(() => gui = new UNILAG()));
             Querier.Invt = invt;
             //gui = new UNILAG();
-            if (InvokeRequired) {
-                this.Invoke(new Action(() => ChangeLabel("Updating Database...")));
-            }
+            ChangeLabel("Updating Database");
+            skippable = true;
             //Crawler
             Thread a = new Thread(new ThreadStart(FirstInvtUpdate));
             a.Start();
         }
         void OpenGui() {
-            lblDetails.Text = "Done.";
-            Thread a = new Thread(new ThreadStart(UpdateInverterThread));
-            a.Start();
-            gui.Show();
-            Hide();
+                this.Invoke(new Action(() => {
+                    if (!movedOn) {
+                        movedOn = true;
+                        lblDetails.Text = "Done.";
+                       
+                        Thread.Sleep(300);
+                        gui.Show();
+                        Hide();
+                    }
+                }));
         }
         void UpdateInverterThread() {
             Stopwatch sw = new Stopwatch();
@@ -70,7 +67,6 @@ namespace Front_End {
                 sw.Restart();
                 UpdateInverter();
                 Inverter.LogMovement("lastSeen");
-                //TODO remove last lastseen
                 //Wait one minute
                 while (sw.ElapsedMilliseconds < 60000) { }
             }
@@ -82,9 +78,25 @@ namespace Front_End {
             File.Move("Inverter.invt.temp", "Inverter.invt");
         }
         void FirstInvtUpdate() {
+            Thread.Sleep(20000);
             UpdateInverter();
-            if (InvokeRequired) {
-                this.Invoke(new Action(() => OpenGui()));
+            this.Invoke(new Action(() => pictureBox2.Visible = false));
+            Thread a = new Thread(new ThreadStart(UpdateInverterThread));
+            a.Start();
+            OpenGui();
+        }
+
+        private void Label1_Click(object sender, EventArgs e) {
+            OpenGui();
+        }
+
+        private void LblDetails_SizeChanged(object sender, EventArgs e) {
+            pictureBox2.Location  = new Point(lblDetails.Size.Width + lblDetails.Location.X -3,pictureBox2.Location.Y);
+        }
+
+        private void Splashscreen_DoubleClick(object sender, EventArgs e) {
+            if (skippable) {
+                label1.Visible = true;
             }
         }
     }

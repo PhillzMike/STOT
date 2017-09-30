@@ -118,7 +118,7 @@ namespace Engine
         /// <returns></returns>
         public List<String> Autocorrect(String query) {
             List<string> results = new List<string>();
-            foreach(string word in query.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries).ToList()) {
+            foreach(string word in query.Split(punctuations, StringSplitOptions.RemoveEmptyEntries).ToList()) {
                 results.Add(CorrectWord(word));
             }
             return results;
@@ -569,7 +569,8 @@ namespace Engine
 
             return deletes.Union(transposes).Union(replaces).Union(inserts).ToList();
         }
-#endregion
+        #endregion
+
 
         public void TrieWord(String word) {
             TrieWord(word, 1);

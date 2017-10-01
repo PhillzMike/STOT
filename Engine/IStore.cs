@@ -49,6 +49,12 @@ namespace Engine {
         /// <param name="doc">The document.</param>
         /// <returns></returns>
         int[] PositionsWordOccursInDocument(string word, Document doc);
+        /// <summary>
+        /// Wordses the positions.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <returns></returns>
+        Dictionary<Document, List<int>> WordsPositions(string word);
 
 
     }

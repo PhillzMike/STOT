@@ -42,7 +42,21 @@ namespace Engine
                 collection.InsertOneAsync(docs).Wait();
             }
         }
-
+        public Dictionary<Document, List<int>> WordsPositions(string word) {
+            var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
+            var result = collection.Find(filter).Single()["array"].AsBsonArray;
+            var x = new Dictionary<Document, List<int>>();
+            foreach (var item in result) {
+                var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
+                var doc = documents.Find(filter2).Single();
+                var value = new List<int>();
+                foreach (var i in item["value"].AsBsonArray) {
+                    value.Add((int)i);
+                }
+                x.Add(doc, value);
+            }
+            return x;
+        }
         private async void AddToDocTable(Document doc) {
             var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
             var answer = documents.Find(filter).FirstOrDefault();

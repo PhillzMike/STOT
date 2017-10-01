@@ -91,22 +91,25 @@ namespace Engine {
             t7 = sw.ElapsedMilliseconds;
             var found = new Dictionary<Document, Dictionary<string, List<int>>>();
             t8 = sw.ElapsedMilliseconds;
-            HashSet<Document> available = new HashSet<Document>(new DocumentComparer());
+            Dictionary<string,Dictionary<Document, List<int>>> available = new Dictionary<string, Dictionary<Document, List<int>>>();
+            HashSet<Document> availableDocs = new HashSet<Document>(new DocumentComparer());
             String QueryToTrie = "";
             foreach (string word in querywords) {
                 QueryToTrie += word + " ";
-                available.UnionWith(invt.AllDocumentsContainingWord(word));
+                Dictionary<Document, List<int>> thisWords = invt.AllDocumentsPositionsContainingWord(word);
+                available.Add(word, thisWords);
+                availableDocs.UnionWith(thisWords.Keys);
             }
 
-            foreach (Document x in available) {
+            foreach (Document x in availableDocs) {
                 if (typesPossible.Contains(x.Type) && x.Exists) {
                     Dictionary<string, List<int>> wordDict = new Dictionary<string, List<int>>();
                     foreach (string word in querywords) {
 
 
-                        if (invt.WordIsInDoc(word, x)) {
+                        if (available[word].ContainsKey(x)) {
                             if (!wordDict.ContainsKey(word)) {
-                                wordDict.Add(word, invt.PositionsWordOccursInDocument(word, x).ToList());
+                                wordDict.Add(word, available[word][x]);
                             }
                         } else {
                             if (!wordDict.ContainsKey(word)) {

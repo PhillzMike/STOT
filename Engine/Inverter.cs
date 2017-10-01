@@ -203,22 +203,12 @@ namespace Engine {
         /// </summary>
         /// <param name="Word">The word to be searched for</param>
         /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
-        public Document[] AllDocumentsContainingWord(string Word) {
-            return store.AllDocumentsContainingWord(Word);
+        public Dictionary<Document,List<int>> AllDocumentsPositionsContainingWord(string Word) {
+            return store.WordsPositions(Word);
             
         }
         public int[] PositionsWordOccursInDocument(string Word,Document doc) {
             return store.PositionsWordOccursInDocument(Word, doc);
-        }
-        public void GC() {
-            foreach(string word in AllWordsInTable) {
-                foreach(Document doc in AllDocumentsContainingWord(word)) {
-                    if(!doc.Exists) {
-                        RemoveDocument(word,doc);
-                    }
-                }
-
-            }
         }
 
         /// <summary>

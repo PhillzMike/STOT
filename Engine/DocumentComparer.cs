@@ -8,7 +8,7 @@ namespace Engine {
     class DocumentComparer : IEqualityComparer<Document> {
 
         public bool Equals(Document x, Document y) {
-            return (x.Available == y.Available) && (x.Address == y.Address)
+            return (x.Exists == y.Exists) && (x.Address == y.Address)
                 && (x.Name == y.Name);
         }
 

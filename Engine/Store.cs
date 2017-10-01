@@ -44,9 +44,10 @@ namespace Engine
         }
         public Dictionary<Document, List<int>> WordsPositions(string word) {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
-            var result = collection.Find(filter).Single()["array"].AsBsonArray;
-            var x = new Dictionary<Document, List<int>>();
-            foreach (var item in result) {
+            var result = collection.Find(filter).FirstOrDefault();
+            var x = new Dictionary<Document, List<int>>(new DocumentComparer());
+            if(result!=null)
+            foreach (var item in result["array"].AsBsonArray) {
                 var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
                 var doc = documents.Find(filter2).Single();
                 var value = new List<int>();

@@ -10,7 +10,7 @@ namespace Front_End {
         static void Main() {
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new UNILAG());
+            Application.Run(new Splashscreen());
            
         }
     }

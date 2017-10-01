@@ -13,15 +13,21 @@ namespace Engine
     /// </summary>
     public class Semanter
     {
-        private Dictionary<String,int> _dictionary;
-        public static string[] punctuations = { " ",",",":","(",")","?","!",";","-","[","]","\"","\t","\n","\r" };
+        Dictionary<String,int> _dictionary;
+        Dictionary<String, Dictionary<String, int>> Trie = new Dictionary<string, Dictionary<string, int>>();
+        public static string[] punctuations = { " ",",","@","#","$","%","^","&","*","+","=","`","~","<",">","/","\\","|",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
         public static string[] Splitwords(string query) {
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
         }
         public static string[] Splitwords(string query,string except)
         {
-            //TODO split numbers 
-            List<string> puncs = new List<string> { " ", ",", ":", "(", ")", "?", "!", ";", "-", "[", "]", "\"", "\t", "\n", "\r" };
+            List<string> segments = new List<string>();
+            for(int i = 0; i < query.Length; i++) {
+                if (query[i] == '"') {
+
+                }
+            }
+            List<string> puncs = punctuations.ToList();
             puncs.Remove(except);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
@@ -45,13 +51,23 @@ namespace Engine
         /// <param name="weight">The weight of each word in the Dictionary NOTE: words with higher weight will be suggested first.</param>
         private void LoadToDictionary(String words,int weight) {
         foreach(string word in words.Split(Semanter.punctuations,StringSplitOptions.RemoveEmptyEntries).ToList()) {
-            string trimmedWord = word.Trim().ToLower();
-                if(_dictionary.ContainsKey(trimmedWord))
-                    _dictionary[trimmedWord]+=weight;
-                else {
-                    _dictionary.Add(trimmedWord,weight);
-                }
+                string trimmedWord = word.Trim().ToLower();
+                AddWordToDictionary(trimmedWord, weight);
         }
+        }
+        /// <summary>
+        /// Adds the word to dictionary and increments the weight if it already exists.
+        /// </summary>
+        /// <param name="word">The word.</param>
+        /// <param name="weight">The weight.</param>
+        public void AddWordToDictionary(string word,int weight) {
+            if(weight!=1)
+                TrieWord(word,(weight<3)?3:weight);
+            if (_dictionary.ContainsKey(word))
+                _dictionary[word] += weight;
+            else 
+                _dictionary.Add(word, weight);
+            
         }
         /// <summary>
         /// Loads the words in the string (Space or new Line  "\n" delimeter) to dictionary.
@@ -66,22 +82,46 @@ namespace Engine
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
-        public List<String> Suggestions(List<String> query, int noOfResults) {
-            //TODO suggest queries
+        public List<String> Suggestions(String query, int noOfResults) {
+            String[] Listwords = Splitwords(query.Trim().ToLower());
+            query = String.Join(" ", Listwords);
+            int noRemaining = noOfResults;
+            String PreWord="";
+            HashSet<String> Results = new HashSet<string>();
+            foreach(String word in Listwords) {
+                if (Trie.ContainsKey(query)) {
+                    foreach (String res in Trie[query].OrderByDescending(x => x.Value).Select(k => k.Key)) {
+                        if(Results.Add(PreWord + res))
+                            noRemaining--;
+                        if (noRemaining == 0) {
+                            break;
+                        }
+                    }
+                }
+                if (noRemaining == 0) {
+                    break;
+                }
+                PreWord += word + " ";
+                if(!query.Equals(word))
+                query = query.Substring(word.Length + 1);
+            }
+
             //Autocorrect from dictionary
             //Filename
-            //words in my inverted index
             //Previous searches
-            return null;
+            return Results.ToList();
         }
         /// <summary>
         /// Corrects the specified query. *For DID you mean, or showing results instead
         /// </summary>
         /// <param name="query">The query.</param>
         /// <returns></returns>
-        public List<String> Autocorrect(List<String> query) {
-            //TODO Autocorrect query
-            return null;
+        public List<String> Autocorrect(String query) {
+            List<string> results = new List<string>();
+            foreach(string word in query.Split(punctuations, StringSplitOptions.RemoveEmptyEntries).ToList()) {
+                results.Add(CorrectWord(word));
+            }
+            return results;
         }
         /// <summary>
         /// The Stemmer transforms a word into its root form.
@@ -430,12 +470,12 @@ namespace Engine
         /// A list containing the specified number of suggestions correcting the specified word.
         /// </returns>
         public List<string> CorrectWord(string word,int top) {
-            top = (top <= 1) ? 1:top;
+            top = (top <0) ? 1:top;
             if(string.IsNullOrEmpty(word))
                 return new List<String>();
             word = word.ToLower();
             // known and common
-            if(_dictionary.ContainsKey(word)&&_dictionary[word]>2)
+            if(_dictionary.ContainsKey(word)&&_dictionary[word]>2&&top==1)
                 return new List<String> { word };
 
             List<String> list = Edits(word);
@@ -445,17 +485,19 @@ namespace Engine
                 if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
                     candidates.Add(wordVariation,_dictionary[wordVariation]);
             }
-
-            if (candidates.Count > 0) 
-                return candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>();
+            
             // known_edits2()
             foreach(string item in list) {
                 foreach(string wordVariation in Edits(item)) {
                     if(_dictionary.ContainsKey(wordVariation) && !candidates.ContainsKey(wordVariation))
-                        candidates.Add(wordVariation,_dictionary[wordVariation]);
+                        candidates.Add(wordVariation,_dictionary[wordVariation]/3);
                 }
             }
-            return (candidates.Count > 0) ? candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>() : new List<String>();
+            return (candidates.Count > 0) ? 
+                (top==0)?
+                    candidates.OrderByDescending(x=>x.Value).Select(k=>k.Key).ToList()
+                    :candidates.OrderByDescending(x => x.Value).Take(top).Select(k => k.Key).ToList<string>()
+                : new List<String>();
         }
         /// <summary>
         /// Corrects the word.
@@ -527,6 +569,26 @@ namespace Engine
 
             return deletes.Union(transposes).Union(replaces).Union(inserts).ToList();
         }
-#endregion
+        #endregion
+
+
+        public void TrieWord(String word) {
+            TrieWord(word, 1);
+        }
+        public void TrieWord(String word,int weight) {
+            for (int i = 1; i < word.Length; i++) {
+                if (word[i] == ' ')
+                    TrieWord(word.Substring(i + 1), weight);
+                String key = word.Substring(0, i);
+                if (Trie.ContainsKey(key)){
+                    if (Trie[key].ContainsKey(word))
+                        Trie[key][word]+=weight;
+                    else
+                        Trie[key].Add(word, weight);
+                } else { 
+                    Trie.Add(key, new Dictionary<string, int> { { word, weight } });
+                }
+            }
+        }
     }
 }

@@ -102,7 +102,7 @@ namespace Engine {
         /// <value>
         /// The Inverted Index Table.
         /// </value>
-          private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
+         // private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
 
         /// <summary>
         /// Gets the stopwords which are ignored in this inverted Index Table.
@@ -252,13 +252,12 @@ namespace Engine {
                     invt = (Inverter)(bform.Deserialize(stream));
                     stream.Close();
                 };
+                invt.store = new Store();
                 return invt;
             }
             catch (Exception ex){
                 throw new Exception("An error occured trying to load Inverter from " + loadID + ". The path is either corrupted or doesn't exist",ex);
             }
-            invt.store = new Store();
-            return invt;
         }
         public static void LogMovement(string message)
         {

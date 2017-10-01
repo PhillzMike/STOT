@@ -29,7 +29,7 @@ namespace Engine.Tests {
             Double t5 = sw.ElapsedMilliseconds;
 
 
-            List<Document> x = Querier.Search(" Joda ", invt);
+            List<Document> x = Querier.Search(" Joda ");
             Double Firsttime = sw.ElapsedMilliseconds - t5;
             sw.Restart();
             string[] queries = {" United    abstract   State's    type:t   of     America type :p",
@@ -40,7 +40,7 @@ namespace Engine.Tests {
             List<long> time = new List<long>();
             for (int i = 0; i < 1000; i++) {
                 foreach (string query in queries)
-                    results.Add(Querier.Search(query, invt));
+                    results.Add(Querier.Search(query));
                 time.Add(sw.ElapsedMilliseconds);
             }
             double endTime = sw.ElapsedMilliseconds;

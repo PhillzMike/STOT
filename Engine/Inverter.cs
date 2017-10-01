@@ -130,19 +130,19 @@ namespace Engine {
             AddWordToTable(doc.Type, doc, i++);
             foreach (String addWord in words) {
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
-                
-                if (_stopwords.Contains(word)) {
+                if (_stopwords.Contains(word))
                     continue;
-                }
-                HashSet<string> correctedwords = new HashSet<string> { word };
+             
+                AddWordToTable(word, doc, i);
+                /*HashSet<string> correctedwords = new HashSet<string> { word };
                 foreach (string Stemm in Samantha.CorrectWord(addWord, 3))
                     correctedwords.Add(Samantha.StemWord(Stemm));
                 foreach (string correctedword in correctedwords)
-                    AddWordToTable(correctedword, doc, i);
+                    AddWordToTable(correctedword, doc, i);*/
                 i++;
             }
-            _files.Add(doc.Address,doc);
-            LogMovement("########Added document to index : " + doc.Address);
+            _files.Add(doc.Address,doc); 
+            //LogMovement("########Added document to index : " + doc.Address);
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
@@ -161,7 +161,7 @@ namespace Engine {
             else
                 invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
              
-            LogMovement( "Added document " + doc.Address+ " under word \"" + word + "\"");
+            //LogMovement( "Added document " + doc.Address+ " under word \"" + word + "\"");
         }
 
         /// <summary>

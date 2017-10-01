@@ -16,18 +16,18 @@ namespace Engine {
                 pathfile= Directory.EnumerateFiles(path, "*."+type,SearchOption.AllDirectories).Select(Path.GetFullPath).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
-            bool RemovedFile = false;
+           // bool RemovedFile = false;
             foreach (String item in files.Keys.ToArray<String>()) {
                 if (!pathfiles.Contains(item))
                 {
                     Streamer.RemoveFile(files[item]);
-                    RemovedFile = true;
+                 //   RemovedFile = true;
                 }
                 else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0)
                 {
                     try {
                         Streamer.ModifyFile(files[item]);
-                        RemovedFile = true;
+                     //   RemovedFile = true;
                     } catch (Exception ex) {
                         Inverter.LogMovement("!!!!!!!!!Error withdrawing from " + files[item].Address + " while modifying. ERROR MESSAGE:" + ex.Message);
                     }
@@ -46,8 +46,8 @@ namespace Engine {
                     }
                 }
             }
-            if (RemovedFile)
-                invt.GC();
+          //  if (RemovedFile)
+          //      invt.GC();
            
         }
         private static Document GetDocumentFrom(String path) {

@@ -29,7 +29,7 @@ namespace Engine {
         /// <param name="doc">The document.</param>
         /// <param name="invt">The Inverted Index.</param>
         public static void RemoveFile(Document doc,Inverter invt) {
-            invt.DeleteDocument(doc);
+            invt.DeleteDocumentAsync(doc);
         }
         /// <summary>
         /// Modifies the file in the inverted Index Table.

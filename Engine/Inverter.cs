@@ -13,6 +13,8 @@ namespace Engine {
     /// Author 3dO
     /// </summary>
     public class Inverter{
+        [NonSerialized]
+        private IStore store;
         /// <summary>
         /// Initializes a new instance of the <see cref="Inverter" /> class.
         /// </summary>
@@ -22,12 +24,15 @@ namespace Engine {
             Formats = new Dictionary<string, List<string>>();
             AddToFormats(File.ReadAllLines(FormatsPath));
             _samantha = new Semanter(DictionaryPath,CommonWordsPath);
+            
             //TODO tomiwas idea about weight distribution based on file size
             foreach(String BookPath in BooksPaths)
                 _samantha.AddToDictionary(BookPath,1);
             _stopwords = new HashSet<string>();
             _documentCount = 0;
-            invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
+            this.store = new Store();
+          
+            //invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
             _files = new Dictionary<string,Document>();
             try {
                 foreach(String stp in File.ReadAllLines(StopWords))
@@ -36,7 +41,11 @@ namespace Engine {
                 throw new IOException("The specified path could not be Read",ex);
             }
         }
-        private void AddToFormats(string[] types)
+        public Inverter(String StopWords, String DictionaryPath, String CommonWordsPath, String FormatsPath, List<String> BooksPaths, IStore database):
+            this(StopWords,DictionaryPath,CommonWordsPath,FormatsPath,BooksPaths){
+            this.store = database;
+        }
+            private void AddToFormats(string[] types)
         {
             foreach(string type in types)
             {
@@ -95,7 +104,7 @@ namespace Engine {
         /// </value>
         //TODO 3dO synchronize
         //TODO Move to Database
-          private Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
+          public Dictionary<String,Dictionary<Document,List<int>>> invertedIndexTable;
 
         /// <summary>
         /// Gets the stopwords which are ignored in this inverted Index Table.
@@ -129,6 +138,7 @@ namespace Engine {
                 i--;
             }
             i = 0;
+            //TODO add words to dictionary first
             foreach(String addWord in words) {
                 string word = Samantha.StemWord(addWord.ToLower().Trim());
                 string correctedword =  Samantha.StemWord(Samantha.CorrectWord(addWord.ToLower().Trim()));
@@ -141,37 +151,26 @@ namespace Engine {
                     AddWordToTable(correctedword, doc, i);
                 }
                 i++;
+               // if ((i % 50000) == 0)
+                 //   i = i + 1 - 1;
             }
             _files.Add(doc.Address,doc);
-            LogMovement("../../../Resources/InvtLogs.txt", "Added doc : " + doc.Address);
+            //LogMovement("../../../Resources/InvtLogs.txt", "Added doc : " + doc.Address);
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
-            if (invertedIndexTable.ContainsKey(word))
-            {
-                if (invertedIndexTable[word].ContainsKey(doc))
-                {
-                    invertedIndexTable[word][doc].Add(i);
-                }
-                else
-                {
-                    invertedIndexTable[word].Add(doc, new List<int> { i });
-                }
-            }
-            else
-            {
-                invertedIndexTable.Add(word, new Dictionary<Document, List<int>> { { doc, new List<int> { i } } });
-            }
-            LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
+            store.AddWordToTable(word, doc, i);
+            //LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
         }
 
         /// <summary>
         /// Delete this document
         /// </summary>
         /// <param name="doc">The document.</param>
-        public void DeleteDocument(Document doc) {
-            LogMovement("../../../Resources/InvtLogs.txt", "Deletes" + doc.Address);
+        public void DeleteDocumentAsync(Document doc) {
+            //LogMovement("../../../Resources/InvtLogs.txt", "Deletes" + doc.Address);
             Files.Remove(doc.Address);
+            store.Delete(doc);
             doc.Delete();
             _documentCount--;
         }
@@ -182,11 +181,7 @@ namespace Engine {
         /// <param name="word">The word that found a Document that has been Deleted.</param>
         /// <param name="doc">The document pointer to be removed.</param>
         public void RemoveDocument(String word,Document doc) {
-            invertedIndexTable[word].Remove(doc);
-            if(invertedIndexTable[word].Keys.Count == 0) {
-                invertedIndexTable.Remove(word);
-            }
-            LogMovement("../../../Resources/InvtLogs.txt", "Removed unused doc in word " + word);
+            store.RemoveDocument(word,doc);
         }
 
         /// <summary>
@@ -195,17 +190,15 @@ namespace Engine {
         public void GarbageCollector() {
             //TODO 3dO test 
             //Deadlock avoidance in database
-            Thread a = new Thread(new ThreadStart(GC));
-            a.Start();
+           // Thread a = new Thread(new ThreadStart(GC));
+            //a.Start();
         }
         public String[] AllWordsInTable {
-           get=> invertedIndexTable.Keys.ToArray<String>();
+            get => store.AllWordsInTable();
         }
         public bool WordIsInDoc(string word,Document doc)
         {
-            if (invertedIndexTable.ContainsKey(word))
-                return (invertedIndexTable[word].ContainsKey(doc));
-            return false;
+            return store.CheckWordInDoc(word, doc);
         }
         /// <summary>
         /// Returns all documents Containing this word, returns an empty array if the word isn't in any document
@@ -213,24 +206,17 @@ namespace Engine {
         /// <param name="Word">The word to be searched for</param>
         /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
         public Document[] AllDocumentsContainingWord(string Word) {
-            if (invertedIndexTable.ContainsKey(Word)){
-                return invertedIndexTable[Word].Keys.ToArray<Document>();
-            }
-            else
-            {
-                return new Document[0];
-            }
+            return store.AllDocumentsContainingWord(Word);
             
         }
         public int[] PositionsWordOccursInDocument(string Word,Document doc) {
-            return invertedIndexTable[Word][doc].ToArray();
+            return store.PositionsWordOccursInDocument(Word, doc);
         }
         private void GC() {
             foreach(string word in AllWordsInTable) {
                 foreach(Document doc in AllDocumentsContainingWord(word)) {
                     if(!doc.Exists) {
                         RemoveDocument(word,doc);
-                       
                     }
                 }
 
@@ -244,7 +230,7 @@ namespace Engine {
         /// <param name="doc">The document modified.</param>
         public Document ModifyDocument(String[] words,Document doc) {
             Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastAccessTime);
-            DeleteDocument(doc);
+            DeleteDocumentAsync(doc);
             AddDocument(words,newDoc);
             return newDoc;
         }
@@ -272,6 +258,7 @@ namespace Engine {
             catch (FileNotFoundException) {
                 //TODO Remember to create an exception class for this search Engine and remove null
             }
+            invt.store = new Store();
             return invt;
         }
         public static void LogMovement(string path, string message)

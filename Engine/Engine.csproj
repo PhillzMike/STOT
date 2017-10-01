@@ -196,7 +196,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Document.cs" />
+    <Compile Include="DocumentComparer.cs" />
     <Compile Include="Inverter.cs" />
+    <Compile Include="IStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Querier.cs" />
     <Compile Include="Ranker.cs" />

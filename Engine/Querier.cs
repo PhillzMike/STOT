@@ -98,7 +98,7 @@ namespace Engine
             t7 = sw.ElapsedMilliseconds;
             var found = new Dictionary<Document, Dictionary<string, List<int>>>();
             t8 = sw.ElapsedMilliseconds;
-            HashSet<Document> available = new HashSet<Document>();
+            HashSet<Document> available = new HashSet<Document>(new DocumentComparer());
             foreach (string word in querywords)
                 available.UnionWith(invt.AllDocumentsContainingWord(word));
             foreach (Document x in available)

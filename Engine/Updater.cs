@@ -15,21 +15,21 @@ namespace Engine {
                 pathfile= Directory.EnumerateFiles(path, "*."+doc,SearchOption.AllDirectories).ToList<string>();
                 pathfiles = pathfiles.Union<string>(pathfile).ToList<string>();
             }
-            bool RemovedFile = false;
+            //bool RemovedFile = false;
             foreach (String item in files.Keys.ToArray<String>()) {
                 if (!pathfiles.Contains(item))
                 {
                     Streamer.RemoveFile(files[item], invt);
-                    RemovedFile = true;
+                   // RemovedFile = true;
                 }
                 else if (new FileInfo(item).LastWriteTime.CompareTo(files[item].LastModified) != 0)
                 {
                     Streamer.ModifyFile(files[item], invt);
-                    RemovedFile = true;
+                    //RemovedFile = true;
                 }
             }
-            if (RemovedFile)
-                invt.GarbageCollector();
+            //if (RemovedFile)
+            //    invt.GarbageCollector();
             Dictionary<string,Exception> ErrorList = new Dictionary<string,Exception>();
             //adding file
             //creating a document object and pass into streamer.adddfile

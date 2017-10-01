@@ -51,13 +51,15 @@ namespace Engine
             double t5 = sw.ElapsedMilliseconds;
             //Calculating the cosine of the angles between the query vector and the document vectors
             List<double> cosOfAngle = new List<double>();
-            //List<double> secondGuy = new List<double>();
-            List<Document> sortedDocument = new List<Document>(CountOfAllWords.Keys);
+            List<double> secondGuy = new List<double>();
+            //List<Document> sortedDocument = new List<Document>(CountOfAllWords.Keys);
+            List<Document> sortedDocument = new List<Document>();
+
             foreach (Document item in CountOfAllWords.Keys) {
-                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item])) * noOfWordsWeight + GetScoreBasedOnPos(query, item) * consecutiveWeight) ;
-                //secondGuy.Add(GetScoreBasedOnPos(query, item));
-                //cosOfAngle[cosOfAngle.Count - 1] += secondGuy[secondGuy.Count - 1] * consecutiveWeight;
-                //sortedDocument.Add(item);
+                cosOfAngle.Add((GetCOSAngle(queryVector, CountOfAllWords[item])) * noOfWordsWeight);
+                secondGuy.Add(GetScoreBasedOnPos(query, item));
+                cosOfAngle[cosOfAngle.Count - 1] += secondGuy[secondGuy.Count - 1] * consecutiveWeight;
+                sortedDocument.Add(item);
             }
             double t9 = sw.ElapsedMilliseconds;
             //double t6 = sw.ElapsedMilliseconds;
@@ -177,7 +179,7 @@ namespace Engine
             return (count == 0) ? 0 : 1 + Math.Log(count);
         }
         private static double IDFWeight(int noOfDocuments,int documentCount) {
-            return Math.Log(documentCount/noOfDocuments);
+            return (noOfDocuments > 0) ? Math.Log(documentCount/noOfDocuments) : 0;
         }
         //TODO use Code contract here
         /// <summary>

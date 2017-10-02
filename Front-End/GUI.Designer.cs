@@ -33,7 +33,6 @@
             this.Name = "UNILAG";
             this.Text = "UNILAG";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;
-            this.Load += new System.EventHandler(this.UNILAG_Load);
             this.SizeChanged += new System.EventHandler(this.UNILAG_SizeChanged);
             this.ResumeLayout(false);
 

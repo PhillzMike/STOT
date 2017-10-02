@@ -6,9 +6,8 @@ using System.Threading.Tasks;
 using MongoDB.Bson;
 using MongoDB.Driver;
 using MongoDB.Bson.Serialization;
-namespace Engine
-{
-    public class Store : IStore{
+namespace Engine {
+    public class Store : IStore {
         private MongoClient client;
         private readonly string connectionString = "mongodb://127.0.0.1:27017";
         private IMongoDatabase database;
@@ -24,7 +23,7 @@ namespace Engine
         }
         public Store(IMongoDatabase db) {
             database = db;
-            
+
             collection = database.GetCollection<BsonDocument>("STOT");
             documents = database.GetCollection<Document>("Document");
         }
@@ -46,16 +45,16 @@ namespace Engine
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
             var result = collection.Find(filter).FirstOrDefault();
             var x = new Dictionary<Document, List<int>>(new DocumentComparer());
-            if(result!=null)
-            foreach (var item in result["array"].AsBsonArray) {
-                var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
-                var doc = documents.Find(filter2).Single();
-                var value = new List<int>();
-                foreach (var i in item["value"].AsBsonArray) {
-                    value.Add((int)i);
+            if (result != null)
+                foreach (var item in result["array"].AsBsonArray) {
+                    var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
+                    var doc = documents.Find(filter2).Single();
+                    var value = new List<int>();
+                    foreach (var i in item["value"].AsBsonArray) {
+                        value.Add((int)i);
+                    }
+                    x.Add(doc, value);
                 }
-                x.Add(doc, value);
-            }
             return x;
         }
         private async void AddToDocTable(Document doc) {
@@ -66,7 +65,7 @@ namespace Engine
         }
         private bool CheckWord(string word) {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
-             var answer = collection.Find(filter).FirstOrDefault();
+            var answer = collection.Find(filter).FirstOrDefault();
             if (answer == null)
                 return false;
             return true;
@@ -98,7 +97,7 @@ namespace Engine
             BsonDocument bdoc = new BsonDocument { { "_id", word } };
             bdoc.Add("array", new BsonArray { bdoc1 });
             collection.InsertOne(bdoc);
-            
+
         }
         private void RemoveDoc(string word, Document doc) {
             var filter1 = Builders<BsonDocument>.Filter.Eq("_id", word);
@@ -123,9 +122,15 @@ namespace Engine
                 collection.DeleteOne(filter);
             }
         }
-        public void AddWordToTable(String word, Document doc, int i) {
+        /// <summary>
+        /// Adds the word to table under the Document.
+        /// </summary>
+        /// <param name="word">The word to be added.</param>
+        /// <param name="doc">The document under which the word is added.</param>
+        /// <param name="i">The index/Position the word occurs in the document.</param>
+        public void AddWordUnderDocument(String word, Document doc, int i) {
             if (CheckWord(word)) {
-                if (CheckWordInDoc(word,doc)) {
+                if (CheckWordInDoc(word, doc)) {
                     AddAsync(word, doc, i);
                 } else {
                     AddDocToWord(word, doc, i);
@@ -141,7 +146,7 @@ namespace Engine
             List<Document> allDocs = new List<Document>();
             if (CheckWord(word)) {
                 var ans = collection.Find(filter).Single()["array"].AsBsonArray;
-                
+
                 foreach (BsonDocument item in ans) {
                     var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
                     allDocs.Add(documents.Find(filter2).Single());
@@ -170,4 +175,3 @@ namespace Engine
 
     }
 }
- 

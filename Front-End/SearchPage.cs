@@ -97,7 +97,7 @@ namespace Front_End {
         }
         Thread a;
         void FillSuggestions() {
-            List<string> suggestions = Querier.Invt.Samantha.Suggestions(TxtSearch1.Text, 5);
+            List<string> suggestions = Querier.AutoComplete(TxtSearch1.Text, 5);
             if (InvokeRequired){
                 this.Invoke(new Action(() => ShowSuggestions(suggestions)));
             }

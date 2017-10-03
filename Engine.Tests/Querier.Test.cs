@@ -24,9 +24,9 @@ namespace Engine.Tests
             string s = "type                    :  pdf";
             Char[] space = { ' ' };
             string[] sarray = s.Split(space, StringSplitOptions.RemoveEmptyEntries);
-            //string actual = Querier.TypeChecker(sarray);
-           // string expected = ("pdf");
-           //Assert.AreEqual<string>(expected, actual);
+            string actual = Querier.TypeChecker(sarray);
+            string expected = ("pdf");
+           Assert.AreEqual<string>(expected, actual);
         }
 
     }

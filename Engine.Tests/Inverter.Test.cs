@@ -1,7 +1,5 @@
 using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Engine;
-using System.IO;
 using System.Collections.Generic;
 using System.Diagnostics;
 
@@ -24,7 +22,6 @@ namespace Engine.Tests {
             Double t3 = sw.ElapsedMilliseconds;
             // invt.SaveThis("Tester");
             Double t4 = sw.ElapsedMilliseconds;
-            //TODO figure out how and why first run slower
             invt.Samantha.StemWord("United");
             Double t5 = sw.ElapsedMilliseconds;
 

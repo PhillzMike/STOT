@@ -34,7 +34,6 @@ namespace Engine {
             Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible);
             if (Results.Keys.Count<2)
                 return Results.Keys.ToList();
-            //TODO "words within quote"
             return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount);
         }
         public static List<String> AutoComplete(String querywords,int noOfResults) {

@@ -108,7 +108,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.63636F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1505, 104);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1283, 104);
             this.tableLayoutPanel1.TabIndex = 6;
             this.tableLayoutPanel1.Visible = false;
             // 
@@ -139,7 +139,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(5, 40);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(1495, 62);
+            this.label2.Size = new System.Drawing.Size(1271, 62);
             this.label2.TabIndex = 2;
             this.label2.Text = resources.GetString("label2.Text");
             // 
@@ -169,7 +169,7 @@
             this.ResultsWindow.Location = new System.Drawing.Point(12, 141);
             this.ResultsWindow.Name = "ResultsWindow";
             this.ResultsWindow.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
-            this.ResultsWindow.Size = new System.Drawing.Size(1551, 684);
+            this.ResultsWindow.Size = new System.Drawing.Size(1329, 684);
             this.ResultsWindow.TabIndex = 9;
             // 
             // Pages
@@ -178,9 +178,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Pages.BackColor = System.Drawing.Color.Transparent;
             this.Pages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Pages.Location = new System.Drawing.Point(503, 871);
+            this.Pages.Location = new System.Drawing.Point(503, 731);
             this.Pages.Name = "Pages";
-            this.Pages.Size = new System.Drawing.Size(562, 37);
+            this.Pages.Size = new System.Drawing.Size(340, 37);
             this.Pages.TabIndex = 10;
             // 
             // KeyPressTimer
@@ -197,7 +197,7 @@
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1600, 920);
+            this.ClientSize = new System.Drawing.Size(1378, 780);
             this.Controls.Add(this.Pages);
             this.Controls.Add(this.ResultsWindow);
             this.Controls.Add(this.SearchTime);

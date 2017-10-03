@@ -8,9 +8,12 @@ using System.Text.RegularExpressions;
 namespace Engine {
 
     /// <summary>
-    /// Author Teni
-    /// Don't forget to set Querier.invt before you begin
+    /// Gets the input query from the user, filters the stop words from the query,
+    /// gets the possible types of the documents which the query can have,
+    /// The class returns the filtered words from the query and the document and the position they occur 
+    /// in the document to the ranker.
     /// </summary>
+
     public static class Querier {
         public static Inverter Invt { get { return invt; } set { invt = value; } }
         static Inverter invt;
@@ -34,13 +37,23 @@ namespace Engine {
             Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible);
             if (Results.Keys.Count<2)
                 return Results.Keys.ToList();
-            //TODO "words within quote"
             return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount);
         }
+        /// <summary>
+        /// Expands strings that have been partially entered in an edit control into complete strings
+        /// </summary>
+        /// <param name="querywords">A string of words from the query after removing the stopwords.</param>
+        /// <param name="noOfResults">The number of suggestions from the query</param>
+        /// <returns></returns>
         public static List<String> AutoComplete(String querywords,int noOfResults) {
             return invt.Samantha.Suggestions(querywords,noOfResults);
         }
-
+        /// <summary>
+        /// gets the document that contain the words in the query
+        /// </summary>
+        /// <param name="querywords">The querywords.</param>
+        /// <param name="typesPossible">The types of document possible.</param>
+        /// <returns></returns>
         private static Dictionary<Document, Dictionary<string, List<int>>> DocsFound(List<String> querywords, HashSet<string> typesPossible) {
             var found = new Dictionary<Document, Dictionary<string, List<int>>>();
             Dictionary<string,Dictionary<Document, List<int>>> available = new Dictionary<string, Dictionary<Document, List<int>>>();
@@ -75,7 +88,12 @@ namespace Engine {
             }
             return found;
         }
-        static HashSet<String> TypeChecker(List<string> words) {
+        /// <summary>
+        /// If given a specified type by the User, gets the type inorder to display document of only those types.
+        /// </summary>
+        /// <param name="words">The String of words entered by the user.</param>
+        /// <returns></returns>
+        public static HashSet<String> TypeChecker(List<string> words) {
             HashSet<String> typesPossible = new HashSet<string>();
             for (int k = 0; k < words.Count; k++) {
                 if (words[k].Equals("type")) {

@@ -104,7 +104,7 @@ namespace Engine {
             }
             if (typesPossible.Count == 0)
                 typesPossible.UnionWith(invt.Formats[""]);
-            return typesPossible;
+            return typesPossible; 
         }
 
     }

@@ -7,7 +7,7 @@ namespace Engine
     /// <summary>
     /// The Representation Of the available documents within the code.
     /// </summary>
-    public class Document
+    public class Document : Interfaces.IDocument
     {
         private string _Name;
         private string _Address;
@@ -88,7 +88,7 @@ namespace Engine
         /// </value>
         public string Address {
             get { return _Address; }
-            set {
+            private set {
                 if(string.IsNullOrWhiteSpace(value))
                     throw new ArgumentNullException("Document Path","String is null Exception");
                 _Address = value;
@@ -103,7 +103,7 @@ namespace Engine
         /// </value>
         public string Type {
             get { return _Type; }
-            set {_Type = value; }
+            private set {_Type = value; }
         }
         [BsonDateTimeOptions]
         /// <summary>
@@ -114,7 +114,7 @@ namespace Engine
         /// </value>
         public DateTime LastModified {
             get { return _LastSeen; }
-            set {_LastSeen=value; }
+            private set {_LastSeen=value; }
         }
         [BsonElement("Relevance")]
         /// <summary>

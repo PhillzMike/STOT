@@ -209,6 +209,7 @@
             this.Name = "SearchPage";
             this.Text = "SearchPage";
             this.Load += new System.EventHandler(this.SearchPage_Load);
+            this.Resize += new System.EventHandler(this.SearchPage_Resize);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResultsWindow.ResumeLayout(false);

@@ -30,12 +30,12 @@ namespace Engine {
         /// <param name="doc">The document.</param>
         void RemoveDocument(string word, Document doc);
         /// <summary>
-        /// Adds the word to table.
+        /// Adds the word to table under the Document.
         /// </summary>
-        /// <param name="word">The word.</param>
-        /// <param name="doc">The document.</param>
-        /// <param name="i">The i.</param>
-        void AddWordToTable(String word, Document doc, int i);
+        /// <param name="word">The word to be added.</param>
+        /// <param name="doc">The document under which the word is added.</param>
+        /// <param name="i">The index/Position the word occurs in the document.</param>
+        void AddWordUnderDocument(String word, Document doc, int i);
         /// <summary>
         /// Alls the documents containing word.
         /// </summary>

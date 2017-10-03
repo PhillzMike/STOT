@@ -21,14 +21,35 @@ namespace Engine
         }
         public static string[] Splitwords(string query,string except)
         {
-            List<string> segments = new List<string>();
-            for(int i = 0; i < query.Length; i++) {
+            List<string> puncs = punctuations.ToList();
+            puncs.Remove(except);/*
+            List<string> output = new List<string>();
+            String Segment = "";
+            String Quoted = "";
+            bool inQuote = false;
+            
+            for (int i = 0; i < query.Length; i++) {
                 if (query[i] == '"') {
-
+                    if (inQuote) {
+                        output.Add(Regex.Replace(Quoted.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries).ToList().j);
+                        inQuote = false;
+                        Quoted = "";
+                    } else {
+                       output.AddRange( Regex.Replace(Segment.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries));
+                        inQuote = true;
+                        Segment = "";
+                    }
+                } else {
+                    if (inQuote) {
+                        Quoted += query[i];
+                    } else {
+                        Segment += query[i];
+                    }
                 }
             }
-            List<string> puncs = punctuations.ToList();
-            puncs.Remove(except);
+            String leftOver = (Quoted.Length > 0) ? Quoted : (Segment.Length > 0) ? Segment : "";
+            Regex.Replace(leftOver.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
+            */
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
         public Semanter(String toDictionary,String toCommon) {

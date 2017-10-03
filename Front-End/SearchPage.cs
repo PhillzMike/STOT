@@ -11,13 +11,14 @@ namespace Front_End {
         public HomePage Homepage { get; set; }
         string searchTerm;
         List<List<Document>> searchresults;
-        //TODO change
-        //TODO highlight current page after search
-        int DocsPerPage = 6;
+        List<Document> searchresultlist;
+        int currentPage;
+        int DocsPerPage = 4;
         private Stopwatch sw = new Stopwatch();
 
         public SearchPage() {
             InitializeComponent();
+            searchresultlist = new List<Document>();
             a = new Thread(new ThreadStart(FillSuggestions));
         }
         public string SearchTxt { set { TxtSearch1.Text = value; TxtSearch1.SelectionStart = TxtSearch1.Text.Length; } }
@@ -55,18 +56,34 @@ namespace Front_End {
             Pages.Controls.Clear();
             sw.Start();
             searchTerm = TxtSearch1.Text;
-            List<Document> searchresultlist = Querier.Search(TxtSearch1.Text);
+            searchresultlist = Querier.Search(TxtSearch1.Text);
             searchresults = DivideIntoPages(searchresultlist);
             SearchTime.Text = ((double)sw.ElapsedMilliseconds) + "ms";
             sw.Reset();
-            if (searchresults.Count > 0) {
-                foreach (Document x in searchresults[0]) {
+            DisplayPages(0);
+            currentPage = 0;
+            StoreSearch.Stop();
+           
+            StoreSearch.Start();
+            //  this.Close();
+            //   (this.MdiParent as UNILAG).LoadHomePage();
+        }
+
+        private void DisplayPages(int j)
+        {
+            if (searchresults.Count > 0)
+            {
+                foreach (Document x in searchresults[j])
+                {
                     ResultsWindow.Controls.Add(new ResultCard(x, TxtSearch1.Text));
                 }
             }
-            if (searchresults.Count > 1) {
-                for (int i = 1; i <= searchresults.Count; i++) {
-                    Button num = new Button {
+            if (searchresults.Count > 1)
+            {
+                for (int i = 1; i <= searchresults.Count; i++)
+                {
+                    Button num = new Button
+                    {
                         FlatStyle = System.Windows.Forms.FlatStyle.Flat,
                         Size = new System.Drawing.Size(30, 30),
                         Text = i + "",
@@ -77,14 +94,10 @@ namespace Front_End {
                     Pages.Controls.Add(num);
                 }
             }
-            StoreSearch.Stop();
-            StoreSearch.Start();
-            //  this.Close();
-            //   (this.MdiParent as UNILAG).LoadHomePage();
         }
         Thread a;
         void FillSuggestions() {
-            List<string> suggestions = Querier.Invt.Samantha.Suggestions(TxtSearch1.Text, 5);
+            List<string> suggestions = Querier.AutoComplete(TxtSearch1.Text, 5);
             if (InvokeRequired){
                 this.Invoke(new Action(() => ShowSuggestions(suggestions)));
             }
@@ -116,6 +129,7 @@ namespace Front_End {
             foreach (Document x in searchresults[pageIndex - 1]) {
                 ResultsWindow.Controls.Add(new ResultCard(x, searchTerm));
             }
+            currentPage = pageIndex - 1;
         }
 
 
@@ -140,6 +154,20 @@ namespace Front_End {
         private void StoreSearch_Tick(object sender, EventArgs e) {
             Querier.Invt.Samantha.TrieWord(TxtSearch1.Text.Trim().ToLower());
             StoreSearch.Stop();
+        }
+
+        private void SearchPage_Resize(object sender, EventArgs e)
+        {
+            //if size of screen is small, leave the number of documents per page
+            //if size of screen is fit to screen, add a document to page
+            double panelsize;
+            panelsize = Size.Height - 186;
+            DocsPerPage = (int)Math.Floor(panelsize / 110);
+            searchresults = DivideIntoPages(searchresultlist);
+            ResultsWindow.Controls.Clear();
+            Pages.Controls.Clear();
+            DisplayPages(currentPage);
+
         }
     }
 }

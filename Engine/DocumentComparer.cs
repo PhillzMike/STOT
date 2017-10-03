@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace Engine {
-    class DocumentComparer : IEqualityComparer<Document> {
+    public class DocumentComparer : IEqualityComparer<Document> {
 
         public bool Equals(Document x, Document y) {
             return (x.Exists == y.Exists) && (x.Address == y.Address)

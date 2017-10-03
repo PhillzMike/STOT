@@ -5,6 +5,7 @@ using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace Engine {
     [Serializable]
@@ -31,9 +32,6 @@ namespace Engine {
             _stopwords = new HashSet<string>();
             _documentCount = 0;
             this.store = new Store();
-          
-            //invertedIndexTable = new Dictionary<string,Dictionary<Document,List<int>>>();
-            _files = new Dictionary<string,Document>();
             try {
                 foreach(String stp in File.ReadAllLines(StopWords))
                     _stopwords.Add(stp);
@@ -80,8 +78,7 @@ namespace Engine {
         /// <value>
         /// The files stored in the Table.
         /// </value>
-        public Dictionary<String,Document> Files { get => _files; }
-        private Dictionary<String,Document> _files;
+        public Dictionary<String,Document> Files { get => store.GetAllDoc(); }
 
         /// <summary>
         /// Gets the count of all the Documents in the inverted Index Table.
@@ -152,7 +149,6 @@ namespace Engine {
                // if ((i % 50000) == 0)
                  //   i = i + 1 - 1;
             }
-            _files.Add(doc.Address,doc); 
             //LogMovement("########Added document to index : " + doc.Address);
             _documentCount++;
         }
@@ -211,12 +207,16 @@ namespace Engine {
             return store.PositionsWordOccursInDocument(Word, doc);
         }
 
-        /// <summary>
-        /// When a document has been modified.
-        /// </summary>
-        /// <param name="words">The words in the new Document.</param>
-        /// <param name="doc">The document modified.</param>
-        public Document ModifyDocument(String[] words,Document doc) {
+        public string GetRelevance(string address, int pos) {
+             return store.GetRelevance(address, pos);
+        }
+
+            /// <summary>
+            /// When a document has been modified.
+            /// </summary>
+            /// <param name="words">The words in the new Document.</param>
+            /// <param name="doc">The document modified.</param>
+            public Document ModifyDocument(String[] words,Document doc) {
             Document newDoc = new Document(doc,(new FileInfo(doc.Address)).LastAccessTime);
             DeleteDocumentAsync(doc);
             AddDocument(words,newDoc);

@@ -91,6 +91,7 @@
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(503, 69);
             this.listBox1.TabIndex = 2;
+            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.ListBox1_SelectedIndexChanged);
             // 
             // tableLayoutPanel1
             // 
@@ -174,13 +175,14 @@
             // 
             // Pages
             // 
-            this.Pages.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
+            this.Pages.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
+            this.Pages.AutoSize = true;
+            this.Pages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Pages.BackColor = System.Drawing.Color.Transparent;
             this.Pages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Pages.Location = new System.Drawing.Point(503, 731);
+            this.Pages.Location = new System.Drawing.Point(330, 768);
             this.Pages.Name = "Pages";
-            this.Pages.Size = new System.Drawing.Size(340, 37);
+            this.Pages.Size = new System.Drawing.Size(0, 0);
             this.Pages.TabIndex = 10;
             // 
             // KeyPressTimer
@@ -209,6 +211,7 @@
             this.Name = "SearchPage";
             this.Text = "SearchPage";
             this.Load += new System.EventHandler(this.SearchPage_Load);
+            this.Resize += new System.EventHandler(this.SearchPage_Resize);
             this.tableLayoutPanel1.ResumeLayout(false);
             this.tableLayoutPanel1.PerformLayout();
             this.ResultsWindow.ResumeLayout(false);

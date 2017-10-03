@@ -153,7 +153,7 @@ namespace Engine {
             _documentCount++;
         }
         private void AddWordToTable(String word,Document doc,int i) {
-            store.AddWordToTable(word, doc, i);
+            store.AddWordUnderDocument(word, doc, i);
             //LogMovement("../../../Resources/InvtLogs.txt", "Added doc in word " + word+"document path: "+doc.Address);
         }
 

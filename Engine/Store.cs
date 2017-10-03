@@ -16,8 +16,8 @@ namespace Engine {
         public Store() {
             client = new MongoClient(connectionString);
             database = client.GetDatabase("STOT");
-            database.DropCollection("STOT");
-            database.DropCollection("Document");
+            //database.DropCollection("STOT");
+            //database.DropCollection("Document");
             collection = database.GetCollection<BsonDocument>("STOT");
             documents = database.GetCollection<Document>("Document");
         }

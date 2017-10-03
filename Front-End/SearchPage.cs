@@ -65,8 +65,6 @@ namespace Front_End {
             StoreSearch.Stop();
            
             StoreSearch.Start();
-            //  this.Close();
-            //   (this.MdiParent as UNILAG).LoadHomePage();
         }
 
         private void DisplayPages(int j)
@@ -88,7 +86,6 @@ namespace Front_End {
                         Size = new System.Drawing.Size(30, 30),
                         Text = i + "",
                         UseVisualStyleBackColor = true,
-                        //Click += new EventHandler(PageNumber)
                     };
                     num.Click += new EventHandler(PageNumber);
                     Pages.Controls.Add(num);
@@ -111,7 +108,6 @@ namespace Front_End {
             if (a.IsAlive)
                 a.Abort();
             a = new Thread(new ThreadStart(FillSuggestions));
-            //TODO Autocorrect
             KeyPressTimer.Stop();
             KeyPressTimer.Start();
             a.Start();
@@ -123,7 +119,6 @@ namespace Front_End {
         }
 
         private void PageNumber(object sender, EventArgs e) {
-            //Search();
             ResultsWindow.Controls.Clear();
             int.TryParse((sender as Button).Text, out int pageIndex);
             foreach (Document x in searchresults[pageIndex - 1]) {
@@ -168,6 +163,10 @@ namespace Front_End {
             Pages.Controls.Clear();
             DisplayPages(currentPage);
 
+        }
+
+        private void ListBox1_SelectedIndexChanged(object sender, EventArgs e) {
+            TxtSearch1.Text = listBox1.SelectedItem.ToString();
         }
     }
 }

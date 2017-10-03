@@ -37,7 +37,7 @@ namespace Engine {
             Dictionary<Document, Dictionary<string, List<int>>> Results = DocsFound(splitwords, typesPossible);
             if (Results.Keys.Count<2)
                 return Results.Keys.ToList();
-            return Ranker.SearchQuery(splitwords, Results, invt.DocumentCount);
+            return Ranker.RankQuery(splitwords, Results, invt.DocumentCount);
         }
         /// <summary>
         /// Expands strings that have been partially entered in an edit control into complete strings

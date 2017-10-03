@@ -55,7 +55,7 @@ namespace Engine {
         /// <param name="word">The word.</param>
         /// <returns></returns>
         Dictionary<Document, List<int>> WordsPositions(string word);
-
-
+         string GetRelevance(string address, int pos);
+        Dictionary<string, Document> GetAllDoc();
     }
 }

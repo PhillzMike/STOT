@@ -93,7 +93,6 @@ namespace Front_End {
         private void LblDetails_SizeChanged(object sender, EventArgs e) {
             pictureBox2.Location  = new Point(lblDetails.Size.Width + lblDetails.Location.X -3,pictureBox2.Location.Y);
         }
-
         private void Splashscreen_DoubleClick(object sender, EventArgs e) {
             if (skippable) {
                 label1.Visible = true;

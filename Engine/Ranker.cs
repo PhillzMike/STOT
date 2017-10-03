@@ -16,8 +16,8 @@ namespace Engine
         private static Stopwatch sw = new Stopwatch();
         //TODO Optimize Ranker, takes way too much time
         private static Dictionary<Document, Dictionary<string, List<int>>> Results;
-        private static double noOfWordsWeight = 0.7;
-        private static double consecutiveWeight = 0.3;
+        private static double noOfWordsWeight = 0.5;
+        private static double consecutiveWeight = 0.5;
         private static int howFarApartTheWordsCanBe = 2;
         /// <summary>
         /// Searches the query.

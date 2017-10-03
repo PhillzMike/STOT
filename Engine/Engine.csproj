@@ -197,6 +197,7 @@
   <ItemGroup>
     <Compile Include="Document.cs" />
     <Compile Include="DocumentComparer.cs" />
+    <Compile Include="Interfaces\IDocument.cs" />
     <Compile Include="Inverter.cs" />
     <Compile Include="Interfaces\IStore.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -42,6 +42,7 @@ namespace Engine {
             }
         }
         public Dictionary<Document, List<int>> WordsPositions(string word) {
+
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
             var result = collection.Find(filter).FirstOrDefault();
             var x = new Dictionary<Document, List<int>>(new DocumentComparer());
@@ -57,11 +58,42 @@ namespace Engine {
                 }
             return x;
         }
+        public Dictionary<string, Dictionary<Document, List<int>>> WordsPositions(string[] queryWords) {
+            var filter = Builders<BsonDocument>.Filter.Eq("", queryWords[0]);
+            var answer = new Dictionary<string, Dictionary<Document, List<int>>>();
+            foreach (var item in queryWords) {
+                filter = filter | Builders<BsonDocument>.Filter.Eq("_id", item);
+            }
+            var result = collection.FindSync(filter);
+            using (var asyncCursor = result) {
+                while (asyncCursor.MoveNext()) {
+                    foreach (var current in asyncCursor.Current) {
+                        string word = current["_id"].AsString;
+                        var dictionary = new Dictionary<Document, List<int>>(new DocumentComparer());
+                        int j = 0;
+                        foreach (var item in current["array"].AsBsonArray) {
+                            var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
+                            var doc = documents.Find(filter2).Single();
+                            var value = new List<int>();
+                            foreach (var i in current["array"][j]["value"].AsBsonArray) {
+                                value.Add((int)i);
+                            }
+                            j++;
+                            dictionary.Add(doc, value);
+
+                        }
+                        answer.Add(word, dictionary);
+                    }
+                }
+
+            }
+            return answer;
+        }
         private async void AddToDocTable(Document doc) {
-            var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
-            var answer = documents.Find(filter).FirstOrDefault();
-            if (answer == null)
-                await documents.InsertOneAsync(doc);
+        var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
+        var answer = documents.Find(filter).FirstOrDefault();
+        if (answer == null)
+            await documents.InsertOneAsync(doc);
         }
         private bool CheckWord(string word) {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
@@ -139,7 +171,27 @@ namespace Engine {
                 AddWordToInvtTableAsync(word, doc, i);
 
             }
-
+        }
+        public Dictionary<string,Document> GetAllDoc() {
+            var docs = new Dictionary<string, Document>();
+            var allDoc = documents.Find(new BsonDocument()).ToList();
+            foreach (var item in allDoc) {
+                docs.Add(item.Address, item);
+            }
+            return docs;
+        }
+         public string GetRelevance(string address, int pos) {
+            var x = "";
+            for (int i = -5; i <= 5; i++) {
+                if (pos + i >= 0) {
+                var filter = Builders<BsonDocument>.Filter.Eq("array._id", address)
+                        & Builders<BsonDocument>.Filter.AnyEq("array.value", pos + i);
+                    foreach (var j in collection.Find(filter).ToList()) {
+                        x += j["_id"].AsString + " ";
+                    }
+                }
+            }
+            return x;
         }
         public Document[] AllDocumentsContainingWord(string word) {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);

@@ -150,17 +150,7 @@ namespace Engine {
             doc.Delete();
             _documentCount--;
         }
-
-        /// <summary>
-        /// Removes a Document from the Table When it sees a Document no longer beign Tracked.
-        /// </summary>
-        /// <param name="word">The word that found a Document that has been Deleted.</param>
-        /// <param name="doc">The document pointer to be removed.</param>
-        public void RemoveDocument(String word, Document doc) {
-            store.RemoveDocument(word, doc);
-        }
-
-      
+        
         public String[] AllWordsInTable {
             get => store.AllWordsInTable();
         }
@@ -172,14 +162,10 @@ namespace Engine {
         /// </summary>
         /// <param name="Word">The word to be searched for</param>
         /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
-        public Dictionary<Document, List<int>> AllDocumentsPositionsContainingWord(string Word) {
+        public Dictionary<Document, List<int>> AllDocumentsContainingWordnPositions(string Word) {
             return store.WordsPositions(Word);
 
         }
-        public int[] PositionsWordOccursInDocument(string Word, Document doc) {
-            return store.PositionsWordOccursInDocument(Word, doc);
-        }
-
         /// <summary>
         /// When a document has been modified.
         /// </summary>

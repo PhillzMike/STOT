@@ -30,6 +30,7 @@
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(787, 515);
+            this.MinimumSize = new System.Drawing.Size(650, 350);
             this.Name = "UNILAG";
             this.Text = "UNILAG";
             this.WindowState = System.Windows.Forms.FormWindowState.Maximized;

@@ -42,6 +42,7 @@
             this.ResultsWindow = new System.Windows.Forms.FlowLayoutPanel();
             this.Pages = new System.Windows.Forms.FlowLayoutPanel();
             this.KeyPressTimer = new System.Windows.Forms.Timer(this.components);
+            this.StoreSearch = new System.Windows.Forms.Timer(this.components);
             this.tableLayoutPanel1.SuspendLayout();
             this.ResultsWindow.SuspendLayout();
             this.SuspendLayout();
@@ -62,7 +63,6 @@
             this.TxtSearch1.TabIndex = 0;
             this.TxtSearch1.TabStop = false;
             this.TxtSearch1.UseSystemPasswordChar = false;
-            this.TxtSearch1.Click += new System.EventHandler(this.TxtSearch1_Click);
             this.TxtSearch1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.TxtSearch1_KeyPress);
             this.TxtSearch1.TextChanged += new System.EventHandler(this.TxtSearch1_TextChanged);
             // 
@@ -85,11 +85,12 @@
             // listBox1
             // 
             this.listBox1.FormattingEnabled = true;
+            this.listBox1.Items.AddRange(new object[] {
+            "Power"});
             this.listBox1.Location = new System.Drawing.Point(12, 53);
             this.listBox1.Name = "listBox1";
             this.listBox1.Size = new System.Drawing.Size(503, 69);
             this.listBox1.TabIndex = 2;
-            this.listBox1.Visible = false;
             // 
             // tableLayoutPanel1
             // 
@@ -107,7 +108,7 @@
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 38.63636F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 61F));
             this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Absolute, 20F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(1505, 104);
+            this.tableLayoutPanel1.Size = new System.Drawing.Size(1283, 104);
             this.tableLayoutPanel1.TabIndex = 6;
             this.tableLayoutPanel1.Visible = false;
             // 
@@ -138,7 +139,7 @@
             this.label2.Font = new System.Drawing.Font("Microsoft Sans Serif", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.label2.Location = new System.Drawing.Point(5, 40);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(1495, 62);
+            this.label2.Size = new System.Drawing.Size(1271, 62);
             this.label2.TabIndex = 2;
             this.label2.Text = resources.GetString("label2.Text");
             // 
@@ -168,7 +169,7 @@
             this.ResultsWindow.Location = new System.Drawing.Point(12, 141);
             this.ResultsWindow.Name = "ResultsWindow";
             this.ResultsWindow.Padding = new System.Windows.Forms.Padding(20, 0, 20, 0);
-            this.ResultsWindow.Size = new System.Drawing.Size(1551, 684);
+            this.ResultsWindow.Size = new System.Drawing.Size(1329, 684);
             this.ResultsWindow.TabIndex = 9;
             // 
             // Pages
@@ -177,9 +178,9 @@
             | System.Windows.Forms.AnchorStyles.Right)));
             this.Pages.BackColor = System.Drawing.Color.Transparent;
             this.Pages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Pages.Location = new System.Drawing.Point(503, 871);
+            this.Pages.Location = new System.Drawing.Point(503, 731);
             this.Pages.Name = "Pages";
-            this.Pages.Size = new System.Drawing.Size(562, 37);
+            this.Pages.Size = new System.Drawing.Size(340, 37);
             this.Pages.TabIndex = 10;
             // 
             // KeyPressTimer
@@ -187,11 +188,16 @@
             this.KeyPressTimer.Interval = 500;
             this.KeyPressTimer.Tick += new System.EventHandler(this.KeyPressTimer_Tick);
             // 
+            // StoreSearch
+            // 
+            this.StoreSearch.Interval = 20000;
+            this.StoreSearch.Tick += new System.EventHandler(this.StoreSearch_Tick);
+            // 
             // SearchPage
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1600, 920);
+            this.ClientSize = new System.Drawing.Size(1378, 780);
             this.Controls.Add(this.Pages);
             this.Controls.Add(this.ResultsWindow);
             this.Controls.Add(this.SearchTime);
@@ -226,5 +232,6 @@
         private System.Windows.Forms.FlowLayoutPanel ResultsWindow;
         private System.Windows.Forms.FlowLayoutPanel Pages;
         private System.Windows.Forms.Timer KeyPressTimer;
+        private System.Windows.Forms.Timer StoreSearch;
     }
 }

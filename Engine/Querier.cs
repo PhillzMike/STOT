@@ -47,9 +47,13 @@ namespace Engine {
             String QueryToTrie = "";
             foreach (string word in querywords) {
                 QueryToTrie += word + " ";
-                Dictionary<Document, List<int>> thisWords = invt.AllDocumentsPositionsContainingWord(word);
+                if (!available.ContainsKey(word)) { 
+                    Dictionary<Document, List<int>> thisWords = invt.AllDocumentsPositionsContainingWord(word);
+
                 available.Add(word, thisWords);
-                availableDocs.UnionWith(thisWords.Keys);
+                    availableDocs.UnionWith(thisWords.Keys);
+                }
+                
             }
 
             foreach (Document x in availableDocs) {

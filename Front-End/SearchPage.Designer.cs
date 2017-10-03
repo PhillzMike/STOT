@@ -180,7 +180,7 @@
             this.Pages.AutoSizeMode = System.Windows.Forms.AutoSizeMode.GrowAndShrink;
             this.Pages.BackColor = System.Drawing.Color.Transparent;
             this.Pages.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.Pages.Location = new System.Drawing.Point(330, 768);
+            this.Pages.Location = new System.Drawing.Point(494, 768);
             this.Pages.Name = "Pages";
             this.Pages.Size = new System.Drawing.Size(0, 0);
             this.Pages.TabIndex = 10;

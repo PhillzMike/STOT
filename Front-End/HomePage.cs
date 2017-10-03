@@ -15,7 +15,7 @@ namespace Front_End
     public partial class HomePage : Form
     {
         BindingList<string> tree = new BindingList<string>();
-        public string SearchTxt { set { TxtSearch.Text = value; } }
+        public string SearchTxt { set { TxtSearch.Text = value; TxtSearch.SelectionStart = TxtSearch.Text.Length; } }
         public SearchPage Searchpage { get; set; }
         public HomePage()
         {
@@ -24,7 +24,8 @@ namespace Front_End
         private void HomePage_Load(object sender, EventArgs e)
         {
             listBox1.DataSource = tree;
-            tree.ListChanged += new ListChangedEventHandler(ItemSizeChanged);           
+            tree.ListChanged += new ListChangedEventHandler(ItemSizeChanged);
+            Location = new System.Drawing.Point(0, 0);
         }
         private void ItemSizeChanged(object sender,ListChangedEventArgs e)
         {
@@ -39,14 +40,13 @@ namespace Front_End
                 listBox1.Visible = true;
             }
         }
-
         private void MaterialRaisedButton1_Click(object sender, EventArgs e)
         {
             if (!OpenSearchPage()) { }
             //tree.Add("cdrghrghirtjjbrgigijg"+i++);
         }
         private bool OpenSearchPage() {
-            if ((!TxtSearch.Text.Equals(""))&&Querier.Search(TxtSearch.Text,Searchpage.invt).Count > 0)
+            if ((!TxtSearch.Text.Equals(""))&&Querier.Search(TxtSearch.Text).Count > 0)
             {
                 Searchpage.SearchTxt = TxtSearch.Text;
                 Searchpage.BringToFront();
@@ -59,19 +59,10 @@ namespace Front_End
             }
                
         }
-
-
-        private void MaterialRaisedButton2_Click(object sender, EventArgs e)
-        {
-            if(tree.Count > 0)
-            tree.RemoveAt(tree.Count-1);
-        }
-
         private void ListBox1_ItemSelected(object sender, EventArgs e)
         {
 
         }
-
         private void ListBox1_KeyPress(object sender, KeyPressEventArgs e)
         {
             if (e.KeyChar == 13)
@@ -79,7 +70,6 @@ namespace Front_End
                 ListBox1_ItemSelected(sender, e);
             }
         }
-
         private void TxtSearch_TextChanged(object sender, EventArgs e)
         {            
             tree.Clear();
@@ -88,10 +78,7 @@ namespace Front_End
                   tree.Add(it);*/
             //Below Lines will open the search page the moment Querier.Search starts returning search Results
            
-
-
         }
-
-       
+        
     }
 }

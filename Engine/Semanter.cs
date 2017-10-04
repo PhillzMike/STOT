@@ -15,32 +15,59 @@ namespace Engine
     {
         Dictionary<String,int> _dictionary;
         Dictionary<String, Dictionary<String, int>> Trie = new Dictionary<string, Dictionary<string, int>>();
+
         public static string[] punctuations = { " ",",","@","#","$","%","^","&","*","+","=","`","~","<",">","/","\\","|",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
+
+        /// <summary>
+        /// Edit the specified query by splitting with punctuations and whitespaces.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
         public static string[] Splitwords(string query) {
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(punctuations, StringSplitOptions.RemoveEmptyEntries);
         }
+        /// <summary>
+        /// Edit the specified query by splitting with punctuations and whitespaces,
+        /// with exceptions of some punctuations.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="except">The string to exempted which splitting the query..</param>
+        /// <returns>The query split into an array</returns>
         public static string[] Splitwords(string query,string except)
         {
             List<string> puncs = punctuations.ToList();
             puncs.Remove(except);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
+        /// <summary>
+        /// Edit the specified query by splitting with punctuations and whitespaces,
+        /// with exceptions of some punctuations.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <param name="except">The string to exempted which splitting the query..</param>
+        /// <returns>The query split into an array</returns>
         public static string[] Splitwords(string query,string[] except) {
             List<string> puncs = punctuations.ToList();
             foreach(string rem in except)
             puncs.Remove(rem);
             return Regex.Replace(query.Trim().ToLower(), "'", string.Empty).Split(puncs.ToArray(), StringSplitOptions.RemoveEmptyEntries);
         }
+        /// <summary>
+        /// Initializes a new instance of the <see cref="Semanter"/> class, reads all the words in the dictionary file
+        /// and the common file and allocates weight to each word.
+        /// </summary>
+        /// <param name="toDictionary">A path to the file that contains all the words in a dictionary.</param>
+        /// <param name="toCommon">A path to the file that contains commonly used words</param>
         public Semanter(String toDictionary,String toCommon) {
             _dictionary = new Dictionary<string,int>();
             LoadToDictionary(File.ReadAllText(toDictionary));
             LoadToDictionary(File.ReadAllText(toCommon),2);
         }
         /// <summary>
-        /// Adds a Book to dictionary with specified weight.
+        /// Provided a Book and its weight, this method allocat.es each word in the book to its weight
         /// </summary>
-        /// <param name="toBook">To book.</param>
-        /// <param name="weight">The weight.</param>
+        /// <param name="toBook">A path to the file that contains books</param>
+        /// <param name="weight">The weight allocated to a word</param>
         public void AddToDictionary(String toBook,int weight) {
             LoadToDictionary(File.ReadAllText(toBook),weight);
         }
@@ -76,11 +103,12 @@ namespace Engine
         private void LoadToDictionary(String words) {
             LoadToDictionary(words,1);
         }
-       
+
         /// <summary>
         /// Suggest Search Queries Similar to the Passed in query
         /// </summary>
         /// <param name="query">The List of strings containing the query in order.</param>
+        /// <param name="noOfResults">The number of suggestions produced.</param>
         /// <returns>An array of suggested terms, sorted by relevance</returns>
         public List<String> Suggestions(String query, int noOfResults) {
             String[] Listwords = Splitwords(query.Trim().ToLower());

@@ -7,28 +7,32 @@ using System.Threading.Tasks;
 namespace Engine {
     public interface IStore {
         /// <summary>
-        /// Checks the word in document.
+        /// Checks if a word exists in a document.
         /// </summary>
         /// <param name="word">The word.</param>
         /// <param name="doc">The document.</param>
-        /// <returns></returns>
+        /// <returns>true if it contains document otherwise false</returns>
         bool CheckWordInDoc(string word, Document doc);
+
         /// <summary>
-        /// Alls the words in table.
+        /// Gets all the words in the inverted index table
         /// </summary>
-        /// <returns></returns>
+        /// <returns> an array of the words contained in the inverted index table.</returns>
         string[] AllWordsInTable();
+
         /// <summary>
-        /// Deletes the specified document.
+        /// deletes a document;
         /// </summary>
         /// <param name="doc">The document.</param>
         void Delete(Document doc);
+
         /// <summary>
-        /// Removes the document.
+        /// Removes the document from a specific word.
         /// </summary>
         /// <param name="word">The word.</param>
         /// <param name="doc">The document.</param>
         void RemoveDocument(string word, Document doc);
+
         /// <summary>
         /// Adds the word to table under the Document.
         /// </summary>
@@ -36,24 +40,27 @@ namespace Engine {
         /// <param name="doc">The document under which the word is added.</param>
         /// <param name="i">The index/Position the word occurs in the document.</param>
         void AddWordUnderDocument(String word, Document doc, int i);
+
         /// <summary>
-        /// Alls the documents containing word.
+        /// Get all the documents containing the given word.
         /// </summary>
         /// <param name="word">The word.</param>
-        /// <returns></returns>
+        /// <returns> an array of documents containing the word</returns>
         Document[] AllDocumentsContainingWord(string word);
+
         /// <summary>
-        /// Positionses the word occurs in document.
+        /// Gets the position a word occurs in document.
         /// </summary>
         /// <param name="word">The word.</param>
         /// <param name="doc">The document.</param>
-        /// <returns></returns>
+        /// <returns>an array of the positions the word appears in the documents</returns>
         int[] PositionsWordOccursInDocument(string word, Document doc);
+
         /// <summary>
-        /// Wordses the positions.
+        /// Get all word positions in each document.
         /// </summary>
         /// <param name="word">The word.</param>
-        /// <returns></returns>
+        /// <returns>a dictionary containing a document in which a word occurs and the list of positions where it occurs</returns>
         Dictionary<Document, List<int>> WordsPositions(string word);
         /// <summary>
         /// Adds the document to document table.

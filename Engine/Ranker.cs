@@ -20,12 +20,12 @@ namespace Engine
         private static double consecutiveWeight = 0.5;
         private static int howFarApartTheWordsCanBe = 2;
         /// <summary>
-        /// Searches the query.
+        /// Ranks the query.
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies (in ascending order) each word in the query is found in this document.</param>
         /// <returns> A list of documents in descending order of relevance</returns>
-        public static List<Document> SearchQuery(List<String> query, Dictionary<Document, Dictionary<string, List<int>>> Results,int documentCount) {
+        public static List<Document> RankQuery(List<String> query, Dictionary<Document, Dictionary<string, List<int>>> Results,int documentCount) {
             //TODO: add a feature that makes searching for a particular document by name possible
             //Calculating Tf-Idf wieghting of each word in a document
             sw.Start();

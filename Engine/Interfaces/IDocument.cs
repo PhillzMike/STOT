@@ -1,9 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
 namespace Engine.Interfaces {
     public interface IDocument {
         /// <summary>
@@ -42,7 +37,7 @@ namespace Engine.Interfaces {
         /// Gets the address of the document.
         /// </summary>
         /// <value> The address. </value>
-/        string Address {
+        string Address {
             get;
         }
         /// <summary>

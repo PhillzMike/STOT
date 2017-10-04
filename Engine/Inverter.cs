@@ -1,11 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
-using System.Threading;
 using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Engine {
     [Serializable]
@@ -166,7 +162,6 @@ namespace Engine {
         /// <returns>All documents Containing this word, returns an empty array if the word isn't in any document</returns>
         public Dictionary<Document, List<int>> AllDocumentsPositionsContainingWord(string Word) {
             return store.WordsPositions(Word);
-
         }
         /// <summary>
         /// When a document has been modified.

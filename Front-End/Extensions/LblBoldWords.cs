@@ -7,11 +7,14 @@ using System.Windows.Forms;
 namespace Front_End {
     public class LblBoldWords : Label {
         HashSet<String> bolded;
+        Semanter sam;
         public LblBoldWords(String bold) {
             this.bolded = new HashSet<string>();
+            this.sam = Querier.Invt.Samantha;
             bold = bold.ToLower();
             String[] bolded = bold.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
-            this.bolded.UnionWith(bolded);
+            foreach(string boldStem in bolded)
+                this.bolded.Add(sam.StemWord(boldStem));
         }
         protected override void OnPaint(PaintEventArgs e) {
             Point drawPoint = new Point(0, 0);
@@ -28,7 +31,7 @@ namespace Front_End {
                 if (drawPoint.X + boldSize.Width > Width) {
                     drawPoint = new Point(0, drawPoint.Y + boldSize.Height);
                 }
-                if (bolded.Contains(word.ToLower())) {
+                if (bolded.Contains(sam.StemWord(word.ToLower()))) {
                     Rectangle boldRect = new Rectangle(drawPoint, boldSize);
                     drawPoint = new Point(drawPoint.X + boldRect.Width, drawPoint.Y);
                     TextRenderer.DrawText(e.Graphics, " "+word+" ", boldFont, boldRect, ForeColor);

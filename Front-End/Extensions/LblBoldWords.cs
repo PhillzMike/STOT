@@ -31,11 +31,11 @@ namespace Front_End {
                 if (bolded.Contains(word.ToLower())) {
                     Rectangle boldRect = new Rectangle(drawPoint, boldSize);
                     drawPoint = new Point(drawPoint.X + boldRect.Width, drawPoint.Y);
-                    TextRenderer.DrawText(e.Graphics, word+"  ", boldFont, boldRect, ForeColor);
+                    TextRenderer.DrawText(e.Graphics, " "+word+" ", boldFont, boldRect, ForeColor);
                 } else {
                     Rectangle normalRect = new Rectangle(drawPoint, normalSize);
                     drawPoint = new Point(drawPoint.X + normalSize.Width, drawPoint.Y);
-                    TextRenderer.DrawText(e.Graphics, word+"  ", normalFont, normalRect, ForeColor);
+                    TextRenderer.DrawText(e.Graphics, " "+word+" ", normalFont, normalRect, ForeColor);
                 }
 
             }

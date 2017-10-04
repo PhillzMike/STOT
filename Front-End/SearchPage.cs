@@ -103,7 +103,14 @@ namespace Front_End {
             listBox1.Items.Clear();
             foreach (string word in suggestions)
                 listBox1.Items.Add(word);
-        }
+            if (suggestions.Count == 0)
+                listBox1.Hide();
+            else {
+                listBox1.Show();
+                listBox1.Height = (4 + (13 * (listBox1.Items.Count )));
+                listBox1.Visible = true;
+            }
+            }
         private void TxtSearch1_TextChanged(object sender, EventArgs e) {
             if (a.IsAlive)
                 a.Abort();
@@ -161,7 +168,10 @@ namespace Front_End {
             searchresults = DivideIntoPages(searchresultlist);
             ResultsWindow.Controls.Clear();
             Pages.Controls.Clear();
-            DisplayPages(currentPage);
+            if (searchresults.Count > currentPage)
+                DisplayPages(currentPage);
+            else
+                DisplayPages(0);
 
         }
 

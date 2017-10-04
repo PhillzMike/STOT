@@ -55,7 +55,16 @@ namespace Engine {
         /// <param name="word">The word.</param>
         /// <returns></returns>
         Dictionary<Document, List<int>> WordsPositions(string word);
-         string GetRelevance(string address, int pos);
+        /// <summary>
+        /// Adds the document to document table.
+        /// </summary>
+        /// <param name="doc">The document to be added.</param>
+        void AddToDocTable(Document doc);
+
+        /// <summary>
+        /// Gets all document in the document table.
+        /// </summary>
+        /// <returns>All Documents in a Dictionry, with their address as key</returns>
         Dictionary<string, Document> GetAllDoc();
     }
 }

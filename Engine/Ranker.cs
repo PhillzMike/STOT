@@ -123,7 +123,6 @@ namespace Engine
                 score = GetSum(GetBestDiff(firstWord, query, dic, i));
                 if (finalScore < score) {
                     finalScore = score;
-                    doc.Relevance = dic[firstWord][i].ToString();
                 }
                 finalScore = (finalScore > score) ? finalScore : score;
             }

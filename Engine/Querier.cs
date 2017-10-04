@@ -90,7 +90,7 @@ namespace Engine {
                     found.Add(x, wordDict);
                 }
             }
-            return found;
+          return found;
         }
         /// <summary>
         /// If given a specified type by the User, gets the type inorder to display document of only those types.

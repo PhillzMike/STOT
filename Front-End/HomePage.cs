@@ -25,7 +25,13 @@ namespace Front_End {
             Location = new System.Drawing.Point(0, 0);
         }
         private void ItemSizeChanged(object sender, EventArgs e) {
-
+            if (listBox1.Items.Count == 0) {
+                listBox1.Visible = false;
+                listBox1.Height = 0;
+            } else {
+                listBox1.Height = (28 + (24 * (listBox1.Items.Count - 1)));
+                listBox1.Visible = true;
+            }
         }
         private void MaterialRaisedButton1_Click(object sender, EventArgs e) {
             if (!OpenSearchPage()) { }

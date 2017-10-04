@@ -121,11 +121,14 @@ namespace Engine {
             _samantha.TrieWord(NameToTrie, 7);
             store.AddWordUnderDocument(doc.Type, doc, i++);
             foreach (String addWord in words) {
+                if (i <= 160)
+                    doc.Relevance += addWord + " ";
                 string word =addWord.ToLower().Trim();
                 if (_stopwords.Contains(word))
                     continue;
                 store.AddWordUnderDocument(Samantha.StemWord(word), doc, i++);
             }
+            store.AddToDocTable(doc);
             _documentCount++;
         }
         /// <summary>

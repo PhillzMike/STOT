@@ -62,7 +62,10 @@ namespace Engine {
             if (result != null)
                 foreach (var item in result["array"].AsBsonArray) {
                     var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
-                    var doc = documents.Find(filter2).Single();
+                    //TODO ask timi to change single to First or default
+                    var doc = documents.Find(filter2).FirstOrDefault();
+                    if (doc == null)
+                        continue;
                     var value = new List<int>();
                     foreach (var i in item["value"].AsBsonArray) {
                         value.Add((int)i);
@@ -71,11 +74,15 @@ namespace Engine {
                 }
             return x;
         }
-        private async void AddToDocTable(Document doc) {
-        var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
-        var answer = documents.Find(filter).FirstOrDefault();
-        if (answer == null)
-            await documents.InsertOneAsync(doc);
+        public void AddToDocTable(Document doc) {
+            var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
+            var answer = documents.Find(filter).FirstOrDefault();
+            try {
+                if (answer == null)
+                    documents.InsertOne(doc);
+            } catch (Exception ex) {
+                Inverter.LogMovement("!!!!!!!!!!ERROR adding to table "+ex.Message);
+            }
         }
         private bool CheckWord(string word) {
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
@@ -103,7 +110,7 @@ namespace Engine {
             collection.UpdateOne(filter, update);
         }
         private void AddDocToWord(string word, Document doc, int i) {
-            AddToDocTable(doc);
+            //AddToDocTable(doc);
             var filter = Builders<BsonDocument>.Filter.Eq("_id", word);
             BsonDocument bdoc = new BsonDocument { { "_id", doc.Address } };
             bdoc.Add("value", new BsonArray { i });
@@ -111,7 +118,7 @@ namespace Engine {
             collection.UpdateOne(filter, update);
         }
         private void AddWordToInvtTableAsync(string word, Document doc, int i) {
-            AddToDocTable(doc);
+            //AddToDocTable(doc);
             BsonDocument bdoc1 = new BsonDocument { { "_id", doc.Address } };
             bdoc1.Add("value", new BsonArray { i });
             BsonDocument bdoc = new BsonDocument { { "_id", word } };

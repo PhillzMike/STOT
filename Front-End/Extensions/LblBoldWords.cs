@@ -15,10 +15,13 @@ namespace Front_End {
         }
         protected override void OnPaint(PaintEventArgs e) {
             Point drawPoint = new Point(0, 0);
-            String[] relevantWords = Text.Split(Semanter.punctuations, StringSplitOptions.RemoveEmptyEntries);
+            String[] keep = new[] { "]", "[" };
+            String[] relevantWords = Semanter.Splitwords(Text, keep);
             //Fonts
             Font normalFont = this.Font;
             Font boldFont = new Font(normalFont, FontStyle.Bold);
+            if (this.Font.Underline)
+                boldFont = new Font(normalFont, newStyle: FontStyle.Bold | FontStyle.Underline);
             foreach (String word in relevantWords) {
                 Size boldSize = TextRenderer.MeasureText(word, boldFont);
                 Size normalSize = TextRenderer.MeasureText(word, normalFont);
@@ -28,12 +31,11 @@ namespace Front_End {
                 if (bolded.Contains(word.ToLower())) {
                     Rectangle boldRect = new Rectangle(drawPoint, boldSize);
                     drawPoint = new Point(drawPoint.X + boldRect.Width, drawPoint.Y);
-                    TextRenderer.DrawText(e.Graphics, word, boldFont, boldRect, ForeColor);
+                    TextRenderer.DrawText(e.Graphics, word+"  ", boldFont, boldRect, ForeColor);
                 } else {
-
                     Rectangle normalRect = new Rectangle(drawPoint, normalSize);
                     drawPoint = new Point(drawPoint.X + normalSize.Width, drawPoint.Y);
-                    TextRenderer.DrawText(e.Graphics, word, normalFont, normalRect, ForeColor);
+                    TextRenderer.DrawText(e.Graphics, word+"  ", normalFont, normalRect, ForeColor);
                 }
 
             }

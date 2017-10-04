@@ -63,7 +63,7 @@
             this.listBox1.Size = new System.Drawing.Size(459, 76);
             this.listBox1.TabIndex = 12;
             this.listBox1.Visible = false;
-            this.listBox1.SelectedIndexChanged += new System.EventHandler(this.ListBox1_ItemSelected);
+            this.listBox1.Click += new System.EventHandler(this.ListBox1_ItemSelected);
             this.listBox1.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.ListBox1_KeyPress);
             // 
             // materialRaisedButton1

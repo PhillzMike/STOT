@@ -12,8 +12,19 @@ namespace Engine {
     /// </summary>
 
     public static class Querier {
+        /// <summary>
+        /// Gets or sets the inverted Index table beign used by the querier.
+        /// </summary>
+        /// <value>
+        /// The inverted index object.
+        /// </value>
         public static Inverter Invt { get { return invt; } set { invt = value; } }
         static Inverter invt;
+        /// <summary>
+        /// Searches for the specified query, returns a ranked List of Documents matching any word in the query.
+        /// </summary>
+        /// <param name="query">The query.</param>
+        /// <returns></returns>
         public static List<Document> Search(String query) {
             //Separate words, remove punctiations,make lowercase
             List<String> words = Semanter.Splitwords(query, ":").ToList();

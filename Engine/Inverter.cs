@@ -4,11 +4,10 @@ using System.IO;
 using System.Runtime.Serialization.Formatters.Binary;
 
 namespace Engine {
-    [Serializable]
     /// <summary>
-    /// Uploads tokens from a file into the inverted index Table
-    /// Author 3dO
+    /// Uploads tokens from a file into the inverted index Table.
     /// </summary>
+    [Serializable]
     public class Inverter {
         [NonSerialized]
         private IStore store;

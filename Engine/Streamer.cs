@@ -2,8 +2,7 @@
 using TikaOnDotNet.TextExtraction;
 namespace Engine {
     /// <summary>
-    /// Author 3dO
-    /// Class to Help Convert a File of the following file types
+    /// Extracts text word from the document.
     /// Remeber to set Inverter before working on this class
     /// <para>pdf, doc, docx, ppt, pptx, xls, xlsx, txt, html and xml</para>
     /// <para>to a File Stream</para>

@@ -6,17 +6,17 @@ using System.Diagnostics;
 namespace Engine.Tests {
     [TestClass]
     public class InverterTest {
-        Inverter invt;
+        //Inverter invt;
         [TestMethod]
         public void Inverter() {
-            Stopwatch sw = new Stopwatch();
+           /* Stopwatch sw = new Stopwatch();
             sw.Start();
             Double t1 = sw.ElapsedMilliseconds;
-            invt = new Inverter(@"C:\Users\Phillz Mike\Source\Repos\stot\Resources\stopwords.txt", @"C:\Users\Phillz Mike\Source\Repos\stot\Resources\Dictionary.txt"
-                       , @"C:\Users\Phillz Mike\Source\Repos\stot\Resources\commonSfw.txt", @"C:\Users\Phillz Mike\Source\Repos\stot\Resources\Formats.txt", new List<string>());
+            invt = new Inverter(@"..\..\..\Resources\stopwords.txt", @"..\..\..\Resources\Dictionary.txt"
+                       , @"..\..\..\Resources\commonSfw.txt", @"..\..\..\Resources\Formats.txt", new List<string>());
             // invt = Engine.Inverter.Load("Tester");
-            Updater.Crawler(@"C: \Users\Phillz Mike\Source\Repos\stot\Resources\Mock", invt);
-            invt.SaveThis("tester");
+            Updater.Crawler(@"..\..\..\Resources\Mock", invt);
+            //invt.SaveThis("tester");
             Double t2 = sw.ElapsedMilliseconds;
             
             Double t3 = sw.ElapsedMilliseconds;
@@ -43,7 +43,8 @@ namespace Engine.Tests {
             double endTime = sw.ElapsedMilliseconds;
             double proveSWisOn;
             try { throw new Exception(); } catch { proveSWisOn = sw.ElapsedMilliseconds; }
-            Assert.AreEqual(1, 1);
+            Assert.AreEqual(1, 1);*/
+           // Before Database.
         }
     }
 }

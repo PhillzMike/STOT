@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Diagnostics.Contracts;
 
 namespace Engine
 {
     /// <summary>
-    /// Author Timi
     /// Gets Results to the Query and ranks them by relevance.
     /// </summary>
     public static class Ranker
     {
         private static Stopwatch sw = new Stopwatch();
-        //TODO Optimize Ranker, takes way too much time
         private static Dictionary<Document, Dictionary<string, List<int>>> Results;
         private static double noOfWordsWeight = 0.5;
         private static double consecutiveWeight = 0.5;
@@ -21,7 +20,10 @@ namespace Engine
         /// </summary>
         /// <param name="query">The query.</param>
         /// <param name="Results">A dictionary whose keys are documents and values, an array of the frequencies (in ascending order) each word in the query is found in this document.</param>
-        /// <returns> A list of documents in descending order of relevance</returns>
+        /// <param name="documentCount">The total number of Documents in the database.</param>
+        /// <returns>
+        /// A list of documents in descending order of relevance
+        /// </returns>
         public static List<Document> RankQuery(List<String> query, Dictionary<Document, Dictionary<string, List<int>>> Results,int documentCount) {
             //TODO: add a feature that makes searching for a particular document by name possible
             //Calculating Tf-Idf wieghting of each word in a document
@@ -188,11 +190,12 @@ namespace Engine
         public static double NoOfWordsWeight {
             get => noOfWordsWeight;
             set {
-                if (value <= 0 && value >= 1) { 
+                Contract.Requires<ArgumentOutOfRangeException>(value >= 0 && value <= 1);
+                //if (value <= 0 && value >= 1) { 
                     noOfWordsWeight = value;
                     consecutiveWeight = 1 - value;
-                }else
-                    throw new ArgumentOutOfRangeException();
+                //}else
+                 //   throw new ArgumentOutOfRangeException();
             }
         }
         /// <summary>

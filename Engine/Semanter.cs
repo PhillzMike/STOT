@@ -4,18 +4,18 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 
-namespace Engine
-{
-    [Serializable]
+namespace Engine {
     /// <summary>
-    /// IDK
-    /// Author 3dO
+    /// This class generates suggestion, auto correct invalid query and stems the query.
     /// </summary>
+    [Serializable]
     public class Semanter
     {
         Dictionary<String,int> _dictionary;
         Dictionary<String, Dictionary<String, int>> Trie = new Dictionary<string, Dictionary<string, int>>();
-
+        /// <summary>
+        /// An array of all punctutions, can be used for splitting text into constituent words
+        /// </summary>
         public static string[] punctuations = { " ",",","@","#","$","%","^","&","*","+","=","`","~","<",">","/","\\","|",":","(",")","?","!",";","-", "–","_","[","]","\"",".","…","\t","\n","\r" };
 
         /// <summary>
@@ -488,15 +488,13 @@ namespace Engine
         /// <summary>
         /// The Correcter Corrects the specified word using the Set dictionary
         /// </summary>
-        #region Correcter
-        /// <summary>
-        /// Corrects the word .
-        /// </summary>
-        /// <param name="word">The word.</param>
+        /// <param name="word">The word to be corrected.</param>
         /// <param name="top">The max number of corrections to be suggested.</param>
         /// <returns>
         /// A list containing the specified number of suggestions correcting the specified word.
         /// </returns>
+        #region Correcter
+
         public List<string> CorrectWord(string word,int top) {
             top = (top <0) ? 1:top;
             if(string.IsNullOrEmpty(word))
@@ -599,10 +597,22 @@ namespace Engine
         }
         #endregion
 
-
+        /// <summary>
+        /// Adds the word to the Suggestions trie.
+        /// A data structure containing all the Suggestions as values, under their Trie as key
+        /// e.g Tomiwa is a value under T, To, Tom, Tomi, Tomiw, and Tomiwa e.t.c
+        /// </summary>
+        /// <param name="word">The word to be trie'ed.</param>
         public void TrieWord(String word) {
             TrieWord(word, 1);
         }
+        /// <summary>
+        /// Adds the word to the Suggestions trie.
+        /// A data structure containing all the Suggestions as values, under their Trie as key
+        /// e.g Tomiwa is a value under T, To, Tom, Tomi, Tomiw, and Tomiwa e.t.c
+        /// </summary>
+        /// <param name="word">The word to be trie'ed.</param>
+        /// <param name="weight">The weight of this word.</param>
         public void TrieWord(String word,int weight) {
             for (int i = 1; i < word.Length; i++) {
                 if (word[i] == ' ')

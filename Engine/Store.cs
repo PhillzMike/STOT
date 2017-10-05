@@ -4,6 +4,10 @@ using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
 namespace Engine {
+    /// <summary>
+    /// Keeping the inverted index tble to the database.
+    /// </summary>
+    /// <seealso cref="Engine.IStore" />
     public class Store : IStore {
         private MongoClient client;
         private readonly string connectionString = "mongodb://127.0.0.1:27017";
@@ -59,7 +63,6 @@ namespace Engine {
             if (result != null)
                 foreach (var item in result["array"].AsBsonArray) {
                     var filter2 = Builders<Document>.Filter.Eq("_id", item["_id"]);
-                    //TODO ask timi to change single to First or default
                     var doc = documents.Find(filter2).FirstOrDefault();
                     if (doc == null)
                         continue;
@@ -71,6 +74,10 @@ namespace Engine {
                 }
             return x;
         }
+        /// <summary>
+        /// Adds the document to document table.
+        /// </summary>
+        /// <param name="doc">The document to be added.</param>
         public void AddToDocTable(Document doc) {
             var filter = Builders<Document>.Filter.Eq("_id", doc.Address);
             var answer = documents.Find(filter).FirstOrDefault();

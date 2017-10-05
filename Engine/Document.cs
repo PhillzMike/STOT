@@ -3,10 +3,11 @@ using System;
 
 namespace Engine
 {
-    [Serializable]
     /// <summary>
-    /// The Representation Of the available documents within the code.
+    /// Document class, stores a representtion of the documents in memory, keeping the name, address and co.
     /// </summary>
+    /// <seealso cref="Engine.Interfaces.IDocument" />
+    [Serializable]
     public class Document : Interfaces.IDocument
     {
         private string _Name;
@@ -17,10 +18,11 @@ namespace Engine
         private bool _Available;
 
         /// <summary>
-        /// Initializes a new instance of the <see cref="Document"/> class.
+        /// Initializes a new instance of the <see cref="Document" /> class.
         /// </summary>
         /// <param name="Name">The name of the Document.</param>
         /// <param name="Path">The path to where the document is stored.</param>
+        /// <param name="Type">The format of the DOcument.</param>
         /// <param name="LastModified">The last time the Document was Modified.</param>
         public Document(String Name, String Path, String Type, DateTime LastModified) {
             this.Name = Name;
@@ -54,7 +56,6 @@ namespace Engine
             _Name = "";
             _Relevance = "";
         }
-        [BsonElement("Available")]
         /// <summary>
         /// Gets a value indicating whether this <see cref="Document"/> exists.
         /// <para>All references to this Instance must ensure this is true before proceeding, to avoid null pointer Exceptions</para>
@@ -62,30 +63,31 @@ namespace Engine
         /// <value>
         ///   <c>true</c> if exists; otherwise, <c>false</c>.
         /// </value>
+        [BsonElement("Available")]
         public bool Exists {
             get { return _Available;}
             private set {
                 _Available = value;
             }
         }
-        [BsonElement("name")]
         /// <summary>
         /// Gets or sets the name of the Document.
         /// </summary>
         /// <value>
         /// The name of the Document.
         /// </value>
+        [BsonElement("name")]
         public string Name {
             get { return _Name; }
             set { _Name = value; }
         }
-        [BsonId]
         /// <summary>
         /// Gets or sets the address or path to where the document is stored.
         /// </summary>
         /// <value>
         /// The location of the document.
         /// </value>
+        [BsonId]
         public string Address {
             get { return _Address; }
             private set {
@@ -94,32 +96,32 @@ namespace Engine
                 _Address = value;
             }
         }
-        [BsonElement("type")]
         /// <summary>
         /// Gets or sets the type or file format of the document.
         /// </summary>
         /// <value>
         /// The type or file format ofthe document.
         /// </value>
+        [BsonElement("type")]
         public string Type {
             get { return _Type; }
             private set {_Type = value; }
         }
-        [BsonDateTimeOptions]
         /// <summary>
         /// Gets or sets the last time the document was modified.
         /// </summary>
         /// <value>
         /// The last modified.
         /// </value>
+        [BsonDateTimeOptions]
         public DateTime LastModified {
             get { return _LastSeen; }
             private set {_LastSeen=value; }
         }
-        [BsonElement("Relevance")]
         /// <summary>
         /// The part of the document relevant to the query, To be displayed During Search
         /// </summary>
+        [BsonElement("Relevance")]
         public string Relevance {
             get { return _Relevance; }
             set {

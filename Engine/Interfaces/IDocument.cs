@@ -1,5 +1,8 @@
 ﻿using System;
 namespace Engine.Interfaces {
+    /// <summary>
+    /// Interface to be used for Document class to be used by this app
+    /// </summary>
     public interface IDocument {
         /// <summary>
         /// Gets a value indicating whether this <see cref="IDocument"/> is exists.

@@ -11,7 +11,7 @@ namespace Engine.Tests {
     public class UpdaterTest {
         [TestMethod]
         public void Updater() {
-            string pathString = System.IO.Path.Combine(@"C:\Users\Teniola\Documents\Visual Studio 2017\Projects\Stot\Resources", "Testing Folder");
+            string pathString = Path.Combine(@"..\..\..\Resources", "Testing Folder");
             System.IO.Directory.CreateDirectory(pathString);
             Inverter invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
                     , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());

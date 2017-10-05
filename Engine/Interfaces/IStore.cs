@@ -2,6 +2,9 @@
 using System.Collections.Generic;
 
 namespace Engine {
+    /// <summary>
+    /// Interface for the Store class, involved with sending data to a Database
+    /// </summary>
     public interface IStore {
         /// <summary>
         /// Checks if a word exists in a document.

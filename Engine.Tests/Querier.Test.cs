@@ -23,7 +23,7 @@ namespace Engine.Tests
         [TestMethod]
         public void SearchTest()
         {
-            string pathString = System.IO.Path.Combine(@"C:\Users\Teniola\Documents\Visual Studio 2017\Projects\Stot\Resources", "Testing Folder");
+            string pathString = System.IO.Path.Combine(@"..\..\..\Resources", "Testing Folder");
             System.IO.Directory.CreateDirectory(pathString);
             Inverter invt = new Inverter("../../../Resources/stopwords.txt", "../../../Resources/Dictionary.txt"
                     , "../../../Resources/commonSfw.txt", "../../../Resources/Formats.txt", new List<string>());

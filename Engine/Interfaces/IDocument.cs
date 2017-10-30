@@ -1,5 +1,5 @@
 ﻿using System;
-namespace Engine.Interfaces {
+namespace Engine {
     /// <summary>
     /// Interface to be used for Document class to be used by this app
     /// </summary>

@@ -8,7 +8,7 @@ namespace Engine
     /// </summary>
     /// <seealso cref="Engine.Interfaces.IDocument" />
     [Serializable]
-    public class Document : Interfaces.IDocument
+    public class Document : IDocument
     {
         private string _Name;
         private string _Address;

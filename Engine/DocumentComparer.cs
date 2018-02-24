@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Engine.Interfaces;
+using Engine;
 namespace Engine {
     /// <summary>
     /// Override the Comprator of Documents, Compares Name and Address insted of HashCode
